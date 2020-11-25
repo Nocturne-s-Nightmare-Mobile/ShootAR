@@ -14,20 +14,24 @@ import {
   ViroAmbientLight,
   ViroSpotLight,
   ViroARCamera,
+  ViroSphere,
+  // applyImpulse,
 } from 'react-viro';
 
 export default class HelloWorldSceneAR extends Component {
   constructor() {
     super();
-
-    // Set initial state here
     this.state = {
       text: 'Initializing AR...',
     };
 
-    // bind 'this' to functions
     this._onInitialized = this._onInitialized.bind(this);
+    // this.shoot = this.shoot.bind(this);
   }
+
+  // shoot() {
+  //   this.applyImpulse({ force: [0, 0, 10], position: [0, 0, -0.1] });
+  // }
 
   render() {
     return (
@@ -75,7 +79,35 @@ export default class HelloWorldSceneAR extends Component {
             onLoadEnd={this._onLoadEnd}
             onError={this._onError}
           />
+          <ViroBox
+            // position={[0.02, -0.06, -0.15]} position to render in gun
+            position={[0, 0, -0.1]}
+            height={0.02}
+            width={0.02}
+            length={0.02}
+            physicsBody={{
+              type: 'Dynamic',
+              mass: 1,
+              useGravity: false,
+            }}
+            onClick={function () {
+              this.props.applyImpulse([0, 15, -10], [0, 0, -0.1]);
+            }}
+          />
         </ViroARCamera>
+        <ViroBox
+          position={[0, 1, -3]}
+          height={0.5}
+          width={0.5}
+          length={0.5}
+          physicsBody={{
+            type: 'Kinematic',
+            mass: 0,
+          }}
+          onClick={function () {
+            this.prototype.applyImpulse([0, 15, -10], [0, 0, -0.1]);
+          }}
+        />
       </ViroARScene>
     );
   }
