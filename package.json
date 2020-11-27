@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-"prestart": "./node_modules/react-viro/bin/run_ngrok.sh",
+    "prestart": "./node_modules/react-viro/bin/run_ngrok.sh",
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest"
   },
@@ -15,9 +15,9 @@
   "devDependencies": {
     "@babel/core": "7.12.9",
     "@babel/runtime": "7.12.5",
-    "babel-jest": "26.6.3",
-    "jest": "26.6.3",
-    "metro-react-native-babel-preset": "0.64.0",
+    "babel-jest": "^24.8.0",
+    "metro-react-native-babel-preset": "^0.54.1",
+    "jest": "^24.8.0",
     "react-test-renderer": "16.8.3"
   },
   "jest": {
