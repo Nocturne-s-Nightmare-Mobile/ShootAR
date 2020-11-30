@@ -28,6 +28,8 @@ export default class HelloWorldSceneAR extends Component {
       firing: false,
       bulletPosition: [0.02, -0.06, -0.15],
       hits: 0,
+      roundHits: 0,
+      roundCount: 5,
     };
 
     this.bullets = [];
@@ -52,12 +54,13 @@ export default class HelloWorldSceneAR extends Component {
 
   _onCollision() {
     Vibration.vibrate(50);
-    this.targets.pop();
-    // this.targets.push(this.renderTarget());
     this.setState((prevState) => ({
       ...this.state,
+      roundHits: prevState.roundHits + 1,
       hits: prevState.hits + 1,
     }));
+    // this.targets.pop();
+    // this.targets.push(this.renderTarget());
   }
 
   renderTarget() {
@@ -72,9 +75,9 @@ export default class HelloWorldSceneAR extends Component {
       <ViroBox
         key={this.targets.length}
         position={randomPosition}
-        height={0.3}
-        width={0.3}
-        length={0.3}
+        height={0.5}
+        width={0.5}
+        length={0.5}
         materials={['grid']}
         physicsBody={{
           type: 'Dynamic',
@@ -106,12 +109,21 @@ export default class HelloWorldSceneAR extends Component {
     );
   }
 
-  fire({ position, rotation, forward }) {
+  async fire({ position, rotation, forward }) {
     if (this.state.firing) {
-      const velocity = forward.map((vector) => 15 * vector);
+      const velocity = forward.map((vector) => 10 * vector);
       this.setState({ ...this.state, firing: false });
       this.bullets.push(this.renderBullet(velocity));
-    } else if (this.targets.length < 1) {
+    }
+    if (this.state.roundHits >= this.state.roundCount) {
+      this.targets = [];
+      await this.setState((prevState) => ({
+        ...this.state,
+        roundCount: 5,
+        roundHits: 0,
+      }));
+    }
+    if (this.targets.length < this.state.roundCount) {
       this.targets.push(this.renderTarget());
       // this.targets.push(this.renderTarget());
       // this.targets.push(this.renderTarget());
@@ -125,7 +137,7 @@ export default class HelloWorldSceneAR extends Component {
         onCameraTransformUpdate={this.fire}
       >
         <ViroText
-          text={`Hits: ${this.state.hits}`}
+          text={`Hits: ${this.state.roundHits}`}
           scale={[0.5, 0.5, 0.5]}
           position={[0, 0, -1]}
           style={styles.helloWorldTextStyle}
@@ -140,6 +152,12 @@ export default class HelloWorldSceneAR extends Component {
           castsShadow={true}
         />
         <ViroARCamera>
+          {/* <ViroText
+            text={`Hits: ${this.state.hits.toString()}`}
+            scale={[0.06, 0.06, 0.06]}
+            position={[0, 0.1, -0.2]}
+            style={styles.helloWorldTextStyle}
+          /> */}
           <Viro3DObject
             source={require('./res/gun.vrx')}
             type="VRX"
@@ -249,6 +267,14 @@ export default class HelloWorldSceneAR extends Component {
       </ViroARScene>
     );
   }
+
+  // _onInitialized(state, reason) {
+  //   if (state === ViroConstants.TRACKING_NORMAL) {
+  //     this._updateLocation();
+  //   } else if (state === ViroConstants.TRACKING_NONE) {
+  //     // Handle loss of tracking
+  //   }
+  // }
 
   _onButtonTap() {
     this.setState({
