@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { StyleSheet, Vibration } from 'react-native';
+import { StyleSheet, Vibration } from "react-native";
 
 import {
   ViroARScene,
@@ -17,17 +17,20 @@ import {
   ViroARCamera,
   ViroSphere,
   ViroButton,
-} from 'react-viro';
+  ViroSound,
+} from "react-viro";
 
 export default class HelloWorldSceneAR extends Component {
   constructor() {
     super();
     this.state = {
       hasARInitialized: false,
-      text: 'Initializing AR...',
+      text: "Initializing AR...",
       firing: false,
       bulletPosition: [0.02, -0.06, -0.15],
       hits: 0,
+      shotSound: false,
+      explosionSound: false,
     };
 
     this.bullets = [];
@@ -38,16 +41,18 @@ export default class HelloWorldSceneAR extends Component {
     this._onTouch = this._onTouch.bind(this);
     this.fire = this.fire.bind(this);
     this._onCollision = this._onCollision.bind(this);
+    this.stopShotSound = this.stopShotSound.bind(this);
+    this.stopExplosionSound = this.stopExplosionSound.bind(this);
   }
 
   _onLoadStart() {
-    console.log('OBJ loading has started');
+    console.log("OBJ loading has started");
   }
   _onLoadEnd() {
-    console.log('OBJ loading has finished');
+    console.log("OBJ loading has finished");
   }
   _onError(event) {
-    console.log('OBJ loading failed with error: ' + event.nativeEvent.error);
+    console.log("OBJ loading failed with error: " + event.nativeEvent.error);
   }
 
   _onCollision() {
@@ -57,6 +62,7 @@ export default class HelloWorldSceneAR extends Component {
     this.setState((prevState) => ({
       ...this.state,
       hits: prevState.hits + 1,
+      explosionSound: true,
     }));
   }
 
@@ -75,13 +81,13 @@ export default class HelloWorldSceneAR extends Component {
         height={0.3}
         width={0.3}
         length={0.3}
-        materials={['grid']}
+        materials={["grid"]}
         physicsBody={{
-          type: 'Dynamic',
+          type: "Dynamic",
           mass: 0.1,
           useGravity: false,
         }}
-        viroTag={'target'}
+        viroTag={"target"}
         onCollision={this._onCollision}
       />
     );
@@ -96,12 +102,12 @@ export default class HelloWorldSceneAR extends Component {
         width={0.01}
         length={0.01}
         physicsBody={{
-          type: 'Dynamic',
+          type: "Dynamic",
           mass: 10,
           useGravity: false,
           velocity: velocity,
         }}
-        materials={['grid']}
+        materials={["grid"]}
       />
     );
   }
@@ -109,13 +115,22 @@ export default class HelloWorldSceneAR extends Component {
   fire({ position, rotation, forward }) {
     if (this.state.firing) {
       const velocity = forward.map((vector) => 15 * vector);
-      this.setState({ ...this.state, firing: false });
+      this.setState({ ...this.state, firing: false, shotSound: true });
       this.bullets.push(this.renderBullet(velocity));
+      // ADD SOUND HERE
     } else if (this.targets.length < 1) {
       this.targets.push(this.renderTarget());
       // this.targets.push(this.renderTarget());
       // this.targets.push(this.renderTarget());
     }
+  }
+
+  stopShotSound() {
+    this.setState({ shotSound: false });
+  }
+
+  stopExplosionSound() {
+    this.setState({ explosionSound: false });
   }
 
   render() {
@@ -124,6 +139,26 @@ export default class HelloWorldSceneAR extends Component {
         onTrackingUpdated={this.trackingUpdated}
         onCameraTransformUpdate={this.fire}
       >
+        <ViroSound
+          source={require("./audio/pistolShot.mp3")}
+          loop={false}
+          paused={!this.state.shotSound}
+          volume={0.5}
+          onFinish={this.stopShotSound}
+        />
+        <ViroSound
+          source={require("./audio/explosion.mp3")}
+          loop={false}
+          paused={!this.state.explosionSound}
+          volume={0.5}
+          onFinish={this.stopExplosionSound}
+        />
+        <ViroSound
+          source={require("./audio/song2.m4a")}
+          loop={true}
+          paused={false}
+          volume={0.5}
+        />
         <ViroText
           text={`Hits: ${this.state.hits}`}
           scale={[0.5, 0.5, 0.5]}
@@ -141,7 +176,7 @@ export default class HelloWorldSceneAR extends Component {
         />
         <ViroARCamera>
           <Viro3DObject
-            source={require('./res/gun.vrx')}
+            source={require("./res/gun.vrx")}
             type="VRX"
             scale={[0.0003, 0.0003, 0.0003]}
             position={[0.02, -0.1, -0.2]}
@@ -271,17 +306,17 @@ export default class HelloWorldSceneAR extends Component {
 
 var styles = StyleSheet.create({
   helloWorldTextStyle: {
-    fontFamily: 'Arial',
+    fontFamily: "Arial",
     fontSize: 25,
-    color: 'white',
-    textAlignVertical: 'center',
-    textAlign: 'center',
+    color: "white",
+    textAlignVertical: "center",
+    textAlign: "center",
   },
 });
 
 ViroMaterials.createMaterials({
   grid: {
-    diffuseTexture: require('./res/grid_bg.jpg'),
+    diffuseTexture: require("./res/grid_bg.jpg"),
   },
 });
 
