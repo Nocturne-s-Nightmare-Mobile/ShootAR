@@ -141,14 +141,14 @@ export default class HelloWorldSceneAR extends Component {
       >
         <ViroSound
           source={require("./audio/pistolShot.mp3")}
-          loop={true}
+          loop={false}
           paused={!this.state.shotSound}
           volume={0.5}
           onFinish={this.stopShotSound}
         />
         <ViroSound
           source={require("./audio/explosion.mp3")}
-          loop={true}
+          loop={false}
           paused={!this.state.explosionSound}
           volume={0.5}
           onFinish={this.stopExplosionSound}
