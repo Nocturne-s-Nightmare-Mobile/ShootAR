@@ -18,6 +18,7 @@ import {
   ViroSphere,
   ViroButton,
   ViroSound,
+  ViroAnimations,
 } from 'react-viro';
 
 export default class HelloWorldSceneAR extends Component {
@@ -33,6 +34,7 @@ export default class HelloWorldSceneAR extends Component {
       explosionSound: false,
       update: true,
       canShoot: true,
+      currentAnim: '',
     };
 
     this.bullets = [];
@@ -79,13 +81,29 @@ export default class HelloWorldSceneAR extends Component {
       update: !prevState.update,
     }));
     return (
+      // <ViroSphere
+      //   key={num}
+      //   position={randomPosition}
+      //   radius={0.06}
+      //   rotation={[0, 90, 0]}
+      //   materials={['bullseye']}
+      //   physicsBody={{
+      //     type: 'Static',
+      //     mass: 0,
+      //     useGravity: false,
+      //     velocity: [0, 0, 0],
+      //   }}
+      //   viroTag={`${num}`}
+      //   transformBehaviors={['billboard']}
+      // />
+
       <ViroBox
         key={num}
         position={randomPosition}
         height={0.3}
         width={0.3}
         length={0.3}
-        materials={['grid']}
+        materials={['bullseye']}
         physicsBody={{
           type: 'Static',
           mass: 0,
@@ -93,28 +111,44 @@ export default class HelloWorldSceneAR extends Component {
           velocity: [0, 0, 0],
         }}
         viroTag={`${num}`}
+        transformBehaviors={['billboardY']}
       />
     );
   }
 
   renderBullet(velocity) {
     return (
-      <ViroBox
+      <ViroSphere
         key={this.bullets.length}
-        position={[0.022, -0.06, -0.15]}
-        height={0.01}
-        width={0.01}
-        length={0.01}
+        radius={0.006}
+        position={[0.021, -0.06, -0.15]}
         physicsBody={{
           type: 'Dynamic',
           mass: 10,
           useGravity: false,
           velocity: velocity,
         }}
-        materials={['grid']}
+        materials={['black']}
         viroTag={'bullet'}
+        highAccuracyEvents={true}
         onCollision={this.hitTarget}
       />
+      // <ViroBox
+      //   key={this.bullets.length}
+      //   position={[0.022, -0.06, -0.15]}
+      //   height={0.01}
+      //   width={0.01}
+      //   length={0.01}
+      //   physicsBody={{
+      //     type: 'Dynamic',
+      //     mass: 10,
+      //     useGravity: false,
+      //     velocity: velocity,
+      //   }}
+      //   materials={['grid']}
+      //   viroTag={'bullet'}
+      //   onCollision={this.hitTarget}
+      // />
     );
   }
 
@@ -126,17 +160,16 @@ export default class HelloWorldSceneAR extends Component {
         firing: false,
         shotSound: true,
         canShoot: false,
+        currentAnim: 'recoil',
       });
       this.bullets.push(this.renderBullet(velocity));
       setTimeout(() => {
-        this.setState({ ...this.state, canShoot: true });
-      }, 800);
+        this.setState({ ...this.state, canShoot: true, currentAnim: '' });
+      }, 1000);
     } else if (!this.targets.length) {
       for (let i = 0; i < 10; i++) {
         this.targets.push(this.renderTarget(i));
       }
-    } else {
-      this.setState({ ...this.state, firing: false });
     }
   }
 
@@ -193,9 +226,16 @@ export default class HelloWorldSceneAR extends Component {
           <Viro3DObject
             source={require('./res/gun.vrx')}
             type="VRX"
+            highAccuracyEvents={true}
             scale={[0.0003, 0.0003, 0.0003]}
             position={[0.02, -0.1, -0.2]}
             rotation={[0, 90, -5]}
+            animation={{
+              name: this.state.currentAnim,
+              run: true,
+              // loop: true,
+              // interruptible: true,
+            }}
             onClick={() => {
               this.setState({
                 ...this.state,
@@ -319,6 +359,24 @@ export default class HelloWorldSceneAR extends Component {
   }
 }
 
+ViroAnimations.registerAnimations({
+  // recoilStart: {
+  //   properties: { rotateX: 0, rotateY: 90, rotateZ: -5 },
+  //   // easing: 'easeOut',
+  //   duration: 333,
+  // },
+  recoilUp: {
+    properties: { rotateX: 45, rotateY: 130, rotateZ: 0 },
+    duration: 333,
+  },
+  recoilDown: {
+    properties: { rotateX: 0, rotateY: 90, rotateZ: 0 },
+    // easing: 'easeIn',s
+    duration: 333,
+  },
+  recoil: [['recoilUp', 'recoilDown']],
+});
+
 var styles = StyleSheet.create({
   helloWorldTextStyle: {
     fontFamily: 'Arial',
@@ -330,8 +388,11 @@ var styles = StyleSheet.create({
 });
 
 ViroMaterials.createMaterials({
-  grid: {
+  bullseye: {
     diffuseTexture: require('./res/bullseye.jpg'),
+  },
+  black: {
+    diffuseTexture: require('./res/black.jpeg'),
   },
 });
 
