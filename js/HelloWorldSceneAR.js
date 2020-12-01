@@ -111,7 +111,7 @@ export default class HelloWorldSceneAR extends Component {
           velocity: [0, 0, 0],
         }}
         viroTag={`${num}`}
-        transformBehaviors={['billboardY']}
+        transformBehaviors={['billboard']}
       />
     );
   }
@@ -164,12 +164,19 @@ export default class HelloWorldSceneAR extends Component {
       });
       this.bullets.push(this.renderBullet(velocity));
       setTimeout(() => {
-        this.setState({ ...this.state, canShoot: true, currentAnim: '' });
-      }, 1000);
+        this.setState({
+          ...this.state,
+          canShoot: true,
+          currentAnim: '',
+          shotSound: false,
+        });
+      }, 1100);
     } else if (!this.targets.length) {
       for (let i = 0; i < 10; i++) {
         this.targets.push(this.renderTarget(i));
       }
+    } else {
+      this.setState({ ...this.state, firing: false });
     }
   }
 
@@ -362,17 +369,19 @@ export default class HelloWorldSceneAR extends Component {
 ViroAnimations.registerAnimations({
   // recoilStart: {
   //   properties: { rotateX: 0, rotateY: 90, rotateZ: -5 },
-  //   // easing: 'easeOut',
   //   duration: 333,
   // },
+  //            position={[0.02, -0.1, -0.2]}
+
   recoilUp: {
-    properties: { rotateX: 45, rotateY: 130, rotateZ: 0 },
-    duration: 333,
+    properties: { positionX: 0.02, positionY: -0.09, positionZ: -0.15 },
+    easing: 'easeOut',
+    duration: 150,
   },
   recoilDown: {
-    properties: { rotateX: 0, rotateY: 90, rotateZ: 0 },
-    // easing: 'easeIn',s
-    duration: 333,
+    properties: { positionX: 0.02, positionY: -0.1, positionZ: -0.2 },
+    easing: 'easeIn',
+    duration: 150,
   },
   recoil: [['recoilUp', 'recoilDown']],
 });
