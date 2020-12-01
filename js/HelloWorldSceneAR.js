@@ -31,6 +31,8 @@ export default class HelloWorldSceneAR extends Component {
       hits: 0,
       shotSound: false,
       explosionSound: false,
+      songs: [false, false, false, false, false],
+      battlefield: [false, false],
     };
 
     this.bullets = [];
@@ -43,6 +45,15 @@ export default class HelloWorldSceneAR extends Component {
     this._onCollision = this._onCollision.bind(this);
     this.stopShotSound = this.stopShotSound.bind(this);
     this.stopExplosionSound = this.stopExplosionSound.bind(this);
+    this.pickRandomSong = this.pickRandomSong.bind(this);
+    this.stopSong = this.stopSong.bind(this);
+    this.stopBattlefield = this.stopBattlefield.bind(this);
+    this.nextBattlefield = this.nextBattlefield.bind(this);
+  }
+
+  componentDidMount() {
+    this.pickRandomSong();
+    this.nextBattlefield();
   }
 
   _onLoadStart() {
@@ -133,6 +144,30 @@ export default class HelloWorldSceneAR extends Component {
     this.setState({ explosionSound: false });
   }
 
+  stopSong() {
+    this.setState({ songs: [false, false, false, false, false] });
+    this.pickRandomSong();
+  }
+
+  pickRandomSong() {
+    const random = Math.floor(Math.random() * 5);
+    const newSongs = [...this.state.songs];
+    newSongs[random] = true;
+    this.setState({ songs: [...newSongs] });
+  }
+
+  stopBattlefield() {
+    this.setState({ battlefield: [false, false] });
+    this.nextBattlefield();
+  }
+
+  nextBattlefield() {
+    const random = Math.floor(Math.random() * 2);
+    const newBattlefield = [...this.state.battlefield];
+    newBattlefield[random] = true;
+    this.setState({ battlefield: [...newBattlefield] });
+  }
+
   render() {
     return (
       <ViroARScene
@@ -154,10 +189,53 @@ export default class HelloWorldSceneAR extends Component {
           onFinish={this.stopExplosionSound}
         />
         <ViroSound
+          source={require("./audio/song.mp3")}
+          loop={false}
+          paused={!this.state.songs[0]}
+          volume={0.25}
+          onFinish={this.stopSong}
+        />
+        <ViroSound
           source={require("./audio/song2.m4a")}
-          loop={true}
-          paused={false}
+          loop={false}
+          paused={!this.state.songs[1]}
+          volume={0.25}
+          onFinish={this.stopSong}
+        />
+        <ViroSound
+          source={require("./audio/song3.m4a")}
+          loop={false}
+          paused={!this.state.songs[2]}
+          volume={0.25}
+          onFinish={this.stopSong}
+        />
+        <ViroSound
+          source={require("./audio/song4.mp3")}
+          loop={false}
+          paused={!this.state.songs[3]}
+          volume={2}
+          onFinish={this.stopSong}
+        />
+        <ViroSound
+          source={require("./audio/song5.mp3")}
+          loop={false}
+          paused={!this.state.songs[4]}
           volume={0.5}
+          onFinish={this.stopSong}
+        />
+        <ViroSound
+          source={require("./audio/battlefield.mp3")}
+          loop={true}
+          paused={!this.state.battlefield[0]}
+          volume={0.2}
+          onFinish={this.stopBattlefield}
+        />
+        <ViroSound
+          source={require("./audio/battlefield2.mp3")}
+          loop={true}
+          paused={!this.state.battlefield[1]}
+          volume={0.1}
+          onFinish={this.stopBattlefield}
         />
         <ViroText
           text={`Hits: ${this.state.hits}`}
