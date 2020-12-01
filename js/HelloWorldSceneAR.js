@@ -153,6 +153,12 @@ export default class HelloWorldSceneAR extends Component {
           volume={0.5}
           onFinish={this.stopExplosionSound}
         />
+        <ViroSound
+          source={require("./audio/song2.m4a")}
+          loop={true}
+          paused={false}
+          volume={0.5}
+        />
         <ViroText
           text={`Hits: ${this.state.hits}`}
           scale={[0.5, 0.5, 0.5]}
