@@ -595,9 +595,9 @@ ViroMaterials.createMaterials({
   brass: {
     diffuseTexture: require("./res/brass.jpeg"),
   },
-  rough: {
-    diffuseTexture: require("./res/spheretex1.jpg"),
-  },
+  // rough: {
+  //   diffuseTexture: require("./res/spheretex1.jpg"),
+  // },
   desert: {
     diffuseTexture: require("./res/desert.jpg"),
   },
@@ -619,9 +619,9 @@ ViroMaterials.createMaterials({
   pink: {
     diffuseTexture: require("./res/pink1.jpg"),
   },
-  neon: {
-    diffuseTexture: require("./res/neon.jpeg"),
-  },
+  // neon: {
+  //   diffuseTexture: require("./res/neon.jpeg"),
+  // },
   bullseyeSphere: {
     diffuseTexture: require("./res/bullseye6.png"),
   },
