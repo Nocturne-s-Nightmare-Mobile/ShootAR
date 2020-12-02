@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { StyleSheet, Vibration } from 'react-native';
+import { StyleSheet, Vibration } from "react-native";
 
 import {
   ViroARScene,
@@ -19,14 +19,14 @@ import {
   ViroButton,
   ViroSound,
   ViroAnimations,
-} from 'react-viro';
+} from "react-viro";
 
 export default class HelloWorldSceneAR extends Component {
   constructor() {
     super();
     this.state = {
       hasARInitialized: false,
-      text: 'Initializing AR...',
+      text: "Initializing AR...",
       firing: false,
       bulletPosition: [0.02, -0.06, -0.15],
       hits: 0,
@@ -34,8 +34,8 @@ export default class HelloWorldSceneAR extends Component {
       explosionSound: false,
       update: true,
       canShoot: true,
-      currentAnim: '',
-      songs: [false, false, false, false, false],
+      currentAnim: "",
+      songs: [false, false, false, false, false, false, false],
       battlefield: [false, false],
     };
 
@@ -61,13 +61,13 @@ export default class HelloWorldSceneAR extends Component {
   }
 
   _onLoadStart() {
-    console.log('OBJ loading has started');
+    console.log("OBJ loading has started");
   }
   _onLoadEnd() {
-    console.log('OBJ loading has finished');
+    console.log("OBJ loading has finished");
   }
   _onError(event) {
-    console.log('OBJ loading failed with error: ' + event.nativeEvent.error);
+    console.log("OBJ loading failed with error: " + event.nativeEvent.error);
   }
 
   hitTarget(tag) {
@@ -114,15 +114,15 @@ export default class HelloWorldSceneAR extends Component {
         height={0.3}
         width={0.3}
         length={0.3}
-        materials={['bullseye']}
+        materials={["bullseye"]}
         physicsBody={{
-          type: 'Static',
+          type: "Static",
           mass: 0,
           useGravity: false,
           velocity: [0, 0, 0],
         }}
         viroTag={`${num}`}
-        transformBehaviors={['billboard']}
+        transformBehaviors={["billboard"]}
       />
     );
   }
@@ -134,13 +134,13 @@ export default class HelloWorldSceneAR extends Component {
         radius={0.006}
         position={[0.021, -0.06, -0.15]}
         physicsBody={{
-          type: 'Dynamic',
+          type: "Dynamic",
           mass: 10,
           useGravity: false,
           velocity: velocity,
         }}
-        materials={['black']}
-        viroTag={'bullet'}
+        materials={["black"]}
+        viroTag={"bullet"}
         highAccuracyEvents={true}
         onCollision={this.hitTarget}
       />
@@ -171,14 +171,14 @@ export default class HelloWorldSceneAR extends Component {
         firing: false,
         shotSound: true,
         canShoot: false,
-        currentAnim: 'recoil',
+        currentAnim: "recoil",
       });
       this.bullets.push(this.renderBullet(velocity));
       setTimeout(() => {
         this.setState({
           ...this.state,
           canShoot: true,
-          currentAnim: '',
+          currentAnim: "",
           shotSound: false,
         });
       }, 1100);
@@ -200,15 +200,18 @@ export default class HelloWorldSceneAR extends Component {
   }
 
   stopSong() {
-    this.setState({ songs: [false, false, false, false, false] });
     this.pickRandomSong();
   }
 
   pickRandomSong() {
-    const random = Math.floor(Math.random() * 5);
+    const random = Math.floor(Math.random() * 7);
     const newSongs = [...this.state.songs];
-    newSongs[random] = true;
-    this.setState({ songs: [...newSongs] });
+    if (newSongs[random]) {
+      this.pickRandomSong();
+    } else {
+      newSongs[random] = true;
+      this.setState({ songs: [...newSongs] });
+    }
   }
 
   stopBattlefield() {
@@ -230,14 +233,14 @@ export default class HelloWorldSceneAR extends Component {
         onCameraTransformUpdate={this.fire}
       >
         <ViroSound
-          source={require('./audio/pistolShot.mp3')}
+          source={require("./audio/pistolShot.mp3")}
           loop={false}
           paused={!this.state.shotSound}
-          volume={0.5}
+          volume={0.6}
           onFinish={this.stopShotSound}
         />
         <ViroSound
-          source={require('./audio/explosion.mp3')}
+          source={require("./audio/explosion.mp3")}
           loop={false}
           paused={!this.state.explosionSound}
           volume={0.5}
@@ -268,14 +271,28 @@ export default class HelloWorldSceneAR extends Component {
           source={require("./audio/song4.mp3")}
           loop={false}
           paused={!this.state.songs[3]}
-          volume={2}
+          volume={0.2}
           onFinish={this.stopSong}
         />
         <ViroSound
           source={require("./audio/song5.mp3")}
           loop={false}
           paused={!this.state.songs[4]}
-          volume={0.3}
+          volume={0.35}
+          onFinish={this.stopSong}
+        />
+        <ViroSound
+          source={require("./audio/song6.mp3")}
+          loop={false}
+          paused={!this.state.songs[5]}
+          volume={0.2}
+          onFinish={this.stopSong}
+        />
+        <ViroSound
+          source={require("./audio/song7.mp3")}
+          loop={false}
+          paused={!this.state.songs[6]}
+          volume={0.2}
           onFinish={this.stopSong}
         />
         <ViroSound
@@ -309,7 +326,7 @@ export default class HelloWorldSceneAR extends Component {
         />
         <ViroARCamera>
           <Viro3DObject
-            source={require('./res/gun.vrx')}
+            source={require("./res/gun.vrx")}
             type="VRX"
             highAccuracyEvents={true}
             scale={[0.0003, 0.0003, 0.0003]}
@@ -453,33 +470,33 @@ ViroAnimations.registerAnimations({
 
   recoilUp: {
     properties: { positionX: 0.02, positionY: -0.09, positionZ: -0.15 },
-    easing: 'easeOut',
+    easing: "easeOut",
     duration: 150,
   },
   recoilDown: {
     properties: { positionX: 0.02, positionY: -0.1, positionZ: -0.2 },
-    easing: 'easeIn',
+    easing: "easeIn",
     duration: 150,
   },
-  recoil: [['recoilUp', 'recoilDown']],
+  recoil: [["recoilUp", "recoilDown"]],
 });
 
 var styles = StyleSheet.create({
   helloWorldTextStyle: {
-    fontFamily: 'Arial',
+    fontFamily: "Arial",
     fontSize: 25,
-    color: 'white',
-    textAlignVertical: 'center',
-    textAlign: 'center',
+    color: "white",
+    textAlignVertical: "center",
+    textAlign: "center",
   },
 });
 
 ViroMaterials.createMaterials({
   bullseye: {
-    diffuseTexture: require('./res/bullseye.jpg'),
+    diffuseTexture: require("./res/bullseye.jpg"),
   },
   black: {
-    diffuseTexture: require('./res/black.jpeg'),
+    diffuseTexture: require("./res/black.jpeg"),
   },
 });
 
