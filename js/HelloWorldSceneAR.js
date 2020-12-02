@@ -20,6 +20,8 @@ import {
   ViroSound,
   ViroAnimations,
   ViroParticleEmitter,
+  ViroFlexView,
+  ViroImage,
 } from 'react-viro';
 
 export default class HelloWorldSceneAR extends Component {
@@ -167,38 +169,12 @@ export default class HelloWorldSceneAR extends Component {
         highAccuracyEvents={true}
         onCollision={this.hitTarget}
       />
-      // <Viro3DObject
-      //   key={this.bullets.length}
-      //   source={require('./res/Bullet.vrx')}
-      //   type="VRX"
-      //   highAccuracyEvents={true}
-      //   position={[0.026, -0.07, -0.2]}
-      //   scale={[0.02, 0.02, 0.02]}
-      //   rotation={[0, 90, 0]}
-      //   // resources={[
-      //   //   require('./res/Bullet_AO.png'),
-      //   //   require('./res/Bullet_BaseColor.png'),
-      //   //   require('./res/Bullet_Height.png'),
-      //   //   require('./res/Bullet_Metallic.png'),
-      //   //   require('./res/Bullet_Normal.png'),
-      //   //   require('./res/Bullet_Roughness.png'),
-      //   // ]}
-      //   physicsBody={{
-      //     type: 'Dynamic',
-      //     mass: 10,
-      //     useGravity: false,
-      //     velocity: velocity,
-      //   }}
-      //   viroTag={'bullet'}
-      //   highAccuracyEvents={true}
-      //   onCollision={this.hitTarget}
-      // />
     );
   }
 
   fire({ position, rotation, forward }) {
     if (this.state.firing && this.state.canShoot) {
-      const velocity = forward.map((vector) => 15 * vector);
+      const velocity = forward.map((vector) => 20 * vector);
       this.setState({
         ...this.state,
         firing: false,
@@ -278,6 +254,7 @@ export default class HelloWorldSceneAR extends Component {
           paused={!this.state.explosionSound}
           volume={0.5}
           onFinish={this.stopExplosionSound}
+          interruptible={true}
         />
         <ViroSound
           source={require('./audio/song.mp3')}
@@ -351,6 +328,7 @@ export default class HelloWorldSceneAR extends Component {
           scale={[0.5, 0.5, 0.5]}
           position={[0, 0, -1]}
           style={styles.helloWorldTextStyle}
+          npm
           transformBehaviors={['billboard']}
         />
         <ViroAmbientLight color="#ffffff" intensity={200} />
@@ -364,6 +342,28 @@ export default class HelloWorldSceneAR extends Component {
         />
 
         <ViroARCamera>
+          {/* <ViroFlexView
+            style={{ flexDirection: 'column', padding: 0.1 }}
+            width={0.05}
+            height={0.05}
+            position={[0, 0.5, -1.0]}
+            rotation={[0, 0, 0]}
+          >
+            <ViroImage
+              source={require('./res/neon.jpeg')}
+              style={{ flex: 0.5 }}
+            />
+            <ViroFlexView style={{ flex: 0.5, flexDirection: 'row' }}>
+              <ViroImage
+                source={require('./res/targetpos.jpg')}
+                style={{ flex: 0.5 }}
+              />
+              <ViroImage
+                source={require('./res/spheretex2.jpg')}
+                style={{ flex: 0.5 }}
+              />
+            </ViroFlexView>
+          </ViroFlexView> */}
           <ViroNode>
             <Viro3DObject
               source={require('./res/gun.vrx')}
@@ -464,76 +464,6 @@ export default class HelloWorldSceneAR extends Component {
             onCollision={this.startGame}
           />
         )}
-        {/* <ViroBox
-          position={[5, 4, -5]}
-          height={0.5}
-          width={0.5}
-          length={0.5}
-          materials={['grid']}
-          physicsBody={{
-            type: 'Dynamic',
-            mass: 0.1,
-            useGravity: false,
-          }}
-          viroTag={'Box2'}
-          onCollision={this._onCollision}
-        />
-        <ViroBox
-          position={[-4, 2, -10]}
-          height={0.5}
-          width={0.5}
-          length={0.5}
-          materials={['grid']}
-          physicsBody={{
-            type: 'Dynamic',
-            mass: 0.1,
-            useGravity: false,
-          }}
-          viroTag={'Box3'}
-          onCollision={this._onCollision}
-        />
-        <ViroBox
-          position={[-6, 3, -6]}
-          height={0.5}
-          width={0.5}
-          length={0.5}
-          materials={['grid']}
-          physicsBody={{
-            type: 'Dynamic',
-            mass: 0.1,
-            useGravity: false,
-          }}
-          viroTag={'Box4'}
-          onCollision={this._onCollision}
-        />
-        <ViroBox
-          position={[5, 2, -3]}
-          height={0.5}
-          width={0.5}
-          length={0.5}
-          materials={['grid']}
-          physicsBody={{
-            type: 'Dynamic',
-            mass: 0.1,
-            useGravity: false,
-          }}
-          viroTag={'Box5'}
-          onCollision={this._onCollision}
-        />
-        <ViroBox
-          position={[2, 1, -4]}
-          height={0.5}
-          width={0.5}
-          length={0.5}
-          materials={['grid']}
-          physicsBody={{
-            type: 'Dynamic',
-            mass: 0.1,
-            useGravity: false,
-          }}
-          viroTag={'Box6'}
-          onCollision={this._onCollision}
-        /> */}
       </ViroARScene>
     );
   }
@@ -558,12 +488,6 @@ export default class HelloWorldSceneAR extends Component {
 }
 
 ViroAnimations.registerAnimations({
-  // recoilStart: {
-  //   properties: { rotateX: 0, rotateY: 90, rotateZ: -5 },
-  //   duration: 333,
-  // },
-  //            position={[0.02, -0.1, -0.2]}
-
   recoilUp: {
     properties: { positionX: 0.02, positionY: -0.09, positionZ: -0.15 },
     easing: 'easeOut',
