@@ -7,6 +7,7 @@ import {StyleSheet} from 'react-native';
 import {
   ViroSceneNavigator,
   ViroScene,
+  ViroCamera,
   ViroARSceneNavigator,
   ViroARScene,
   ViroAmbientLight,
@@ -23,12 +24,12 @@ var ShootingRange = require('./HelloWorldSceneAR');
 class ARPortal extends Component{
   constructor (props){
     super(props)
+    this.state = {
+      isLoading: true
+    }
     this._onEnterPortal = this._onEnterPortal.bind(this)
   }
   _onEnterPortal(){
-      //  <ViroARSceneNavigator 
-      //   initialScene={{scene: ShootingRange}} /> 
-      //this.props.sceneNavigator.jump(scene: ShootingRange)
       this.props.arSceneNavigator.jump('shootingRange', { scene: ShootingRange });
   }
   render (){
@@ -36,15 +37,15 @@ class ARPortal extends Component{
       <ViroARScene>
       <ViroAmbientLight color="#ffffff" intensity={200}/>
         <ViroPortalScene 
-        position={[0, 0, 0]}
+        position={[0, -.1, -1.4]}
         passable={true} 
-       // dragType="FixedDistance" 
-      // onDrag={()=>{}}
+        dragType="FixedDistance" 
+        onDrag={()=>{}}
         onPortalEnter={() =>{
          this._onEnterPortal();
        }}
         >
-          <ViroPortal position={[0, 0, 0]} scale={[.5, .5, .5]}>
+          <ViroPortal position={[0, -.1, -1.4]} scale={[.8, 1, .8]}>
             <Viro3DObject source={require('./res/portals/portal_wood_frame.vrx')}
               resources={[require('./res/portals/portal_wood_frame_diffuse.png'),
                           require('./res/portals/portal_wood_frame_normal.png'),
@@ -52,42 +53,10 @@ class ARPortal extends Component{
               type="VRX"/>
           </ViroPortal>
           <Viro360Image source={require("./res/guadalupe_360.jpg")} />
-          {/* <ViroARSceneNavigator 
-        initialScene={{scene: ShootingRange}} /> */}
-          {/* // <ViroARScene source={ShootingRange} /> */}
         </ViroPortalScene>
       </ViroARScene>
     )
 }
 }
-//  ARPortal = createReactClass({
-
-//   render: function() {
-//     return (
-//       <ViroARScene>
-//       <ViroAmbientLight color="#ffffff" intensity={200}/>
-//         <ViroPortalScene passable={true} 
-//         dragType="FixedDistance" 
-//         onDrag={()=>{}}
-//         onPortalEnter={() =>{
-//          this._onEnterPortal();
-//        }}
-//         >
-//           <ViroPortal position={[0, 1, 0]} scale={[.5, .5, .5]}>
-//             <Viro3DObject source={require('./res/portals/portal_wood_frame.vrx')}
-//               resources={[require('./res/portals/portal_wood_frame_diffuse.png'),
-//                           require('./res/portals/portal_wood_frame_normal.png'),
-//                           require('./res/portals/portal_wood_frame_specular.png')]}
-//               type="VRX"/>
-//           </ViroPortal>
-//           {/* <Viro360Image source={require("./res/guadalupe_360.jpg")} /> */}
-//           <ViroARSceneNavigator 
-//         initialScene={{scene: ShootingRange}} />
-//           {/* // <ViroARScene source={ShootingRange} /> */}
-//         </ViroPortalScene>
-//       </ViroARScene>
-//     );var
-//   },
-// });
 
 module.exports = ARPortal;
