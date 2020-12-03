@@ -39,7 +39,10 @@ export default class HelloWorldSceneAR extends Component {
       songs: [false, false, false, false, false, false, false],
       battlefield: [false, false],
       gameStarted: false,
+      clip: 8,
+      isReloading: false,
       score: 0,
+      reloadSound: false,
     };
 
     this.bullets = [];
@@ -57,6 +60,8 @@ export default class HelloWorldSceneAR extends Component {
     this.stopBattlefield = this.stopBattlefield.bind(this);
     this.nextBattlefield = this.nextBattlefield.bind(this);
     this.startGame = this.startGame.bind(this);
+    this.reload = this.reload.bind(this);
+    this.stopReloadSound = this.stopReloadSound.bind(this);
   }
 
   componentDidMount() {
@@ -85,7 +90,7 @@ export default class HelloWorldSceneAR extends Component {
   }
 
   startGame() {
-    this.setState({ ...this.state, gameStarted: true });
+    this.setState({ ...this.state, gameStarted: true, clip: 8 });
     setTimeout(() => {
       this.setState((prevState) => ({
         ...this.state,
@@ -197,15 +202,29 @@ export default class HelloWorldSceneAR extends Component {
   }
 
   fire({ position, rotation, forward }) {
-    if (this.state.firing && this.state.canShoot) {
-      const velocity = forward.map((vector) => 15 * vector);
+    if (this.state.clip === 0) {
       this.setState({
+        canShoot: false,
+        isReloading: true,
+        firing: false,
+        currentAnim: "reload",
+      });
+      this.reload();
+    } else if (
+      this.state.firing &&
+      this.state.canShoot &&
+      this.state.clip > 0 &&
+      !this.state.isReloading
+    ) {
+      const velocity = forward.map((vector) => 20 * vector);
+      this.setState((prevState) => ({
         ...this.state,
         firing: false,
         shotSound: true,
         canShoot: false,
         currentAnim: "recoil",
-      });
+        clip: prevState.clip - 1,
+      }));
       this.bullets.push(this.renderBullet(velocity));
       setTimeout(() => {
         this.setState({
@@ -214,7 +233,7 @@ export default class HelloWorldSceneAR extends Component {
           currentAnim: "",
           shotSound: false,
         });
-      }, 1000);
+      }, 1500);
     } else if (!this.targets.length) {
       for (let i = 0; i < 10; i++) {
         this.targets.push(this.renderTarget(i));
@@ -224,8 +243,29 @@ export default class HelloWorldSceneAR extends Component {
     }
   }
 
+  reload() {
+    setTimeout(() => {
+      this.setState({
+        reloadSound: true,
+      });
+    }, 1500);
+    setTimeout(() => {
+      this.setState({
+        clip: 8,
+        canShoot: true,
+        firing: false,
+        isReloading: false,
+        shotSound: false,
+      });
+    }, 2000);
+  }
+
   stopShotSound() {
     this.setState({ shotSound: false });
+  }
+
+  stopReloadSound() {
+    this.setState({ reloadSound: false });
   }
 
   stopExplosionSound() {
@@ -273,10 +313,17 @@ export default class HelloWorldSceneAR extends Component {
           onFinish={this.stopShotSound}
         />
         <ViroSound
+          source={require("./audio/reload.mp3")}
+          loop={false}
+          paused={!this.state.reloadSound}
+          volume={0.9}
+          onFinish={this.stopReloadSound}
+        />
+        <ViroSound
           source={require("./audio/explosion.mp3")}
           loop={false}
           paused={!this.state.explosionSound}
-          volume={0.5}
+          volume={0.75}
           onFinish={this.stopExplosionSound}
         />
         <ViroSound
@@ -343,10 +390,15 @@ export default class HelloWorldSceneAR extends Component {
           onFinish={this.stopBattlefield}
         />
         <ViroText
-          text={`Hits: ${this.state.hits}`}
+          text={
+            this.state.gameStarted
+              ? `Hits: ${this.state.hits}`
+              : `Shoot to Start!\nScore: ${this.state.score}`
+          }
           scale={[0.5, 0.5, 0.5]}
           position={[0, 0, -1]}
           style={styles.helloWorldTextStyle}
+          transformBehaviors={["billboard"]}
         />
         <ViroAmbientLight color="#ffffff" intensity={200} />
         <ViroSpotLight
@@ -360,12 +412,48 @@ export default class HelloWorldSceneAR extends Component {
 
         <ViroARCamera>
           <ViroNode>
+            <ViroText
+              text={
+                !this.state.isReloading
+                  ? `Clip: ${
+                      this.state.clip === 8
+                        ? "IIIIIIII"
+                        : this.state.clip === 7
+                        ? "IIIIIII"
+                        : this.state.clip === 6
+                        ? "IIIIII"
+                        : this.state.clip === 5
+                        ? "IIIII"
+                        : this.state.clip === 4
+                        ? "IIII"
+                        : this.state.clip === 3
+                        ? "III"
+                        : this.state.clip === 2
+                        ? "II"
+                        : "I"
+                    }`
+                  : this.state.isReloading
+                  ? "Reloading"
+                  : ""
+              }
+              scale={[0.15, 0.15, 0.15]}
+              position={[0.0, 0.08, -0.2]}
+              style={styles.helloWorldTextStyle}
+              transformBehaviors={["billboard"]}
+            />
+            {/* <ViroText
+              text={"O"}
+              scale={[0.08, 0.08, 0.08]}
+              position={[0.0, -0.006, -0.19]}
+              style={styles.helloWorldTextStyle}
+              transformBehaviors={["billboard"]}
+            /> */}
             <Viro3DObject
               source={require("./res/gun.vrx")}
               type="VRX"
               scale={[0.0003, 0.0003, 0.0003]}
               position={[0.02, -0.1, -0.2]}
-              rotation={[0, 90, -5]}
+              rotation={[0, 90, 355]}
               animation={{
                 name: this.state.currentAnim,
                 run: true,
@@ -570,6 +658,45 @@ ViroAnimations.registerAnimations({
     duration: 150,
   },
   recoil: [["recoilUp", "recoilDown"]],
+});
+
+ViroAnimations.registerAnimations({
+  // recoilStart: {
+  //   properties: { rotateX: 0, rotateY: 90, rotateZ: -5 },
+  //   duration: 333,
+  // },
+  //            position={[0.02, -0.1, -0.2]}
+
+  reloadStart: {
+    properties: {
+      rotateX: 0,
+      rotateY: 90,
+      rotateZ: 265,
+      positionX: 0.06,
+      positionY: -0.05,
+      positionZ: -0.2,
+    },
+    easing: "easeOut",
+    duration: 250,
+  },
+  reloadMiddle: {
+    properties: { rotateX: 0, rotateY: 90, rotateZ: 265 },
+    easing: "easeOut",
+    duration: 2500,
+  },
+  reloadEnd: {
+    properties: {
+      rotateX: 0,
+      rotateY: 90,
+      rotateZ: 355,
+      positionX: 0.02,
+      positionY: -0.1,
+      positionZ: -0.2,
+    },
+    easing: "easeIn",
+    duration: 250,
+  },
+  reload: [["reloadStart", "reloadMiddle", "reloadEnd"]],
 });
 
 var styles = StyleSheet.create({
