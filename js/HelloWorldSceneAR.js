@@ -2,7 +2,19 @@
 
 import React, { Component } from 'react';
 
-import { StyleSheet, Vibration, View, Text } from 'react-native';
+import { StyleSheet, Vibration, Platform } from 'react-native';
+
+import {
+  setFiring,
+  setText,
+  setHits,
+  setCanShoot,
+  startGame,
+  setScore,
+  setClip,
+} from './store';
+
+import { connect } from 'react-redux';
 
 import {
   ViroARScene,
@@ -20,6 +32,10 @@ import {
   ViroSound,
   ViroAnimations,
   ViroParticleEmitter,
+  ViroFlexView,
+  ViroImage,
+  ViroSkyBox,
+  Viro360Image,
 } from 'react-viro';
 
 export default class HelloWorldSceneAR extends Component {
@@ -27,27 +43,22 @@ export default class HelloWorldSceneAR extends Component {
     super();
     this.state = {
       hasARInitialized: false,
-      text: 'Initializing AR...',
-      firing: false,
       bulletPosition: [0.02, -0.06, -0.15],
-      hits: 0,
       shotSound: false,
       explosionSound: false,
       update: true,
-      canShoot: true,
       currentAnim: '',
       songs: [false, false, false, false, false, false, false],
       battlefield: [false, false],
-      gameStarted: false,
-      score: 0,
+      isReloading: false,
+      reloadSound: false,
+      scene: 'building',
     };
 
     this.bullets = [];
     this.targets = [];
 
     this._onLoadStart = this._onLoadStart.bind(this);
-    this._onButtonTap = this._onButtonTap.bind(this);
-    this._onTouch = this._onTouch.bind(this);
     this.fire = this.fire.bind(this);
     this.hitTarget = this.hitTarget.bind(this);
     this.stopShotSound = this.stopShotSound.bind(this);
@@ -57,6 +68,8 @@ export default class HelloWorldSceneAR extends Component {
     this.stopBattlefield = this.stopBattlefield.bind(this);
     this.nextBattlefield = this.nextBattlefield.bind(this);
     this.startGame = this.startGame.bind(this);
+    this.reload = this.reload.bind(this);
+    this.stopReloadSound = this.stopReloadSound.bind(this);
   }
 
   componentDidMount() {
@@ -79,20 +92,25 @@ export default class HelloWorldSceneAR extends Component {
     this.targets[+tag] = this.renderTarget(+tag);
     this.setState((prevState) => ({
       ...this.state,
-      hits: prevState.hits + 1,
       explosionSound: true,
     }));
+    this.props.setHits(this.props.hits + 1);
   }
 
   startGame() {
-    this.setState({ ...this.state, gameStarted: true });
+    this.props.startGame(true);
+    this.props.setClip(8);
     setTimeout(() => {
-      this.setState((prevState) => ({
-        ...this.state,
-        score: prevState.hits,
-        hits: 0,
-        gameStarted: false,
-      }));
+      this.props.setScore(this.props.hits);
+      this.props.setHits(0);
+      this.props.startGame(false);
+      this.targets = [];
+      this.bullets = [];
+      if (this.state.scene === 'building') {
+        this.setState({ scene: 'galaxy' });
+      } else {
+        this.setState({ scene: 'building' });
+      }
     }, 60000);
   }
 
@@ -100,7 +118,9 @@ export default class HelloWorldSceneAR extends Component {
     let posX =
       Math.floor(Math.random() * 6) *
       (Math.floor(Math.random() * 2) === 1 ? -1 : 1);
-    let posY = Math.floor(Math.random() * 4);
+    let posY =
+      Math.floor(Math.random() * 4) *
+      (Math.floor(Math.random() * 2) === 1 ? -1 : 1);
     let posZ = Math.floor(Math.random() * 5 * -1 - 3);
     let randomPosition = [posX, posY, posZ];
     const textures = [
@@ -128,6 +148,18 @@ export default class HelloWorldSceneAR extends Component {
       'bullseyeSphere9',
       'bullseyeSphere10',
     ];
+    const planets = [
+      'planet1',
+      'planet2',
+      'planet3',
+      'planet4',
+      'planet5',
+      'planet6',
+      'planet7',
+      'planet8',
+      'planet9',
+      'neon',
+    ];
     this.setState((prevState) => ({
       ...this.state,
       update: !prevState.update,
@@ -137,7 +169,9 @@ export default class HelloWorldSceneAR extends Component {
         key={num}
         position={randomPosition}
         radius={0.2}
-        materials={targets[num]}
+        materials={
+          this.state.scene === 'building' ? targets[num] : planets[num]
+        }
         physicsBody={{
           type: 'Static',
           mass: 0,
@@ -167,61 +201,65 @@ export default class HelloWorldSceneAR extends Component {
         highAccuracyEvents={true}
         onCollision={this.hitTarget}
       />
-      // <Viro3DObject
-      //   key={this.bullets.length}
-      //   source={require('./res/Bullet.vrx')}
-      //   type="VRX"
-      //   highAccuracyEvents={true}
-      //   position={[0.026, -0.07, -0.2]}
-      //   scale={[0.02, 0.02, 0.02]}
-      //   rotation={[0, 90, 0]}
-      //   // resources={[
-      //   //   require('./res/Bullet_AO.png'),
-      //   //   require('./res/Bullet_BaseColor.png'),
-      //   //   require('./res/Bullet_Height.png'),
-      //   //   require('./res/Bullet_Metallic.png'),
-      //   //   require('./res/Bullet_Normal.png'),
-      //   //   require('./res/Bullet_Roughness.png'),
-      //   // ]}
-      //   physicsBody={{
-      //     type: 'Dynamic',
-      //     mass: 10,
-      //     useGravity: false,
-      //     velocity: velocity,
-      //   }}
-      //   viroTag={'bullet'}
-      //   highAccuracyEvents={true}
-      //   onCollision={this.hitTarget}
-      // />
     );
   }
 
   fire({ position, rotation, forward }) {
-    if (this.state.firing && this.state.canShoot) {
-      const velocity = forward.map((vector) => 15 * vector);
+    if (this.props.clip === 0) {
+      this.props.setCanShoot(false);
+      this.setState({ isReloading: true, currentAnim: 'reload' });
+      this.props.setFiring(false);
+      this.reload();
+    } else if (
+      this.props.firing &&
+      this.props.canShoot &&
+      this.props.clip > 0 &&
+      !this.state.isReloading
+    ) {
+      const velocity = forward.map((vector) => 20 * vector);
       this.setState({
         ...this.state,
-        firing: false,
         shotSound: true,
-        canShoot: false,
         currentAnim: 'recoil',
       });
+      this.props.setClip(this.props.clip - 1);
+      this.props.setCanShoot(false);
+      this.props.setFiring(false);
       this.bullets.push(this.renderBullet(velocity));
       setTimeout(() => {
         this.setState({
           ...this.state,
-          canShoot: true,
           currentAnim: '',
           shotSound: false,
         });
+        this.props.setCanShoot(true);
       }, 1000);
     } else if (!this.targets.length) {
       for (let i = 0; i < 10; i++) {
         this.targets.push(this.renderTarget(i));
       }
-    } else {
-      this.setState({ ...this.state, firing: false });
     }
+  }
+
+  reload() {
+    setTimeout(() => {
+      this.setState({
+        reloadSound: true,
+      });
+    }, 1500);
+    setTimeout(() => {
+      this.props.setClip(8);
+      this.props.setFiring(false);
+      this.props.setCanShoot(true);
+      this.setState({
+        isReloading: false,
+        shotSound: false,
+      });
+    }, 2000);
+  }
+
+  stopReloadSound() {
+    this.setState({ reloadSound: false });
   }
 
   stopShotSound() {
@@ -265,6 +303,18 @@ export default class HelloWorldSceneAR extends Component {
         onTrackingUpdated={this.trackingUpdated}
         onCameraTransformUpdate={this.fire}
       >
+        {this.state.scene === 'building' && (
+          <Viro360Image
+            source={require('./res/building.jpg')}
+            rotation={[0, 30, 0]}
+          />
+        )}
+        {this.state.scene === 'galaxy' && (
+          <Viro360Image
+            source={require('./res/360galaxy.jpg')}
+            rotation={[0, 90, 0]}
+          />
+        )}
         <ViroSound
           source={require('./audio/pistolShot.mp3')}
           loop={false}
@@ -276,8 +326,9 @@ export default class HelloWorldSceneAR extends Component {
           source={require('./audio/explosion.mp3')}
           loop={false}
           paused={!this.state.explosionSound}
-          volume={0.5}
+          volume={0.75}
           onFinish={this.stopExplosionSound}
+          interruptible={true}
         />
         <ViroSound
           source={require('./audio/song.mp3')}
@@ -342,16 +393,12 @@ export default class HelloWorldSceneAR extends Component {
           volume={0.1}
           onFinish={this.stopBattlefield}
         />
-        <ViroText
-          text={
-            this.state.gameStarted
-              ? `Hits: ${this.state.hits}`
-              : `Shoot to Start!\nScore: ${this.state.score}`
-          }
-          scale={[0.5, 0.5, 0.5]}
-          position={[0, 0, -1]}
-          style={styles.helloWorldTextStyle}
-          transformBehaviors={['billboard']}
+        <ViroSound
+          source={require('./audio/reload.mp3')}
+          loop={false}
+          paused={!this.state.reloadSound}
+          volume={0.9}
+          onFinish={this.stopReloadSound}
         />
         <ViroAmbientLight color="#ffffff" intensity={200} />
         <ViroSpotLight
@@ -362,26 +409,51 @@ export default class HelloWorldSceneAR extends Component {
           color="#ffffff"
           castsShadow={true}
         />
-
+        <ViroSpotLight
+          innerAngle={5}
+          outterAngle={90}
+          direction={[0.1, -0.1, 0]}
+          position={[0, 1, -0.2]}
+          color="#ffffff"
+          // intensity={10000}
+        />
         <ViroARCamera>
+          {/* <ViroText
+            text={'O'}
+            position={[0.485, -0.465, -2]}
+            style={{ color: 'white', fontSize: 7 }}
+          /> */}
           <ViroNode>
             <Viro3DObject
               source={require('./res/gun.vrx')}
               type="VRX"
               scale={[0.0003, 0.0003, 0.0003]}
               position={[0.02, -0.1, -0.2]}
-              rotation={[0, 90, -5]}
+              rotation={[0, 90, 355]}
               animation={{
                 name: this.state.currentAnim,
                 run: true,
               }}
               onClick={() => {
-                this.setState({
-                  ...this.state,
-                  firing: true,
-                });
+                if (this.props.canShoot && Platform.OS !== 'ios') {
+                  this.props.setFiring(true);
+                }
               }}
             />
+            {/* <Viro3DObject
+              source={require('./res/ColtGun.vrx')}
+              type="VRX"
+              scale={[0.00017, 0.00017, 0.00017]}
+              position={[0.02, -0.1, -0.2]}
+              rotation={[0, 273, 355]}
+              animation={{
+                name: this.state.currentAnim,
+                run: true,
+              }}
+              onClick={() => {
+                this.props.setFiring(true);
+              }}
+            /> */}
             {/* <ViroParticleEmitter
               position={[0.03, -0.09, -0.45]}
               duration={2000}
@@ -415,13 +487,11 @@ export default class HelloWorldSceneAR extends Component {
                     { endValue: 1.0, interval: [0, 500] },
                   ],
                 },
-
                 rotation: {
                   initialRange: [0, 360],
                   factor: 'Distance',
                   interpolation: [{ endValue: 1080, interval: [0, 500] }],
                 },
-
                 scale: {
                   initialRange: [
                     [1, 1, 1],
@@ -446,7 +516,7 @@ export default class HelloWorldSceneAR extends Component {
           </ViroNode>
           {this.bullets}
         </ViroARCamera>
-        {this.state.gameStarted ? (
+        {this.props.gameStarted ? (
           <>{this.targets}</>
         ) : (
           <ViroBox
@@ -464,106 +534,12 @@ export default class HelloWorldSceneAR extends Component {
             onCollision={this.startGame}
           />
         )}
-        {/* <ViroBox
-          position={[5, 4, -5]}
-          height={0.5}
-          width={0.5}
-          length={0.5}
-          materials={['grid']}
-          physicsBody={{
-            type: 'Dynamic',
-            mass: 0.1,
-            useGravity: false,
-          }}
-          viroTag={'Box2'}
-          onCollision={this._onCollision}
-        />
-        <ViroBox
-          position={[-4, 2, -10]}
-          height={0.5}
-          width={0.5}
-          length={0.5}
-          materials={['grid']}
-          physicsBody={{
-            type: 'Dynamic',
-            mass: 0.1,
-            useGravity: false,
-          }}
-          viroTag={'Box3'}
-          onCollision={this._onCollision}
-        />
-        <ViroBox
-          position={[-6, 3, -6]}
-          height={0.5}
-          width={0.5}
-          length={0.5}
-          materials={['grid']}
-          physicsBody={{
-            type: 'Dynamic',
-            mass: 0.1,
-            useGravity: false,
-          }}
-          viroTag={'Box4'}
-          onCollision={this._onCollision}
-        />
-        <ViroBox
-          position={[5, 2, -3]}
-          height={0.5}
-          width={0.5}
-          length={0.5}
-          materials={['grid']}
-          physicsBody={{
-            type: 'Dynamic',
-            mass: 0.1,
-            useGravity: false,
-          }}
-          viroTag={'Box5'}
-          onCollision={this._onCollision}
-        />
-        <ViroBox
-          position={[2, 1, -4]}
-          height={0.5}
-          width={0.5}
-          length={0.5}
-          materials={['grid']}
-          physicsBody={{
-            type: 'Dynamic',
-            mass: 0.1,
-            useGravity: false,
-          }}
-          viroTag={'Box6'}
-          onCollision={this._onCollision}
-        /> */}
       </ViroARScene>
     );
-  }
-
-  _onButtonTap() {
-    this.setState({
-      ...this.state,
-      bulletVelocity: [0, 0, -3],
-      firing: true,
-    });
-  }
-
-  _onTouch() {
-    if (state == 1) {
-      this.setState({
-        ...this.state,
-        bulletVelocity: [0, 0, -1],
-        firing: true,
-      });
-    }
   }
 }
 
 ViroAnimations.registerAnimations({
-  // recoilStart: {
-  //   properties: { rotateX: 0, rotateY: 90, rotateZ: -5 },
-  //   duration: 333,
-  // },
-  //            position={[0.02, -0.1, -0.2]}
-
   recoilUp: {
     properties: { positionX: 0.02, positionY: -0.09, positionZ: -0.15 },
     easing: 'easeOut',
@@ -577,10 +553,43 @@ ViroAnimations.registerAnimations({
   recoil: [['recoilUp', 'recoilDown']],
 });
 
+ViroAnimations.registerAnimations({
+  reloadStart: {
+    properties: {
+      rotateX: 0,
+      rotateY: 90,
+      rotateZ: 265,
+      positionX: 0.06,
+      positionY: -0.05,
+      positionZ: -0.2,
+    },
+    easing: 'easeOut',
+    duration: 250,
+  },
+  reloadMiddle: {
+    properties: { rotateX: 0, rotateY: 90, rotateZ: 265 },
+    easing: 'easeOut',
+    duration: 2500,
+  },
+  reloadEnd: {
+    properties: {
+      rotateX: 0,
+      rotateY: 90,
+      rotateZ: 355,
+      positionX: 0.02,
+      positionY: -0.1,
+      positionZ: -0.2,
+    },
+    easing: 'easeIn',
+    duration: 250,
+  },
+  reload: [['reloadStart', 'reloadMiddle', 'reloadEnd']],
+});
+
 var styles = StyleSheet.create({
   helloWorldTextStyle: {
     fontFamily: 'Arial',
-    fontSize: 15,
+    fontSize: 20,
     color: 'white',
     textAlignVertical: 'center',
     textAlign: 'center',
@@ -657,6 +666,54 @@ ViroMaterials.createMaterials({
   bullseyeSphere10: {
     diffuseTexture: require('./res/bullseye13.png'),
   },
+  planet1: {
+    diffuseTexture: require('./res/planet1.jpg'),
+  },
+  planet2: {
+    diffuseTexture: require('./res/planet2.png'),
+  },
+  planet3: {
+    diffuseTexture: require('./res/planet3.jpg'),
+  },
+  planet4: {
+    diffuseTexture: require('./res/planet4.jpeg'),
+  },
+  planet5: {
+    diffuseTexture: require('./res/planet5.jpeg'),
+  },
+  planet6: {
+    diffuseTexture: require('./res/planet6.jpg'),
+  },
+  planet7: {
+    diffuseTexture: require('./res/planet7.jpg'),
+  },
+  planet8: {
+    diffuseTexture: require('./res/planet8.jpeg'),
+  },
+  planet9: {
+    diffuseTexture: require('./res/planet9.jpg'),
+  },
 });
 
-module.exports = HelloWorldSceneAR;
+const mapState = (state) => ({
+  state: state,
+  text: state.text,
+  firing: state.firing,
+  hits: state.hits,
+  canShoot: state.canShoot,
+  gameStarted: state.gameStarted,
+  score: state.score,
+  clip: state.clip,
+});
+
+const mapDispatch = (dispatch) => ({
+  setFiring: (firing) => dispatch(setFiring(firing)),
+  setText: (text) => dispatch(setText(text)),
+  setHits: (hits) => dispatch(setHits(hits)),
+  setCanShoot: (canShoot) => dispatch(setCanShoot(canShoot)),
+  startGame: (gameStarted) => dispatch(startGame(gameStarted)),
+  setScore: (score) => dispatch(setScore(score)),
+  setClip: (clip) => dispatch(setClip(clip)),
+});
+
+module.exports = connect(mapState, mapDispatch)(HelloWorldSceneAR);
