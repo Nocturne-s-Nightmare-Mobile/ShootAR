@@ -52,7 +52,7 @@ class ARPortal extends Component{
                           require('./res/portals/portal_wood_frame_specular.png')]}
               type="VRX"/>
           </ViroPortal>
-          <Viro360Image source={require("./res/guadalupe_360.jpg")} />
+          <Viro360Image source={require("./res/building.jpg")} />
         </ViroPortalScene>
       </ViroARScene>
     )
