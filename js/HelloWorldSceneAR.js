@@ -104,7 +104,9 @@ export default class HelloWorldSceneAR extends Component {
     let posX =
       Math.floor(Math.random() * 6) *
       (Math.floor(Math.random() * 2) === 1 ? -1 : 1);
-    let posY = Math.floor(Math.random() * 4);
+    let posY =
+      Math.floor(Math.random() * 4) *
+      (Math.floor(Math.random() * 2) === 1 ? -1 : 1);
     let posZ = Math.floor(Math.random() * 5 * -1 - 3);
     let randomPosition = [posX, posY, posZ];
     const textures = [
@@ -382,9 +384,22 @@ export default class HelloWorldSceneAR extends Component {
               }}
               onClick={() => {
                 this.props.setFiring(true);
-                this.props.setText('Hello World!');
               }}
             />
+            {/* <Viro3DObject
+              source={require('./res/ColtGun.vrx')}
+              type="VRX"
+              scale={[0.00017, 0.00017, 0.00017]}
+              position={[0.02, -0.1, -0.2]}
+              rotation={[0, 273, 355]}
+              animation={{
+                name: this.state.currentAnim,
+                run: true,
+              }}
+              onClick={() => {
+                this.props.setFiring(true);
+              }}
+            /> */}
             {/* <ViroParticleEmitter
               position={[0.03, -0.09, -0.45]}
               duration={2000}
