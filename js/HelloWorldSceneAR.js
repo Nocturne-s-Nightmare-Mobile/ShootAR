@@ -11,6 +11,7 @@ import {
   setCanShoot,
   startGame,
   setScore,
+  setClip,
 } from './store';
 
 import { connect } from 'react-redux';
@@ -49,6 +50,8 @@ export default class HelloWorldSceneAR extends Component {
       currentAnim: '',
       songs: [false, false, false, false, false, false, false],
       battlefield: [false, false],
+      isReloading: false,
+      reloadSound: false,
     };
 
     this.bullets = [];
@@ -64,6 +67,8 @@ export default class HelloWorldSceneAR extends Component {
     this.stopBattlefield = this.stopBattlefield.bind(this);
     this.nextBattlefield = this.nextBattlefield.bind(this);
     this.startGame = this.startGame.bind(this);
+    this.reload = this.reload.bind(this);
+    this.stopReloadSound = this.stopReloadSound.bind(this);
   }
 
   componentDidMount() {
@@ -93,6 +98,7 @@ export default class HelloWorldSceneAR extends Component {
 
   startGame() {
     this.props.startGame(true);
+    this.props.setClip(8);
     setTimeout(() => {
       this.props.setScore(this.props.hits);
       this.props.setHits(0);
@@ -177,13 +183,24 @@ export default class HelloWorldSceneAR extends Component {
   }
 
   fire({ position, rotation, forward }) {
-    if (this.props.firing && this.props.canShoot) {
+    if (this.props.clip === 0) {
+      this.props.setCanShoot(false);
+      this.setState({ isReloading: true, currentAnim: 'reload' });
+      this.props.setFiring(false);
+      this.reload();
+    } else if (
+      this.props.firing &&
+      this.props.canShoot &&
+      this.props.clip > 0 &&
+      !this.state.isReloading
+    ) {
       const velocity = forward.map((vector) => 20 * vector);
       this.setState({
         ...this.state,
         shotSound: true,
         currentAnim: 'recoil',
       });
+      this.props.setClip(this.props.clip - 1);
       this.props.setCanShoot(false);
       this.props.setFiring(false);
       this.bullets.push(this.renderBullet(velocity));
@@ -202,6 +219,27 @@ export default class HelloWorldSceneAR extends Component {
     } else {
       // this.props.setFiring(false);
     }
+  }
+
+  reload() {
+    setTimeout(() => {
+      this.setState({
+        reloadSound: true,
+      });
+    }, 1500);
+    setTimeout(() => {
+      this.props.setClip(8);
+      this.props.setFiring(false);
+      this.props.setCanShoot(true);
+      this.setState({
+        isReloading: false,
+        shotSound: false,
+      });
+    }, 2000);
+  }
+
+  stopReloadSound() {
+    this.setState({ reloadSound: false });
   }
 
   stopShotSound() {
@@ -270,7 +308,7 @@ export default class HelloWorldSceneAR extends Component {
           source={require('./audio/explosion.mp3')}
           loop={false}
           paused={!this.state.explosionSound}
-          volume={0.5}
+          volume={0.75}
           onFinish={this.stopExplosionSound}
           interruptible={true}
         />
@@ -336,6 +374,13 @@ export default class HelloWorldSceneAR extends Component {
           paused={!this.state.battlefield[1]}
           volume={0.1}
           onFinish={this.stopBattlefield}
+        />
+        <ViroSound
+          source={require('./audio/reload.mp3')}
+          loop={false}
+          paused={!this.state.reloadSound}
+          volume={0.9}
+          onFinish={this.stopReloadSound}
         />
         {/* <ViroText
           text={
@@ -501,6 +546,39 @@ ViroAnimations.registerAnimations({
   recoil: [['recoilUp', 'recoilDown']],
 });
 
+ViroAnimations.registerAnimations({
+  reloadStart: {
+    properties: {
+      rotateX: 0,
+      rotateY: 90,
+      rotateZ: 265,
+      positionX: 0.06,
+      positionY: -0.05,
+      positionZ: -0.2,
+    },
+    easing: 'easeOut',
+    duration: 250,
+  },
+  reloadMiddle: {
+    properties: { rotateX: 0, rotateY: 90, rotateZ: 265 },
+    easing: 'easeOut',
+    duration: 2500,
+  },
+  reloadEnd: {
+    properties: {
+      rotateX: 0,
+      rotateY: 90,
+      rotateZ: 355,
+      positionX: 0.02,
+      positionY: -0.1,
+      positionZ: -0.2,
+    },
+    easing: 'easeIn',
+    duration: 250,
+  },
+  reload: [['reloadStart', 'reloadMiddle', 'reloadEnd']],
+});
+
 var styles = StyleSheet.create({
   helloWorldTextStyle: {
     fontFamily: 'Arial',
@@ -591,6 +669,7 @@ const mapState = (state) => ({
   canShoot: state.canShoot,
   gameStarted: state.gameStarted,
   score: state.score,
+  clip: state.clip,
 });
 
 const mapDispatch = (dispatch) => ({
@@ -600,6 +679,7 @@ const mapDispatch = (dispatch) => ({
   setCanShoot: (canShoot) => dispatch(setCanShoot(canShoot)),
   startGame: (gameStarted) => dispatch(startGame(gameStarted)),
   setScore: (score) => dispatch(setScore(score)),
+  setClip: (clip) => dispatch(setClip(clip)),
 });
 
 module.exports = connect(mapState, mapDispatch)(HelloWorldSceneAR);

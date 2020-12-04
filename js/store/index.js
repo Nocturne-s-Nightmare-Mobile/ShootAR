@@ -15,12 +15,19 @@ let defaultState = {
   // battlefield: [false, false],
   gameStarted: false,
   score: 0,
+  clip: 8,
 };
 
 const SET_FIRING = 'SET_FIRING';
 export const setFiring = (firing) => ({
   type: SET_FIRING,
   firing,
+});
+
+const SET_CLIP = 'SET_CLIP';
+export const setClip = (clip) => ({
+  type: SET_CLIP,
+  clip,
 });
 
 const SET_TEXT = 'SET_TEXT';
@@ -67,6 +74,8 @@ function gameReducer(state = defaultState, action) {
       return { ...state, gameStarted: action.gameStarted };
     case SET_SCORE:
       return { ...state, score: action.score };
+    case SET_CLIP:
+      return { ...state, clip: clip };
     default:
       return state;
   }
