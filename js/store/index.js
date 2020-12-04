@@ -75,7 +75,7 @@ function gameReducer(state = defaultState, action) {
     case SET_SCORE:
       return { ...state, score: action.score };
     case SET_CLIP:
-      return { ...state, clip: clip };
+      return { ...state, clip: action.clip };
     default:
       return state;
   }

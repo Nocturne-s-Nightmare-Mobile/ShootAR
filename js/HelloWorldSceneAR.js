@@ -478,13 +478,11 @@ export default class HelloWorldSceneAR extends Component {
                     { endValue: 1.0, interval: [0, 500] },
                   ],
                 },
-
                 rotation: {
                   initialRange: [0, 360],
                   factor: 'Distance',
                   interpolation: [{ endValue: 1080, interval: [0, 500] }],
                 },
-
                 scale: {
                   initialRange: [
                     [1, 1, 1],

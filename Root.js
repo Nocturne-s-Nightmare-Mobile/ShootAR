@@ -116,6 +116,8 @@ class Menu extends Component {
         >
           <View
             style={{
+              display: 'flex',
+              flexDirection: 'row',
               position: 'absolute',
               zIndex: 10,
               textAlign: 'center',
@@ -127,18 +129,41 @@ class Menu extends Component {
               borderRadius: 10,
             }}
           >
-            <Text
-              style={{
-                textAlign: 'center',
-                margin: 'auto',
-                width: '100%',
-                color: 'white',
-              }}
-            >
-              {this.props.gameStarted
-                ? `Hits: ${this.props.hits}`
-                : `Shoot to Start!\nScore: ${this.props.score}`}
-            </Text>
+            {this.props.gameStarted ? (
+              <>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    margin: 'auto',
+                    width: '50%',
+                    color: 'white',
+                  }}
+                >
+                  {`Hits: ${this.props.hits}`}
+                </Text>
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    margin: 'auto',
+                    width: '50%',
+                    color: 'white',
+                  }}
+                >
+                  Clip: {this.props.clip.toString()}
+                </Text>
+              </>
+            ) : (
+              <Text
+                style={{
+                  textAlign: 'center',
+                  margin: 'auto',
+                  width: '100%',
+                  color: 'white',
+                }}
+              >
+                {`Shoot to Start!\nScore: ${this.props.score}`}
+              </Text>
+            )}
           </View>
         </View>
         <ViroARSceneNavigator
@@ -241,6 +266,7 @@ const mapState = (state) => ({
   canShoot: state.canShoot,
   gameStarted: state.gameStarted,
   score: state.score,
+  clip: state.clip,
 });
 
 module.exports = connect(mapState)(Menu);
