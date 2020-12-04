@@ -15,11 +15,17 @@ import {
   StyleSheet,
   PixelRatio,
   TouchableHighlight,
+  Button,
+  TouchableOpacity,
+  TouchableNativeFeedback,
+  Platform,
 } from 'react-native';
 
 import { ViroVRSceneNavigator, ViroARSceneNavigator } from 'react-viro';
 
 import { connect } from 'react-redux';
+
+import { setFiring, setText } from './js/store';
 
 /*
 TODO: Insert your API key below
@@ -166,6 +172,45 @@ class Menu extends Component {
             )}
           </View>
         </View>
+        {Platform.OS === 'ios' && (
+          <View
+            style={{
+              top: '80%',
+              position: 'absolute',
+              zIndex: 1000,
+              elevation: 1000,
+              width: '100%',
+            }}
+          >
+            <TouchableHighlight
+              style={{
+                height: 80,
+                backgroundColor: 'darkred',
+                width: 80,
+                borderRadius: 40,
+                elevation: 100000,
+                borderColor: 'white',
+                borderWidth: 2,
+                left: '40%',
+              }}
+              underlayColor={'gray'}
+              onPress={() => {
+                this.props.setFiring(true);
+              }}
+            >
+              <Text
+                style={{
+                  color: 'white',
+                  alignSelf: 'center',
+                  paddingTop: '37%',
+                  margin: 0,
+                }}
+              >
+                Shoot
+              </Text>
+            </TouchableHighlight>
+          </View>
+        )}
         <ViroARSceneNavigator
           style={{ position: 'relative' }}
           {...this.state.sharedProps}
@@ -259,6 +304,11 @@ var localStyles = StyleSheet.create({
   },
 });
 
+const mapDispatch = (dispatch) => ({
+  setFiring: (firing) => dispatch(setFiring(firing)),
+  setText: (text) => dispatch(setText(text)),
+});
+
 const mapState = (state) => ({
   text: state.text,
   firing: state.firing,
@@ -269,4 +319,4 @@ const mapState = (state) => ({
   clip: state.clip,
 });
 
-module.exports = connect(mapState)(Menu);
+module.exports = connect(mapState, mapDispatch)(Menu);

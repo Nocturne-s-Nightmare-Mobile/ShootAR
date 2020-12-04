@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 
-import { StyleSheet, Vibration } from 'react-native';
+import { StyleSheet, Vibration, Platform } from 'react-native';
 
 import {
   setFiring,
@@ -52,6 +52,7 @@ export default class HelloWorldSceneAR extends Component {
       battlefield: [false, false],
       isReloading: false,
       reloadSound: false,
+      scene: 'building',
     };
 
     this.bullets = [];
@@ -103,6 +104,13 @@ export default class HelloWorldSceneAR extends Component {
       this.props.setScore(this.props.hits);
       this.props.setHits(0);
       this.props.startGame(false);
+      this.targets = [];
+      this.bullets = [];
+      if (this.state.scene === 'building') {
+        this.setState({ scene: 'galaxy' });
+      } else {
+        this.setState({ scene: 'building' });
+      }
     }, 60000);
   }
 
@@ -140,6 +148,18 @@ export default class HelloWorldSceneAR extends Component {
       'bullseyeSphere9',
       'bullseyeSphere10',
     ];
+    const planets = [
+      'planet1',
+      'planet2',
+      'planet3',
+      'planet4',
+      'planet5',
+      'planet6',
+      'planet7',
+      'planet8',
+      'planet9',
+      'neon',
+    ];
     this.setState((prevState) => ({
       ...this.state,
       update: !prevState.update,
@@ -149,7 +169,9 @@ export default class HelloWorldSceneAR extends Component {
         key={num}
         position={randomPosition}
         radius={0.2}
-        materials={targets[num]}
+        materials={
+          this.state.scene === 'building' ? targets[num] : planets[num]
+        }
         physicsBody={{
           type: 'Static',
           mass: 0,
@@ -216,8 +238,6 @@ export default class HelloWorldSceneAR extends Component {
       for (let i = 0; i < 10; i++) {
         this.targets.push(this.renderTarget(i));
       }
-    } else {
-      // this.props.setFiring(false);
     }
   }
 
@@ -283,20 +303,18 @@ export default class HelloWorldSceneAR extends Component {
         onTrackingUpdated={this.trackingUpdated}
         onCameraTransformUpdate={this.fire}
       >
-        {/* <ViroSkyBox
-          source={{
-            nx: require('./res/sb_space_left.png'),
-            px: require('./res/sb_space_right.png'),
-            ny: require('./res/sb_space_bottom.png'),
-            py: require('./res/sb_space_top.png'),
-            nz: require('./res/sb_space_back.png'),
-            pz: require('./res/sb_space_front.png'),
-          }}
-        /> */}
-        <Viro360Image
-          source={require('./res/building.jpg')}
-          rotation={[0, 30, 0]}
-        />
+        {this.state.scene === 'building' && (
+          <Viro360Image
+            source={require('./res/building.jpg')}
+            rotation={[0, 30, 0]}
+          />
+        )}
+        {this.state.scene === 'galaxy' && (
+          <Viro360Image
+            source={require('./res/360galaxy.jpg')}
+            rotation={[0, 90, 0]}
+          />
+        )}
         <ViroSound
           source={require('./audio/pistolShot.mp3')}
           loop={false}
@@ -382,17 +400,6 @@ export default class HelloWorldSceneAR extends Component {
           volume={0.9}
           onFinish={this.stopReloadSound}
         />
-        {/* <ViroText
-          text={
-            this.props.gameStarted
-              ? `Hits: ${this.props.hits}`
-              : `Shoot to Start!\nScore: ${this.props.score}`
-          }
-          scale={[0.5, 0.5, 0.5]}
-          position={[0, 0, -1]}
-          style={styles.helloWorldTextStyle}
-          transformBehaviors={['billboard']}
-        /> */}
         <ViroAmbientLight color="#ffffff" intensity={200} />
         <ViroSpotLight
           innerAngle={5}
@@ -428,7 +435,9 @@ export default class HelloWorldSceneAR extends Component {
                 run: true,
               }}
               onClick={() => {
-                this.props.setFiring(true);
+                if (this.props.canShoot && Platform.OS !== 'ios') {
+                  this.props.setFiring(true);
+                }
               }}
             />
             {/* <Viro3DObject
@@ -656,6 +665,33 @@ ViroMaterials.createMaterials({
   },
   bullseyeSphere10: {
     diffuseTexture: require('./res/bullseye13.png'),
+  },
+  planet1: {
+    diffuseTexture: require('./res/planet1.jpg'),
+  },
+  planet2: {
+    diffuseTexture: require('./res/planet2.png'),
+  },
+  planet3: {
+    diffuseTexture: require('./res/planet3.jpg'),
+  },
+  planet4: {
+    diffuseTexture: require('./res/planet4.jpeg'),
+  },
+  planet5: {
+    diffuseTexture: require('./res/planet5.jpeg'),
+  },
+  planet6: {
+    diffuseTexture: require('./res/planet6.jpg'),
+  },
+  planet7: {
+    diffuseTexture: require('./res/planet7.jpg'),
+  },
+  planet8: {
+    diffuseTexture: require('./res/planet8.jpeg'),
+  },
+  planet9: {
+    diffuseTexture: require('./res/planet9.jpg'),
   },
 });
 
