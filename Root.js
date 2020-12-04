@@ -19,6 +19,7 @@ import {
   TouchableOpacity,
   TouchableNativeFeedback,
   Platform,
+  Image,
 } from 'react-native';
 
 import { ViroVRSceneNavigator, ViroARSceneNavigator } from 'react-viro';
@@ -80,24 +81,14 @@ class Menu extends Component {
     return (
       <View style={localStyles.outer}>
         <View style={localStyles.inner}>
-          <Text style={localStyles.titleText}>
-            Choose your desired experience:
-          </Text>
-
+          {/* <Text style={localStyles.titleText}>WELCOME TO SHOOTAR!</Text> */}
+          <Image source={require('./js/res/ShootAR.png')} />
           <TouchableHighlight
             style={localStyles.buttons}
             onPress={this._getExperienceButtonOnPress(AR_NAVIGATOR_TYPE)}
             underlayColor={'#68a0ff'}
           >
-            <Text style={localStyles.buttonText}>AR</Text>
-          </TouchableHighlight>
-
-          <TouchableHighlight
-            style={localStyles.buttons}
-            onPress={this._getExperienceButtonOnPress(VR_NAVIGATOR_TYPE)}
-            underlayColor={'#68a0ff'}
-          >
-            <Text style={localStyles.buttonText}>VR</Text>
+            <Text style={localStyles.buttonText}>Go Shoot</Text>
           </TouchableHighlight>
         </View>
       </View>
@@ -185,7 +176,7 @@ class Menu extends Component {
             <TouchableHighlight
               style={{
                 height: 80,
-                backgroundColor: 'darkred',
+                backgroundColor: 'red',
                 width: 80,
                 borderRadius: 40,
                 elevation: 100000,
@@ -195,7 +186,9 @@ class Menu extends Component {
               }}
               underlayColor={'gray'}
               onPress={() => {
-                this.props.setFiring(true);
+                if (this.props.canShoot) {
+                  this.props.setFiring(true);
+                }
               }}
             >
               <Text
@@ -276,7 +269,8 @@ var localStyles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 25,
+    fontWeight: '900',
   },
   buttons: {
     height: 80,
@@ -285,7 +279,7 @@ var localStyles = StyleSheet.create({
     paddingBottom: 20,
     marginTop: 10,
     marginBottom: 10,
-    backgroundColor: '#68a0cf',
+    backgroundColor: 'red',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#fff',
