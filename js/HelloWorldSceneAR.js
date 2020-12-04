@@ -315,8 +315,8 @@ export default class HelloWorldSceneAR extends Component {
       >
         {this.state.scene === "building" && (
           <Viro360Image
-            source={require("./res/building.jpg")}
-            rotation={[0, 30, 0]}
+            source={require('./res/building.jpg')}
+            rotation={[0, 28, 0]}
           />
         )}
         {this.state.scene === "galaxy" && (
@@ -418,14 +418,6 @@ export default class HelloWorldSceneAR extends Component {
           position={[0, 3, 1]}
           color="#ffffff"
           castsShadow={true}
-        />
-        <ViroSpotLight
-          innerAngle={5}
-          outterAngle={90}
-          direction={[0.1, -0.1, 0]}
-          position={[0, 1, -0.2]}
-          color="#ffffff"
-          // intensity={10000}
         />
         <ViroARCamera>
           {/* <ViroText
@@ -529,18 +521,18 @@ export default class HelloWorldSceneAR extends Component {
         {this.props.gameStarted ? (
           <>{this.targets}</>
         ) : (
-          <ViroBox
-            position={[0, 1, -3]}
-            height={0.5}
-            width={0.5}
-            length={0.5}
-            materials={["bullseye"]}
+          <ViroSphere
+            position={[0, 0, -5]}
+            radius={0.4}
+            materials={['bullseyeSphere']}
             physicsBody={{
-              type: "Dynamic",
-              mass: 0.1,
+              type: 'Static',
+              mass: 0,
               useGravity: false,
+              velocity: [0, 0, 0],
             }}
-            viroTag={"Start"}
+            transformBehaviors={['billboard']}
+            viroTag={'Start'}
             onCollision={this.startGame}
           />
         )}
@@ -702,6 +694,12 @@ ViroMaterials.createMaterials({
   },
   planet9: {
     diffuseTexture: require("./res/planet9.jpg"),
+  },
+  neon2: {
+    diffuseTexture: require('./res/neon2.png'),
+  },
+  start: {
+    diffuseTexture: require('./res/Start1.png'),
   },
 });
 
