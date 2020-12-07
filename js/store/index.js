@@ -29,19 +29,40 @@ let defaultState = {
     rotation: [0, 90, 355],
     animation: '',
   },
-  // selected: {
-  //   source: 'Ak',
-  //   bulletStart: [0.02, -0.06, -0.15],
-  //   recoilAnim: '',
-  //   reloadAnim: '',
-  //   timeout: 50,
-  //   clip: 30,
-  //   scale: [0.0016, 0.0016, 0.0016],
-  //   position: [0.021, -0.075, -0.125],
-  //   rotation: [353, 185, 350],
-  //   anim: '',
-  // },
 };
+
+const guns = {
+  handgun: {
+    source: 'handgun',
+    bulletStart: [0.02, -0.06, -0.15],
+    recoilAnim: '',
+    reloadAnim: '',
+    timeout: 1000,
+    clip: 12,
+    scale: [0.0003, 0.0003, 0.0003],
+    position: [0.02, -0.1, -0.2],
+    rotation: [0, 90, 355],
+    animation: '',
+  },
+  Ak: {
+    source: 'Ak',
+    bulletStart: [0.02, -0.06, -0.15],
+    recoilAnim: '',
+    reloadAnim: '',
+    timeout: 50,
+    clip: 30,
+    scale: [0.0016, 0.0016, 0.0016],
+    position: [0.021, -0.075, -0.125],
+    rotation: [353, 185, 350],
+    anim: '',
+  },
+};
+
+const SET_SELECTED = 'SET_SELECTED';
+export const setSelected = (selected) => ({
+  type: SET_SELECTED,
+  selected,
+});
 
 const SET_FIRING = 'SET_FIRING';
 export const setFiring = (firing) => ({
@@ -109,6 +130,8 @@ function gameReducer(state = defaultState, action) {
       return { ...state, clip: action.clip };
     case SET_TIMER:
       return { ...state, timer: action.timer };
+    case SET_SELECTED:
+      return { ...state, selected: guns[action.selected] };
     default:
       return state;
   }

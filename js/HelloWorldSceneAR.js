@@ -13,6 +13,7 @@ import {
   setScore,
   setClip,
   setTimer,
+  setSelected,
 } from './store';
 
 import { connect } from 'react-redux';
@@ -248,7 +249,6 @@ export default class HelloWorldSceneAR extends Component {
           shotSound: false,
         });
         this.props.setCanShoot(true);
-        //Make this gun timeout after componetized V
       }, this.props.selected.timeout);
     } else if (!this.targets.length) {
       for (let i = 0; i < 10; i++) {
@@ -495,85 +495,59 @@ export default class HelloWorldSceneAR extends Component {
                 }
               }}
             />
-            {/* <ViroParticleEmitter
-              position={[0.03, -0.09, -0.45]}
-              duration={2000}
-              visible={true}
-              delay={0}
-              run={true}
-              loop={true}
-              fixedToEmitter={true}
-              image={{
-                source: require('./res/fireParticle.jpg'),
-                height: 0.01,
-                width: 0.01,
-                bloomThreshold: 0.1,
-              }}
-              spawnBehavior={{
-                particleLifetime: [100, 100],
-                emissionRatePerSecond: [150, 200],
-                spawnVolume: {
-                  shape: 'box',
-                  params: [0, 0, 0],
-                  spawnOnSurface: false,
-                },
-                maxParticles: 500,
-              }}
-              particleAppearance={{
-                opacity: {
-                  initialRange: [0, 1],
-                  factor: 'Distance',
-                  interpolation: [
-                    { endValue: 0.5, interval: [0, 500] },
-                    { endValue: 1.0, interval: [0, 500] },
-                  ],
-                },
-                rotation: {
-                  initialRange: [0, 360],
-                  factor: 'Distance',
-                  interpolation: [{ endValue: 1080, interval: [0, 500] }],
-                },
-                scale: {
-                  initialRange: [
-                    [1, 1, 1],
-                    [4, 4, 4],
-                  ],
-                  factor: 'Distance',
-                  interpolation: [
-                    { endValue: [3, 3, 3], interval: [0, 400] },
-                    { endValue: [0, 0, 0], interval: [400, 500] },
-                  ],
-                },
-              }}
-              particlePhysics={{
-                velocity: {
-                  initialRange: [
-                    [2, 1, -5],
-                    [-2, -1, -5],
-                  ],
-                },
-              }}
-            /> */}
           </ViroNode>
           {this.bullets}
         </ViroARCamera>
         {this.props.gameStarted ? (
           <>{this.targets}</>
         ) : (
-          <ViroSphere
-            position={[0, 0, -5]}
-            radius={0.4}
-            materials={['bullseyeSphere']}
-            physicsBody={{
-              type: 'Static',
-              mass: 0,
-              useGravity: false,
-              velocity: [0, 0, 0],
-            }}
-            transformBehaviors={['billboard']}
-            viroTag={'Start'}
-            onCollision={this.startGame}
-          />
+          <>
+            <ViroSphere
+              position={[0, 0, -5]}
+              radius={0.4}
+              materials={['bullseyeSphere']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              transformBehaviors={['billboard']}
+              viroTag={'Start'}
+              onCollision={this.startGame}
+            />
+            <ViroSphere
+              position={[-3, 0, -5]}
+              radius={0.4}
+              materials={['bullseyeSphere']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              transformBehaviors={['billboard']}
+              viroTag={'Start'}
+              onCollision={() => this.props.selectGun('handgun')}
+            />
+            <ViroSphere
+              position={[3, 0, -5]}
+              radius={0.4}
+              materials={['bullseyeSphere']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              transformBehaviors={['billboard']}
+              viroTag={'Start'}
+              onCollision={async () => {
+                await this.props.selectGun('Ak');
+                this.props.setClip(this.props.selected.clip);
+              }}
+            />
+          </>
         )}
       </ViroARScene>
     );
@@ -764,6 +738,7 @@ const mapDispatch = (dispatch) => ({
   setScore: (score) => dispatch(setScore(score)),
   setClip: (clip) => dispatch(setClip(clip)),
   setTimer: (timer) => dispatch(setTimer(timer)),
+  selectGun: (selected) => dispatch(setSelected(selected)),
 });
 
 module.exports = connect(mapState, mapDispatch)(HelloWorldSceneAR);
