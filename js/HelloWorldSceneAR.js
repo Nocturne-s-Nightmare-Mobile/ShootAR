@@ -1,8 +1,8 @@
-"use strict";
+'use strict';
 
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
-import { StyleSheet, Vibration, Platform } from "react-native";
+import { StyleSheet, Vibration, Platform } from 'react-native';
 
 import {
   setFiring,
@@ -13,9 +13,9 @@ import {
   setScore,
   setClip,
   setTimer,
-} from "./store";
+} from './store';
 
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 
 import {
   ViroARScene,
@@ -37,7 +37,10 @@ import {
   ViroImage,
   ViroSkyBox,
   Viro360Image,
-} from "react-viro";
+} from 'react-viro';
+
+const handgun = require('./res/gun.vrx');
+const Ak = require('./res/Ak.vrx');
 
 export default class HelloWorldSceneAR extends Component {
   constructor() {
@@ -48,12 +51,12 @@ export default class HelloWorldSceneAR extends Component {
       shotSound: false,
       explosionSound: false,
       update: true,
-      currentAnim: "",
+      currentAnim: '',
       songs: [false, false, false, false, false, false, false],
       battlefield: [false, false],
       isReloading: false,
       reloadSound: false,
-      scene: "building",
+      scene: 'building',
     };
 
     this.bullets = [];
@@ -79,13 +82,13 @@ export default class HelloWorldSceneAR extends Component {
   }
 
   _onLoadStart() {
-    console.log("OBJ loading has started");
+    console.log('OBJ loading has started');
   }
   _onLoadEnd() {
-    console.log("OBJ loading has finished");
+    console.log('OBJ loading has finished');
   }
   _onError(event) {
-    console.log("OBJ loading failed with error: " + event.nativeEvent.error);
+    console.log('OBJ loading failed with error: ' + event.nativeEvent.error);
   }
 
   hitTarget(tag) {
@@ -100,7 +103,7 @@ export default class HelloWorldSceneAR extends Component {
 
   startGame() {
     this.props.startGame(true);
-    this.props.setClip(8);
+    this.props.setClip(this.props.selected.clip);
     this.props.setTimer(60);
     let x = setInterval(() => {
       this.props.setTimer(this.props.timer - 1);
@@ -116,10 +119,10 @@ export default class HelloWorldSceneAR extends Component {
       this.props.setTimer(60);
       this.targets = [];
       this.bullets = [];
-      if (this.state.scene === "building") {
-        this.setState({ scene: "galaxy" });
+      if (this.state.scene === 'building') {
+        this.setState({ scene: 'galaxy' });
       } else {
-        this.setState({ scene: "building" });
+        this.setState({ scene: 'building' });
       }
     }, 60000);
   }
@@ -134,41 +137,41 @@ export default class HelloWorldSceneAR extends Component {
     let posZ = Math.floor(Math.random() * 5 * -1 - 3);
     let randomPosition = [posX, posY, posZ];
     const textures = [
-      "metallic",
-      "brass",
-      "neon",
-      "desert",
-      "trippy",
-      "gold",
-      "blueMetal",
-      "redMetal",
-      "shiny",
-      "pink",
-      "rough",
+      'metallic',
+      'brass',
+      'neon',
+      'desert',
+      'trippy',
+      'gold',
+      'blueMetal',
+      'redMetal',
+      'shiny',
+      'pink',
+      'rough',
     ];
     const targets = [
-      "bullseyeSphere",
-      "bullseyeSphere2",
-      "bullseyeSphere3",
-      "bullseyeSphere4",
-      "bullseyeSphere5",
-      "bullseyeSphere6",
-      "bullseyeSphere7",
-      "bullseyeSphere8",
-      "bullseyeSphere9",
-      "bullseyeSphere10",
+      'bullseyeSphere',
+      'bullseyeSphere2',
+      'bullseyeSphere3',
+      'bullseyeSphere4',
+      'bullseyeSphere5',
+      'bullseyeSphere6',
+      'bullseyeSphere7',
+      'bullseyeSphere8',
+      'bullseyeSphere9',
+      'bullseyeSphere10',
     ];
     const planets = [
-      "planet1",
-      "planet2",
-      "planet3",
-      "planet4",
-      "planet5",
-      "planet6",
-      "planet7",
-      "planet8",
-      "planet9",
-      "neon",
+      'planet1',
+      'planet2',
+      'planet3',
+      'planet4',
+      'planet5',
+      'planet6',
+      'planet7',
+      'planet8',
+      'planet9',
+      'neon',
     ];
     this.setState((prevState) => ({
       ...this.state,
@@ -180,16 +183,16 @@ export default class HelloWorldSceneAR extends Component {
         position={randomPosition}
         radius={0.2}
         materials={
-          this.state.scene === "building" ? targets[num] : planets[num]
+          this.state.scene === 'building' ? targets[num] : planets[num]
         }
         physicsBody={{
-          type: "Static",
+          type: 'Static',
           mass: 0,
           useGravity: false,
           velocity: [0, 0, 0],
         }}
         viroTag={`${num}`}
-        transformBehaviors={["billboard"]}
+        transformBehaviors={['billboard']}
       />
     );
   }
@@ -199,15 +202,16 @@ export default class HelloWorldSceneAR extends Component {
       <ViroSphere
         key={this.bullets.length}
         radius={0.006}
+        //Make This Bullet Start Pos after componetized v
         position={[0.021, -0.06, -0.15]}
         physicsBody={{
-          type: "Dynamic",
+          type: 'Dynamic',
           mass: 10,
           useGravity: false,
           velocity: velocity,
         }}
-        materials={["brass"]}
-        viroTag={"bullet"}
+        materials={['brass']}
+        viroTag={'bullet'}
         highAccuracyEvents={true}
         onCollision={this.hitTarget}
       />
@@ -217,7 +221,7 @@ export default class HelloWorldSceneAR extends Component {
   fire({ position, rotation, forward }) {
     if (this.props.clip === 0) {
       this.props.setCanShoot(false);
-      this.setState({ isReloading: true, currentAnim: "reload" });
+      this.setState({ isReloading: true, currentAnim: 'reload' });
       this.props.setFiring(false);
       this.reload();
     } else if (
@@ -230,7 +234,8 @@ export default class HelloWorldSceneAR extends Component {
       this.setState({
         ...this.state,
         shotSound: true,
-        currentAnim: "recoil",
+        //Make This Recoil per gun when componetized V
+        currentAnim: 'recoil',
       });
       this.props.setClip(this.props.clip - 1);
       this.props.setCanShoot(false);
@@ -239,11 +244,12 @@ export default class HelloWorldSceneAR extends Component {
       setTimeout(() => {
         this.setState({
           ...this.state,
-          currentAnim: "",
+          currentAnim: '',
           shotSound: false,
         });
         this.props.setCanShoot(true);
-      }, 1000);
+        //Make this gun timeout after componetized V
+      }, this.props.selected.timeout);
     } else if (!this.targets.length) {
       for (let i = 0; i < 10; i++) {
         this.targets.push(this.renderTarget(i));
@@ -258,7 +264,7 @@ export default class HelloWorldSceneAR extends Component {
       });
     }, 1500);
     setTimeout(() => {
-      this.props.setClip(8);
+      this.props.setClip(this.props.selected.clip);
       this.props.setFiring(false);
       this.props.setCanShoot(true);
       this.setState({
@@ -313,27 +319,27 @@ export default class HelloWorldSceneAR extends Component {
         onTrackingUpdated={this.trackingUpdated}
         onCameraTransformUpdate={this.fire}
       >
-        {this.state.scene === "building" && (
+        {this.state.scene === 'building' && (
           <Viro360Image
             source={require('./res/building.jpg')}
             rotation={[0, 28, 0]}
           />
         )}
-        {this.state.scene === "galaxy" && (
+        {this.state.scene === 'galaxy' && (
           <Viro360Image
-            source={require("./res/360galaxy.jpg")}
+            source={require('./res/360galaxy.jpg')}
             rotation={[0, 90, 0]}
           />
         )}
         <ViroSound
-          source={require("./audio/pistolShot.mp3")}
+          source={require('./audio/pistolShot.mp3')}
           loop={false}
           paused={!this.state.shotSound}
           volume={0.6}
           onFinish={this.stopShotSound}
         />
         <ViroSound
-          source={require("./audio/explosion.mp3")}
+          source={require('./audio/explosion.mp3')}
           loop={false}
           paused={!this.state.explosionSound}
           volume={0.75}
@@ -341,70 +347,70 @@ export default class HelloWorldSceneAR extends Component {
           interruptible={true}
         />
         <ViroSound
-          source={require("./audio/song.mp3")}
+          source={require('./audio/song.mp3')}
           loop={false}
           paused={!this.state.songs[0]}
           volume={0.25}
           onFinish={this.stopSong}
         />
         <ViroSound
-          source={require("./audio/song2.m4a")}
+          source={require('./audio/song2.m4a')}
           loop={false}
           paused={!this.state.songs[1]}
           volume={0.25}
           onFinish={this.stopSong}
         />
         <ViroSound
-          source={require("./audio/song3.m4a")}
+          source={require('./audio/song3.m4a')}
           loop={false}
           paused={!this.state.songs[2]}
           volume={0.25}
           onFinish={this.stopSong}
         />
         <ViroSound
-          source={require("./audio/song4.mp3")}
+          source={require('./audio/song4.mp3')}
           loop={false}
           paused={!this.state.songs[3]}
           volume={0.2}
           onFinish={this.stopSong}
         />
         <ViroSound
-          source={require("./audio/song5.mp3")}
+          source={require('./audio/song5.mp3')}
           loop={false}
           paused={!this.state.songs[4]}
           volume={0.35}
           onFinish={this.stopSong}
         />
         <ViroSound
-          source={require("./audio/song6.mp3")}
+          source={require('./audio/song6.mp3')}
           loop={false}
           paused={!this.state.songs[5]}
           volume={0.2}
           onFinish={this.stopSong}
         />
         <ViroSound
-          source={require("./audio/song7.mp3")}
+          source={require('./audio/song7.mp3')}
           loop={false}
           paused={!this.state.songs[6]}
           volume={0.2}
           onFinish={this.stopSong}
         />
         <ViroSound
-          source={require("./audio/battlefield.mp3")}
+          source={require('./audio/battlefield.mp3')}
           loop={true}
           paused={!this.state.battlefield[0]}
           volume={0.2}
           onFinish={this.stopBattlefield}
         />
         <ViroSound
-          source={require("./audio/battlefield2.mp3")}
+          source={require('./audio/battlefield2.mp3')}
           loop={true}
           paused={!this.state.battlefield[1]}
           volume={0.1}
           onFinish={this.stopBattlefield}
         />
         <ViroSound
-          source={require("./audio/reload.mp3")}
+          source={require('./audio/reload.mp3')}
           loop={false}
           paused={!this.state.reloadSound}
           volume={0.9}
@@ -426,8 +432,8 @@ export default class HelloWorldSceneAR extends Component {
             style={{ color: 'white', fontSize: 7 }}
           /> */}
           <ViroNode>
-            <Viro3DObject
-              source={require("./res/gun.vrx")}
+            {/* <Viro3DObject
+              source={require('./res/gun.vrx')}
               type="VRX"
               scale={[0.0003, 0.0003, 0.0003]}
               position={[0.02, -0.1, -0.2]}
@@ -437,11 +443,28 @@ export default class HelloWorldSceneAR extends Component {
                 run: true,
               }}
               onClick={() => {
-                if (this.props.canShoot && Platform.OS !== "ios") {
+                if (this.props.canShoot && Platform.OS !== 'ios') {
                   this.props.setFiring(true);
                 }
               }}
-            />
+            /> */}
+
+            {/* <Viro3DObject
+              source={require('./res/Ak.vrx')}
+              type="VRX"
+              scale={[0.0016, 0.0016, 0.0016]}
+              position={[0.021, -0.075, -0.125]}
+              rotation={[353, 185, 350]}
+              // animation={{
+              //   name: this.state.currentAnim,
+              //   run: true,
+              // }}
+              onClick={() => {
+                if (this.props.canShoot && Platform.OS !== 'ios') {
+                  this.props.setFiring(true);
+                }
+              }}
+            /> */}
             {/* <Viro3DObject
               source={require('./res/ColtGun.vrx')}
               type="VRX"
@@ -456,6 +479,22 @@ export default class HelloWorldSceneAR extends Component {
                 this.props.setFiring(true);
               }}
             /> */}
+            <Viro3DObject
+              source={this.props.selected.source === 'handgun' ? handgun : Ak}
+              type="VRX"
+              scale={this.props.selected.scale}
+              position={this.props.selected.position}
+              rotation={this.props.selected.rotation}
+              // animation={{
+              //   name: this.state.currentAnim,
+              //   run: true,
+              // }}
+              onClick={() => {
+                if (this.props.canShoot && Platform.OS !== 'ios') {
+                  this.props.setFiring(true);
+                }
+              }}
+            />
             {/* <ViroParticleEmitter
               position={[0.03, -0.09, -0.45]}
               duration={2000}
@@ -544,15 +583,15 @@ export default class HelloWorldSceneAR extends Component {
 ViroAnimations.registerAnimations({
   recoilUp: {
     properties: { positionX: 0.02, positionY: -0.09, positionZ: -0.15 },
-    easing: "easeOut",
+    easing: 'easeOut',
     duration: 150,
   },
   recoilDown: {
     properties: { positionX: 0.02, positionY: -0.1, positionZ: -0.2 },
-    easing: "easeIn",
+    easing: 'easeIn',
     duration: 150,
   },
-  recoil: [["recoilUp", "recoilDown"]],
+  recoil: [['recoilUp', 'recoilDown']],
 });
 
 ViroAnimations.registerAnimations({
@@ -565,12 +604,12 @@ ViroAnimations.registerAnimations({
       positionY: -0.05,
       positionZ: -0.2,
     },
-    easing: "easeOut",
+    easing: 'easeOut',
     duration: 250,
   },
   reloadMiddle: {
     properties: { rotateX: 0, rotateY: 90, rotateZ: 265 },
-    easing: "easeOut",
+    easing: 'easeOut',
     duration: 2500,
   },
   reloadEnd: {
@@ -582,118 +621,118 @@ ViroAnimations.registerAnimations({
       positionY: -0.1,
       positionZ: -0.2,
     },
-    easing: "easeIn",
+    easing: 'easeIn',
     duration: 250,
   },
-  reload: [["reloadStart", "reloadMiddle", "reloadEnd"]],
+  reload: [['reloadStart', 'reloadMiddle', 'reloadEnd']],
 });
 
 var styles = StyleSheet.create({
   helloWorldTextStyle: {
-    fontFamily: "Arial",
+    fontFamily: 'Arial',
     fontSize: 20,
-    color: "white",
-    textAlignVertical: "center",
-    textAlign: "center",
+    color: 'white',
+    textAlignVertical: 'center',
+    textAlign: 'center',
   },
 });
 
 ViroMaterials.createMaterials({
   bullseye: {
-    diffuseTexture: require("./res/bullseye2.jpg"),
+    diffuseTexture: require('./res/bullseye2.jpg'),
   },
   black: {
-    diffuseTexture: require("./res/black.jpeg"),
+    diffuseTexture: require('./res/black.jpeg'),
   },
   metallic: {
-    diffuseTexture: require("./res/metallic.jpg"),
+    diffuseTexture: require('./res/metallic.jpg'),
   },
   brass: {
-    diffuseTexture: require("./res/brass.jpeg"),
+    diffuseTexture: require('./res/brass.jpeg'),
   },
   rough: {
-    diffuseTexture: require("./res/spheretex1.jpg"),
+    diffuseTexture: require('./res/spheretex1.jpg'),
   },
   desert: {
-    diffuseTexture: require("./res/desert.jpg"),
+    diffuseTexture: require('./res/desert.jpg'),
   },
   trippy: {
-    diffuseTexture: require("./res/spheretex2.jpg"),
+    diffuseTexture: require('./res/spheretex2.jpg'),
   },
   gold: {
-    diffuseTexture: require("./res/gold.jpg"),
+    diffuseTexture: require('./res/gold.jpg'),
   },
   blueMetal: {
-    diffuseTexture: require("./res/bluemetal.jpg"),
+    diffuseTexture: require('./res/bluemetal.jpg'),
   },
   redMetal: {
-    diffuseTexture: require("./res/redmetal3.jpg"),
+    diffuseTexture: require('./res/redmetal3.jpg'),
   },
   shiny: {
-    diffuseTexture: require("./res/shiny.jpg"),
+    diffuseTexture: require('./res/shiny.jpg'),
   },
   pink: {
-    diffuseTexture: require("./res/pink1.jpg"),
+    diffuseTexture: require('./res/pink1.jpg'),
   },
   neon: {
-    diffuseTexture: require("./res/neon.jpeg"),
+    diffuseTexture: require('./res/neon.jpeg'),
   },
   bullseyeSphere: {
-    diffuseTexture: require("./res/bullseye6.png"),
+    diffuseTexture: require('./res/bullseye6.png'),
   },
   bullseyeSphere2: {
-    diffuseTexture: require("./res/bullseye5.png"),
+    diffuseTexture: require('./res/bullseye5.png'),
   },
   bullseyeSphere3: {
-    diffuseTexture: require("./res/bullseye4.png"),
+    diffuseTexture: require('./res/bullseye4.png'),
   },
   bullseyeSphere4: {
-    diffuseTexture: require("./res/bullseye7.png"),
+    diffuseTexture: require('./res/bullseye7.png'),
   },
   bullseyeSphere5: {
-    diffuseTexture: require("./res/bullseye8.png"),
+    diffuseTexture: require('./res/bullseye8.png'),
   },
   bullseyeSphere6: {
-    diffuseTexture: require("./res/bullseye9.png"),
+    diffuseTexture: require('./res/bullseye9.png'),
   },
   bullseyeSphere7: {
-    diffuseTexture: require("./res/bullseye10.png"),
+    diffuseTexture: require('./res/bullseye10.png'),
   },
   bullseyeSphere8: {
-    diffuseTexture: require("./res/bullseye11.png"),
+    diffuseTexture: require('./res/bullseye11.png'),
   },
   bullseyeSphere9: {
-    diffuseTexture: require("./res/bullseye12.png"),
+    diffuseTexture: require('./res/bullseye12.png'),
   },
   bullseyeSphere10: {
-    diffuseTexture: require("./res/bullseye13.png"),
+    diffuseTexture: require('./res/bullseye13.png'),
   },
   planet1: {
-    diffuseTexture: require("./res/planet1.jpg"),
+    diffuseTexture: require('./res/planet1.jpg'),
   },
   planet2: {
-    diffuseTexture: require("./res/planet2.png"),
+    diffuseTexture: require('./res/planet2.png'),
   },
   planet3: {
-    diffuseTexture: require("./res/planet3.jpg"),
+    diffuseTexture: require('./res/planet3.jpg'),
   },
   planet4: {
-    diffuseTexture: require("./res/planet4.jpeg"),
+    diffuseTexture: require('./res/planet4.jpeg'),
   },
   planet5: {
-    diffuseTexture: require("./res/planet5.jpeg"),
+    diffuseTexture: require('./res/planet5.jpeg'),
   },
   planet6: {
-    diffuseTexture: require("./res/planet6.jpg"),
+    diffuseTexture: require('./res/planet6.jpg'),
   },
   planet7: {
-    diffuseTexture: require("./res/planet7.jpg"),
+    diffuseTexture: require('./res/planet7.jpg'),
   },
   planet8: {
-    diffuseTexture: require("./res/planet8.jpeg"),
+    diffuseTexture: require('./res/planet8.jpeg'),
   },
   planet9: {
-    diffuseTexture: require("./res/planet9.jpg"),
+    diffuseTexture: require('./res/planet9.jpg'),
   },
   neon2: {
     diffuseTexture: require('./res/neon2.png'),
@@ -713,6 +752,7 @@ const mapState = (state) => ({
   score: state.score,
   clip: state.clip,
   timer: state.timer,
+  selected: state.selected,
 });
 
 const mapDispatch = (dispatch) => ({
