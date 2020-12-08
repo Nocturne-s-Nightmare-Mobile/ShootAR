@@ -42,6 +42,8 @@ import {
 } from 'react-viro';
 
 const handgun = require('./res/gun.vrx');
+const Ak = require('./res/Ak.vrx');
+const HaloBR = require('./res/HaloBR.vrx');
 
 let selected = {
   source: handgun,
@@ -542,85 +544,109 @@ export default class HelloWorldSceneAR extends Component {
         {this.props.gameStarted ? (
           <>{this.targets}</>
         ) : (
-          <>
-            <ViroSphere
-              position={[0, 0, -5]}
-              radius={0.4}
-              materials={['bullseyeSphere']}
-              physicsBody={{
-                type: 'Static',
-                mass: 0,
-                useGravity: false,
-                velocity: [0, 0, 0],
-              }}
-              transformBehaviors={['billboard']}
-              viroTag={'Start'}
-              onCollision={this.startGame}
-            />
-            <ViroSphere
-              position={[-3, 0, -5]}
-              radius={0.4}
-              materials={['pistol']}
-              physicsBody={{
-                type: 'Static',
-                mass: 0,
-                useGravity: false,
-                velocity: [0, 0, 0],
-              }}
-              transformBehaviors={['billboard']}
-              viroTag={'Start'}
-              onCollision={() => {
-                this.props.selectGun('handgun');
-                this.props.setClip(this.props.selected.clip);
-                selected = guns['handgun'];
-                this.setState({
-                  currentAnim: 'setPlace',
-                });
-              }}
-            />
-            <ViroSphere
-              position={[3, 0, -5]}
-              radius={0.4}
-              materials={['Ak']}
-              physicsBody={{
-                type: 'Static',
-                mass: 0,
-                useGravity: false,
-                velocity: [0, 0, 0],
-              }}
-              transformBehaviors={['billboard']}
-              viroTag={'Start'}
-              onCollision={() => {
-                this.props.selectGun('Ak');
-                this.props.setClip(this.props.selected.clip);
-                selected = guns['Ak'];
-                this.setState({
-                  currentAnim: 'setPlace',
-                });
-              }}
-            />
-            <ViroSphere
-              position={[0, -2, -5]}
-              radius={0.4}
-              materials={['HaloBR']}
-              physicsBody={{
-                type: 'Static',
-                mass: 0,
-                useGravity: false,
-                velocity: [0, 0, 0],
-              }}
-              transformBehaviors={['billboard']}
-              onCollision={() => {
-                this.props.selectGun('HaloBR');
-                this.props.setClip(this.props.selected.clip);
-                selected = guns['HaloBR'];
-                this.setState({
-                  currentAnim: 'setPlace',
-                });
-              }}
-            />
-          </>
-        )}
+            <>
+              <ViroSphere
+                position={[0, 0, -5]}
+                radius={0.4}
+                materials={['bullseyeSphere']}
+                physicsBody={{
+                  type: 'Static',
+                  mass: 0,
+                  useGravity: false,
+                  velocity: [0, 0, 0],
+                }}
+                transformBehaviors={['billboard']}
+                viroTag={'Start'}
+                onCollision={this.startGame}
+              />
+              <Viro3DObject
+                source={handgun}
+                type="VRX"
+                position={[-3, 0, -5]}
+                scale={[0.0025, 0.0025, 0.0025]}
+                rotation={[180, 180, 180]}
+                physicsBody={{
+                  type: 'Static',
+                  mass: 0,
+                  useGravity: false,
+                  velocity: [0, 0, 0],
+                }}
+                viroTag={'Start'}
+                onCollision={() => {
+                  this.props.selectGun('handgun');
+                  this.props.setClip(this.props.selected.clip);
+                  selected = guns['handgun'];
+                  this.setState({
+                    currentAnim: 'setPlace',
+                  });
+                }}
+              />
+              <Viro3DObject
+                source={Ak}
+                type="VRX"
+                position={[3, 0, -5]}
+                scale={[0.015, 0.015, 0.015]}
+                rotation={[180, 180, 180]}
+                physicsBody={{
+                  type: 'Static',
+                  mass: 0,
+                  useGravity: false,
+                  velocity: [0, 0, 0],
+                }}
+                viroTag={'Start'}
+                onCollision={() => {
+                  this.props.selectGun('Ak');
+                  this.props.setClip(this.props.selected.clip);
+                  selected = guns['Ak'];
+                  this.setState({
+                    currentAnim: 'setPlace',
+                  });
+                }}
+              />
+              <Viro3DObject
+                source={HaloBR}
+                type="VRX"
+                position={[0, -3, -5]}
+                scale={[0.005, 0.005, 0.005]}
+                rotation={[0, -90, 0]}
+                physicsBody={{
+                  type: 'Static',
+                  mass: 0,
+                  useGravity: false,
+                  velocity: [0, 0, 0],
+                }}
+                viroTag={'Start'}
+                onCollision={() => {
+                  this.props.selectGun('HaloBR');
+                  this.props.setClip(this.props.selected.clip);
+                  selected = guns['HaloBR'];
+                  this.setState({
+                    currentAnim: 'setPlace',
+                  });
+                }}
+              />
+              {/* <ViroSphere
+                position={[0, -2, -5]}
+                radius={0.4}
+                materials={['HaloBR']}
+                physicsBody={{
+                  type: 'Static',
+                  mass: 0,
+                  useGravity: false,
+                  velocity: [0, 0, 0],
+                }}
+                transformBehaviors={['billboard']}
+                onCollision={() => {
+                  this.props.selectGun('HaloBR');
+                  this.props.setClip(this.props.selected.clip);
+                  selected = guns['HaloBR'];
+                  this.setState({
+                    currentAnim: 'setPlace',
+                  });
+                }}
+              /> */}
+            </>
+          )}
       </ViroARScene>
     );
   }
