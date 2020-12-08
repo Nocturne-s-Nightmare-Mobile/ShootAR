@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-
+import { connect } from "react-redux";
 import {
   ViroSpinner,
   ViroARScene,
@@ -12,13 +12,14 @@ import {
   Viro3DObject,
   ViroConstants
 } from 'react-viro';
+import { getInsidePortal } from "./store";
 
-var ShootingRange = require('./HelloWorldSceneAR');
-class ARPortal extends Component{
+const ShootingRange = require('./HelloWorldSceneAR');
+
+export default class ARPortal extends Component{
   constructor (props){
     super(props)
     this.state = {
-      text : "Initializing AR...", 
       elementToRender: <ViroSpinner  position={[0, 0, -2]}/>
     }
     this._onEnterPortal = this._onEnterPortal.bind(this)
@@ -51,7 +52,9 @@ class ARPortal extends Component{
   }
 
   _onEnterPortal(){
+      this.props.getInsidePortal(true)
       this.props.arSceneNavigator.jump('shootingRange', { scene: ShootingRange });
+
   }
 
   render (){
@@ -61,7 +64,17 @@ class ARPortal extends Component{
         <ViroAmbientLight color="#ffffff" intensity={200}/>
  </ViroARScene> ) }}
 
-module.exports = ARPortal;
+
+const mapState = (state) =>({
+  insideShootingRange: state.insideShootingRange
+});
+
+const mapDispatch = (dispatch) =>({
+  getInsidePortal: (insideShootingRange) =>
+    dispatch(getInsidePortal(insideShootingRange))
+})
+
+module.exports = connect(mapState, mapDispatch)(ARPortal);
 
 
 
