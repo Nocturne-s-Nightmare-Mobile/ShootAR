@@ -17,6 +17,7 @@ let defaultState = {
   // songs: [false, false, false, false, false, false, false],
   // battlefield: [false, false],
   gameStarted: false,
+  insideShootingRange: false,
   score: 0,
   clip: 8,
   timer: 60,
@@ -33,6 +34,12 @@ let defaultState = {
     animation: '',
   },
 };
+
+const GET_INSIDE_SHOOTING_RANGE = "GET_INSIDE_SHOOTING_RANGE"
+export const getInsidePortal = (insideShootingRange) => ({
+  type: GET_INSIDE_SHOOTING_RANGE,
+  insideShootingRange,
+});
 
 export const guns = {
   handgun: {
@@ -129,6 +136,8 @@ export const setTimer = (timer) => ({
 
 function gameReducer(state = defaultState, action) {
   switch (action.type) {
+    case GET_INSIDE_SHOOTING_RANGE:
+      return { ...state, insideShootingRange: action.insideShootingRange };
     case SET_FIRING:
       return { ...state, firing: action.firing };
     case SET_TEXT:

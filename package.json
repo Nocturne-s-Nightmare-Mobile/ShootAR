@@ -8,8 +8,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "react": "16.8.3",
-    "react-native": "0.59.9",
+    "ngrok": "^3.3.0",
+    "react": "^16.13.1",
+    "react-native": "^0.59.9",
     "react-native-sound": "^0.11.0",
     "react-redux": "^7.2.2",
     "react-viro": "2.17.0",

@@ -36,7 +36,9 @@ var sharedProps = {
 };
 
 // Sets the default scene you want for AR and VR
-var InitialARScene = require('./js/HelloWorldSceneAR');
+var InitialARScene = require('./js/ARPortal');
+//var InitialARScene = require('./js/HelloWorldSceneAR');
+
 var InitialVRScene = require('./js/HelloWorldScene');
 
 var UNSET = 'UNSET';
@@ -98,7 +100,8 @@ class Menu extends Component {
   // Returns the ViroARSceneNavigator which will start the AR experience
   _getARNavigator() {
     return (
-      <>
+      <> 
+      
         <View
           style={{
             width: '100%',
@@ -126,7 +129,8 @@ class Menu extends Component {
               borderRadius: 10,
             }}
           >
-            {this.props.gameStarted ? (
+            {this.props.insideShootingRange ? (
+            this.props.gameStarted  ? (
               <>
                 <Text
                   style={{
@@ -209,7 +213,19 @@ class Menu extends Component {
               >
                 {`Shoot to Start!\nScore: ${this.props.score}`}
               </Text>
-            )}
+            ) 
+            )
+            
+          : <Text
+           style={{
+              textAlign: "center",
+             margin: "auto",
+             width: "100%",
+             color: "white",
+           }}
+             >
+          {"Enter the portal"}
+           </Text>}
           </View>
         </View>
         {Platform.OS === 'ios' && (
@@ -222,6 +238,7 @@ class Menu extends Component {
               width: '100%',
             }}
           >
+          {this.props.insideShootingRange ? (
             <TouchableHighlight
               style={{
                 height: 80,
@@ -250,9 +267,9 @@ class Menu extends Component {
               >
                 Shoot
               </Text>
-            </TouchableHighlight>
+            </TouchableHighlight> ): null}
           </View>
-        )}
+        )}  
         <ViroARSceneNavigator
           style={{ position: 'relative' }}
           {...this.state.sharedProps}
@@ -353,6 +370,7 @@ const mapDispatch = (dispatch) => ({
 });
 
 const mapState = (state) => ({
+  insideShootingRange: state.insideShootingRange,
   text: state.text,
   firing: state.firing,
   hits: state.hits,
