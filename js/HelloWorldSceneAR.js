@@ -264,13 +264,13 @@ export default class HelloWorldSceneAR extends Component {
       });
     }, 1500);
     setTimeout(() => {
-      this.props.setClip(this.props.selected.clip);
-      this.props.setFiring(false);
-      this.props.setCanShoot(true);
       this.setState({
         isReloading: false,
         shotSound: false,
       });
+      this.props.setFiring(false);
+      this.props.setCanShoot(true);
+      this.props.setClip(this.props.selected.clip);
     }, 2000);
   }
 
@@ -519,7 +519,7 @@ export default class HelloWorldSceneAR extends Component {
             <ViroSphere
               position={[-3, 0, -5]}
               radius={0.4}
-              materials={['bullseyeSphere']}
+              materials={['pistol']}
               physicsBody={{
                 type: 'Static',
                 mass: 0,
@@ -533,7 +533,7 @@ export default class HelloWorldSceneAR extends Component {
             <ViroSphere
               position={[3, 0, -5]}
               radius={0.4}
-              materials={['bullseyeSphere']}
+              materials={['Ak']}
               physicsBody={{
                 type: 'Static',
                 mass: 0,
@@ -713,6 +713,12 @@ ViroMaterials.createMaterials({
   },
   start: {
     diffuseTexture: require('./res/Start1.png'),
+  },
+  Ak: {
+    diffuseTexture: require('./res/AkSphere.png'),
+  },
+  pistol: {
+    diffuseTexture: require('./res/pistolSphere.png'),
   },
 });
 
