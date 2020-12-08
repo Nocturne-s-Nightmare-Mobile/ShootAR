@@ -1,4 +1,7 @@
 import { createStore } from 'redux';
+const handgun = require('../res/gun.vrx');
+const Ak = require('../res/Ak.vrx');
+const HaloBR = require('../res/HaloBR.vrx');
 
 let defaultState = {
   // hasARInitialized: false,
@@ -18,7 +21,7 @@ let defaultState = {
   clip: 8,
   timer: 60,
   selected: {
-    source: 'handgun',
+    source: handgun,
     bulletStart: [0.02, -0.06, -0.15],
     recoilAnim: '',
     reloadAnim: '',
@@ -31,9 +34,9 @@ let defaultState = {
   },
 };
 
-const guns = {
+export const guns = {
   handgun: {
-    source: 'handgun',
+    source: handgun,
     bulletStart: [0.02, -0.06, -0.15],
     recoilAnim: '',
     reloadAnim: '',
@@ -45,7 +48,7 @@ const guns = {
     animation: '',
   },
   Ak: {
-    source: 'Ak',
+    source: Ak,
     bulletStart: [0.02, -0.06, -0.15],
     recoilAnim: '',
     reloadAnim: '',
@@ -54,6 +57,18 @@ const guns = {
     scale: [0.0016, 0.0016, 0.0016],
     position: [0.021, -0.075, -0.125],
     rotation: [353, 185, 350],
+    anim: '',
+  },
+  HaloBR: {
+    source: HaloBR,
+    bulletStart: [0.02, -0.06, -0.15],
+    recoilAnim: '',
+    reloadAnim: '',
+    timeout: 50,
+    clip: 36,
+    scale: [0.001, 0.001, 0.001],
+    position: [0.02, -0.069, -0.18],
+    rotation: [0, 180, 355],
     anim: '',
   },
 };

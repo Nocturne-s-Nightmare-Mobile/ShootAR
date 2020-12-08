@@ -14,6 +14,7 @@ import {
   setClip,
   setTimer,
   setSelected,
+  guns,
 } from './store';
 
 import { connect } from 'react-redux';
@@ -41,7 +42,19 @@ import {
 } from 'react-viro';
 
 const handgun = require('./res/gun.vrx');
-const Ak = require('./res/Ak.vrx');
+
+let selected = {
+  source: handgun,
+  bulletStart: [0.02, -0.06, -0.15],
+  recoilAnim: '',
+  reloadAnim: '',
+  timeout: 1000,
+  clip: 12,
+  scale: [0.0003, 0.0003, 0.0003],
+  position: [0.02, -0.1, -0.2],
+  rotation: [0, 90, 355],
+  animation: '',
+};
 
 export default class HelloWorldSceneAR extends Component {
   constructor() {
@@ -103,6 +116,7 @@ export default class HelloWorldSceneAR extends Component {
   }
 
   startGame() {
+    this.props.setHits(0);
     this.props.startGame(true);
     this.props.setClip(this.props.selected.clip);
     this.props.setTimer(60);
@@ -480,7 +494,7 @@ export default class HelloWorldSceneAR extends Component {
               }}
             /> */}
             <Viro3DObject
-              source={this.props.selected.source === 'handgun' ? handgun : Ak}
+              source={this.props.selected.source}
               type="VRX"
               scale={this.props.selected.scale}
               position={this.props.selected.position}
@@ -528,7 +542,14 @@ export default class HelloWorldSceneAR extends Component {
               }}
               transformBehaviors={['billboard']}
               viroTag={'Start'}
-              onCollision={() => this.props.selectGun('handgun')}
+              onCollision={() => {
+                this.props.selectGun('handgun');
+                this.props.setClip(this.props.selected.clip);
+                selected = guns['handgun'];
+                this.setState({
+                  currentAnim: 'setPlace',
+                });
+              }}
             />
             <ViroSphere
               position={[3, 0, -5]}
@@ -542,9 +563,33 @@ export default class HelloWorldSceneAR extends Component {
               }}
               transformBehaviors={['billboard']}
               viroTag={'Start'}
-              onCollision={async () => {
-                await this.props.selectGun('Ak');
+              onCollision={() => {
+                this.props.selectGun('Ak');
                 this.props.setClip(this.props.selected.clip);
+                selected = guns['Ak'];
+                this.setState({
+                  currentAnim: 'setPlace',
+                });
+              }}
+            />
+            <ViroSphere
+              position={[0, -2, -5]}
+              radius={0.4}
+              materials={['HaloBR']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              transformBehaviors={['billboard']}
+              onCollision={() => {
+                this.props.selectGun('HaloBR');
+                this.props.setClip(this.props.selected.clip);
+                selected = guns['HaloBR'];
+                this.setState({
+                  currentAnim: 'setPlace',
+                });
               }}
             />
           </>
@@ -556,16 +601,36 @@ export default class HelloWorldSceneAR extends Component {
 
 ViroAnimations.registerAnimations({
   recoilUp: {
-    properties: { positionX: 0.02, positionY: -0.09, positionZ: -0.15 },
+    properties: {
+      positionX: selected.position[0],
+      positionY: selected.position[1] + 0.01,
+      positionZ: selected.position[2] + 0.05,
+    },
     easing: 'easeOut',
     duration: 150,
   },
   recoilDown: {
-    properties: { positionX: 0.02, positionY: -0.1, positionZ: -0.2 },
+    // properties: { positionX: 0.02, positionY: -0.1, positionZ: -0.2 },
+    properties: {
+      positionX: selected.position[0],
+      positionY: selected.position[1],
+      positionZ: selected.position[2],
+    },
     easing: 'easeIn',
     duration: 150,
   },
   recoil: [['recoilUp', 'recoilDown']],
+});
+
+ViroAnimations.registerAnimations({
+  setPlace: {
+    properties: {
+      positionX: selected.position[0],
+      positionY: selected.position[1],
+      positionZ: selected.position[2],
+    },
+    duration: 50,
+  },
 });
 
 ViroAnimations.registerAnimations({
@@ -719,6 +784,9 @@ ViroMaterials.createMaterials({
   },
   pistol: {
     diffuseTexture: require('./res/pistolSphere.png'),
+  },
+  HaloBR: {
+    diffuseTexture: require('./res/HaloBRSphere.png'),
   },
 });
 
