@@ -65,7 +65,8 @@ export default class HelloWorldSceneAR extends Component {
       shotSound: false,
       explosionSound: false,
       update: true,
-      currentAnim: '',
+      currentAnim: "",
+      magAnim: "",
       songs: [false, false, false, false, false, false, false],
       battlefield: [false, false],
       isReloading: false,
@@ -245,6 +246,9 @@ export default class HelloWorldSceneAR extends Component {
       this.props.clip > 0 &&
       !this.state.isReloading
     ) {
+      setTimeout(() => {
+        Vibration.vibrate(10);
+      }, 200);
       const velocity = forward.map((vector) => 20 * vector);
       this.setState({
         ...this.state,
@@ -275,6 +279,7 @@ export default class HelloWorldSceneAR extends Component {
     setTimeout(() => {
       this.setState({
         reloadSound: true,
+        magAnim: "mag",
       });
     }, 1500);
     setTimeout(() => {
@@ -286,6 +291,11 @@ export default class HelloWorldSceneAR extends Component {
       this.props.setCanShoot(true);
       this.props.setClip(this.props.selected.clip);
     }, 2000);
+    setTimeout(() => {
+      this.setState({
+        magAnim: "",
+      });
+    }, 3000);
   }
 
   stopReloadSound() {
@@ -335,7 +345,7 @@ export default class HelloWorldSceneAR extends Component {
       >
         {this.state.scene === 'building' && (
           <Viro360Image
-            source={require('./res/building.jpg')}
+            source={require("./res/building.jpg")}
             rotation={[0, 28, 0]}
           />
         )}
@@ -430,13 +440,13 @@ export default class HelloWorldSceneAR extends Component {
           volume={0.9}
           onFinish={this.stopReloadSound}
         />
-        <ViroAmbientLight color="#ffffff" intensity={200} />
+        <ViroAmbientLight color='#ffffff' intensity={200} />
         <ViroSpotLight
           innerAngle={5}
           outerAngle={90}
           direction={[0, -0.1, -0.1]}
           position={[0, 3, 1]}
-          color="#ffffff"
+          color='#ffffff'
           castsShadow={true}
         />
         <ViroARCamera>
@@ -449,6 +459,7 @@ export default class HelloWorldSceneAR extends Component {
             {/* <Viro3DObject
               source={require('./res/gun.vrx')}
               type="VRX"
+              highAccuracyEvents={true}
               scale={[0.0003, 0.0003, 0.0003]}
               position={[0.02, -0.1, -0.2]}
               rotation={[0, 90, 355]}
@@ -479,6 +490,22 @@ export default class HelloWorldSceneAR extends Component {
                 }
               }}
             /> */}
+
+
+            {/* Magazine */}
+            <Viro3DObject
+              highAccuracyEvents={true}
+              source={require("./res/Mag_Handgun.vrx")}
+              type='VRX'
+              scale={[0.004, 0.004, 0.004]}
+              position={[-10, -0.045, -0.11]}
+              rotation={[90, 90, 0]}
+              animation={{
+                name: this.state.magAnim,
+                run: true,
+              }}
+            />
+
             {/* <Viro3DObject
               source={require('./res/ColtGun.vrx')}
               type="VRX"
@@ -648,8 +675,8 @@ ViroAnimations.registerAnimations({
   },
   reloadMiddle: {
     properties: { rotateX: 0, rotateY: 90, rotateZ: 265 },
-    easing: 'easeOut',
-    duration: 2500,
+    easing: "easeOut",
+    duration: 2650,
   },
   reloadEnd: {
     properties: {
@@ -664,6 +691,70 @@ ViroAnimations.registerAnimations({
     duration: 250,
   },
   reload: [['reloadStart', 'reloadMiddle', 'reloadEnd']],
+});
+
+// Magazine Aminations for reload
+ViroAnimations.registerAnimations({
+  magInitial: {
+    properties: {
+      rotateX: 90,
+      rotateY: 90,
+      rotateZ: 0,
+      positionX: 0.055,
+      positionY: -0.045,
+      positionZ: -0.11,
+    },
+    duration: 0,
+  },
+  magStart: {
+    properties: {
+      rotateX: 90,
+      rotateY: 90,
+      rotateZ: 0,
+      positionX: -1.5,
+      positionY: -0.045,
+      positionZ: -0.11,
+    },
+    easing: "easeOut",
+    duration: 1000,
+  },
+  magStartMiddle: {
+    properties: {
+      rotateX: 90,
+      rotateY: 90,
+      rotateZ: 0,
+      positionX: -1.5,
+      positionY: -0.045,
+      positionZ: -0.11,
+    },
+    easing: "easeOut",
+    duration: 500,
+  },
+  magEndMiddle: {
+    properties: {
+      rotateX: 90,
+      rotateY: 90,
+      rotateZ: 0,
+      positionX: 0.055,
+      positionY: -0.045,
+      positionZ: -0.11,
+    },
+    easing: "easeout",
+    duration: 850,
+  },
+  magEnd: {
+    properties: {
+      rotateX: 90,
+      rotateY: 90,
+      rotateZ: 0,
+      positionX: -10,
+      positionY: -0.045,
+      positionZ: -0.11,
+    },
+    duration: 0,
+  },
+
+  mag: [["magInitial", "magStart", "magStartMiddle", "magEndMiddle", "magEnd"]],
 });
 
 var styles = StyleSheet.create({
@@ -774,10 +865,10 @@ ViroMaterials.createMaterials({
     diffuseTexture: require('./res/planet9.jpg'),
   },
   neon2: {
-    diffuseTexture: require('./res/neon2.png'),
+    diffuseTexture: require("./res/neon2.png"),
   },
   start: {
-    diffuseTexture: require('./res/Start1.png'),
+    diffuseTexture: require("./res/Start1.png"),
   },
   Ak: {
     diffuseTexture: require('./res/AkSphere.png'),
