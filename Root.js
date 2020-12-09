@@ -7,7 +7,7 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   AppRegistry,
   Text,
@@ -20,30 +20,30 @@ import {
   TouchableNativeFeedback,
   Platform,
   Image,
-} from 'react-native';
+} from "react-native";
 
-import { ViroVRSceneNavigator, ViroARSceneNavigator } from 'react-viro';
+import { ViroVRSceneNavigator, ViroARSceneNavigator } from "react-viro";
 
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 
-import { setFiring, setText } from './js/store';
+import { setFiring, setText } from "./js/store";
 
 /*
 TODO: Insert your API key below
 */
 var sharedProps = {
-  apiKey: 'API_KEY_HERE',
+  apiKey: "API_KEY_HERE",
 };
 
 // Sets the default scene you want for AR and VR
-var InitialARScene = require('./js/ARPortal');
-//var InitialARScene = require('./js/HelloWorldSceneAR');
+// var InitialARScene = require('./js/ARPortal');
+var InitialARScene = require("./js/HelloWorldSceneAR");
 
-var InitialVRScene = require('./js/HelloWorldScene');
+var InitialVRScene = require("./js/HelloWorldScene");
 
-var UNSET = 'UNSET';
-var VR_NAVIGATOR_TYPE = 'VR';
-var AR_NAVIGATOR_TYPE = 'AR';
+var UNSET = "UNSET";
+var VR_NAVIGATOR_TYPE = "VR";
+var AR_NAVIGATOR_TYPE = "AR";
 
 // This determines which type of experience to launch in, or UNSET, if the user should
 // be presented with a choice of AR or VR. By default, we offer the user a choice.
@@ -84,11 +84,11 @@ class Menu extends Component {
       <View style={localStyles.outer}>
         <View style={localStyles.inner}>
           {/* <Text style={localStyles.titleText}>WELCOME TO SHOOTAR!</Text> */}
-          <Image source={require('./js/res/ShootAR.png')} />
+          <Image source={require("./js/res/ShootAR.png")} />
           <TouchableHighlight
             style={localStyles.buttons}
             onPress={this._getExperienceButtonOnPress(AR_NAVIGATOR_TYPE)}
-            underlayColor={'#68a0ff'}
+            underlayColor={"#68a0ff"}
           >
             <Text style={localStyles.buttonText}>Go Shoot</Text>
           </TouchableHighlight>
@@ -100,178 +100,180 @@ class Menu extends Component {
   // Returns the ViroARSceneNavigator which will start the AR experience
   _getARNavigator() {
     return (
-      <> 
-      
+      <>
         <View
           style={{
-            width: '100%',
-            position: 'absolute',
+            width: "100%",
+            position: "absolute",
             zIndex: 100000,
             top: 80,
             flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
+            alignItems: "center",
+            justifyContent: "center",
             elevation: 100,
           }}
         >
           <View
             style={{
-              display: 'flex',
-              flexDirection: 'row',
-              position: 'absolute',
+              display: "flex",
+              flexDirection: "row",
+              position: "absolute",
               zIndex: 10,
-              textAlign: 'center',
+              textAlign: "center",
               padding: 10,
-              width: '80%',
-              backgroundColor: 'rgba(0, 0, 0, 0.6)',
+              width: "80%",
+              backgroundColor: "rgba(0, 0, 0, 0.6)",
               borderWidth: 2,
-              borderColor: 'white',
+              borderColor: "white",
               borderRadius: 10,
             }}
           >
             {this.props.insideShootingRange ? (
-            this.props.gameStarted  ? (
-              <>
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    margin: 'auto',
-                    width: '33%',
-                    color: 'white',
-                  }}
-                >
-                  {`Hits: ${this.props.hits}`}
-                </Text>
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    margin: 'auto',
-                    width: '33%',
-                    color: 'white',
-                  }}
-                >
-                  Clip: {this.props.clip.toString()}
-                </Text>
-                {this.props.timer > 10 ? (
+              this.props.gameStarted ? (
+                <>
                   <Text
                     style={{
-                      textAlign: 'center',
-                      margin: 'auto',
-                      width: '33%',
-                      color: 'white',
+                      textAlign: "center",
+                      margin: "auto",
+                      width: "33%",
+                      color: "white",
                     }}
                   >
-                    Time:{' '}
-                    {`${parseInt(this.props.timer / 60).toString()}:${
-                      this.props.timer - 60 * parseInt(this.props.timer / 60) <
-                      10
-                        ? '0' +
-                          (
-                            this.props.timer -
-                            60 * parseInt(this.props.timer / 60)
-                          ).toString()
-                        : (
-                            this.props.timer -
-                            60 * parseInt(this.props.timer / 60)
-                          ).toString()
-                    }`}
+                    {`Hits: ${this.props.hits}`}
                   </Text>
-                ) : (
                   <Text
                     style={{
-                      textAlign: 'center',
-                      margin: 'auto',
-                      width: '33%',
-                      color: 'red',
+                      textAlign: "center",
+                      margin: "auto",
+                      width: "33%",
+                      color: "white",
                     }}
                   >
-                    Time:{' '}
-                    {`${parseInt(this.props.timer / 60).toString()}:${
-                      this.props.timer - 60 * parseInt(this.props.timer / 60) <
-                      10
-                        ? '0' +
-                          (
-                            this.props.timer -
-                            60 * parseInt(this.props.timer / 60)
-                          ).toString()
-                        : (
-                            this.props.timer -
-                            60 * parseInt(this.props.timer / 60)
-                          ).toString()
-                    }`}
+                    Clip: {this.props.clip.toString()}
                   </Text>
-                )}
-              </>
+                  {this.props.timer > 10 ? (
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        margin: "auto",
+                        width: "33%",
+                        color: "white",
+                      }}
+                    >
+                      Time:{" "}
+                      {`${parseInt(this.props.timer / 60).toString()}:${
+                        this.props.timer -
+                          60 * parseInt(this.props.timer / 60) <
+                        10
+                          ? "0" +
+                            (
+                              this.props.timer -
+                              60 * parseInt(this.props.timer / 60)
+                            ).toString()
+                          : (
+                              this.props.timer -
+                              60 * parseInt(this.props.timer / 60)
+                            ).toString()
+                      }`}
+                    </Text>
+                  ) : (
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        margin: "auto",
+                        width: "33%",
+                        color: "red",
+                      }}
+                    >
+                      Time:{" "}
+                      {`${parseInt(this.props.timer / 60).toString()}:${
+                        this.props.timer -
+                          60 * parseInt(this.props.timer / 60) <
+                        10
+                          ? "0" +
+                            (
+                              this.props.timer -
+                              60 * parseInt(this.props.timer / 60)
+                            ).toString()
+                          : (
+                              this.props.timer -
+                              60 * parseInt(this.props.timer / 60)
+                            ).toString()
+                      }`}
+                    </Text>
+                  )}
+                </>
+              ) : (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    margin: "auto",
+                    width: "100%",
+                    color: "white",
+                  }}
+                >
+                  {`Shoot to Start!\nScore: ${this.props.score}`}
+                </Text>
+              )
             ) : (
               <Text
                 style={{
-                  textAlign: 'center',
-                  margin: 'auto',
-                  width: '100%',
-                  color: 'white',
+                  textAlign: "center",
+                  margin: "auto",
+                  width: "100%",
+                  color: "white",
                 }}
               >
-                {`Shoot to Start!\nScore: ${this.props.score}`}
+                {"Enter the portal"}
               </Text>
-            ) 
-            )
-            
-          : <Text
-           style={{
-              textAlign: "center",
-             margin: "auto",
-             width: "100%",
-             color: "white",
-           }}
-             >
-          {"Enter the portal"}
-           </Text>}
+            )}
           </View>
         </View>
-        {Platform.OS === 'ios' && (
+        {Platform.OS === "ios" && (
           <View
             style={{
-              top: '80%',
-              position: 'absolute',
+              top: "80%",
+              position: "absolute",
               zIndex: 1000,
               elevation: 1000,
-              width: '100%',
+              width: "100%",
             }}
           >
-          {this.props.insideShootingRange ? (
-            <TouchableHighlight
-              style={{
-                height: 80,
-                backgroundColor: 'red',
-                width: 80,
-                borderRadius: 40,
-                elevation: 100000,
-                borderColor: 'white',
-                borderWidth: 2,
-                left: '40%',
-              }}
-              underlayColor={'gray'}
-              onPress={() => {
-                if (this.props.canShoot) {
-                  this.props.setFiring(true);
-                }
-              }}
-            >
-              <Text
+            {this.props.insideShootingRange ? (
+              <TouchableHighlight
                 style={{
-                  color: 'white',
-                  alignSelf: 'center',
-                  paddingTop: '37%',
-                  margin: 0,
+                  height: 80,
+                  backgroundColor: "red",
+                  width: 80,
+                  borderRadius: 40,
+                  elevation: 100000,
+                  borderColor: "white",
+                  borderWidth: 2,
+                  left: "40%",
+                }}
+                underlayColor={"gray"}
+                onPress={() => {
+                  if (this.props.canShoot) {
+                    this.props.setFiring(true);
+                  }
                 }}
               >
-                Shoot
-              </Text>
-            </TouchableHighlight> ): null}
+                <Text
+                  style={{
+                    color: "white",
+                    alignSelf: "center",
+                    paddingTop: "37%",
+                    margin: 0,
+                  }}
+                >
+                  Shoot
+                </Text>
+              </TouchableHighlight>
+            ) : null}
           </View>
-        )}  
+        )}
         <ViroARSceneNavigator
-          style={{ position: 'relative' }}
+          style={{ position: "relative" }}
           {...this.state.sharedProps}
           initialScene={{ scene: InitialARScene }}
         />
@@ -311,32 +313,32 @@ class Menu extends Component {
 var localStyles = StyleSheet.create({
   viroContainer: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: "black",
   },
   outer: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'black',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "black",
   },
   inner: {
     flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    backgroundColor: 'black',
+    flexDirection: "column",
+    alignItems: "center",
+    backgroundColor: "black",
   },
   titleText: {
     paddingTop: 30,
     paddingBottom: 20,
-    color: '#fff',
-    textAlign: 'center',
+    color: "#fff",
+    textAlign: "center",
     fontSize: 25,
   },
   buttonText: {
-    color: '#fff',
-    textAlign: 'center',
+    color: "#fff",
+    textAlign: "center",
     fontSize: 25,
-    fontWeight: '900',
+    fontWeight: "900",
   },
   buttons: {
     height: 80,
@@ -345,10 +347,10 @@ var localStyles = StyleSheet.create({
     paddingBottom: 20,
     marginTop: 10,
     marginBottom: 10,
-    backgroundColor: 'red',
+    backgroundColor: "red",
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#fff',
+    borderColor: "#fff",
   },
   exitButton: {
     height: 50,
@@ -357,10 +359,10 @@ var localStyles = StyleSheet.create({
     paddingBottom: 10,
     marginTop: 10,
     marginBottom: 10,
-    backgroundColor: '#68a0cf',
+    backgroundColor: "#68a0cf",
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#fff',
+    borderColor: "#fff",
   },
 });
 
