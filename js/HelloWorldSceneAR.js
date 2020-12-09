@@ -248,76 +248,78 @@ export default class HelloWorldSceneAR extends Component {
   }
 
   fire({ position, rotation, forward }) {
-    if (this.props.clip === 0 && !this.props.isReloading) {
-      setTimeout(() => {
-        this.reload();
-      }, 500);
-    } else if (
-      this.props.firing &&
-      this.props.clip > 0 &&
-      !this.state.isReloading &&
-      this.props.selected.type === "burst"
-    ) {
-      const velocity = forward.map((vector) => 20 * vector);
-      this.setState({
-        ...this.state,
-        BRShotSound: true,
-        currentAnim: "recoil",
-      });
-      if (!this.props.burst) {
+    if (!this.props.isReloading) {
+      if (this.props.clip === 0) {
+        setTimeout(() => {
+          this.reload();
+        }, 500);
+      } else if (
+        this.props.firing &&
+        this.props.clip > 0 &&
+        !this.state.isReloading &&
+        this.props.selected.type === "burst"
+      ) {
+        const velocity = forward.map((vector) => 20 * vector);
+        this.setState({
+          ...this.state,
+          BRShotSound: true,
+          currentAnim: "BRRecoil",
+        });
+        if (!this.props.burst) {
+          this.props.setClip(this.props.clip - 1);
+          this.props.setCanShoot(false);
+          this.props.setFiring(false);
+          this.props.setBurst(true);
+
+          this.bullets.push(this.renderBullet(velocity));
+          setTimeout(() => {
+            this.props.setFiring(true);
+          }, 100);
+          setTimeout(() => {
+            this.props.setFiring(true);
+          }, 200);
+          setTimeout(() => {
+            this.props.setCanShoot(true);
+            this.props.setBurst(false);
+            !this.state.isReloading &&
+              this.setState({
+                ...this.state,
+                currentAnim: "",
+              });
+          }, 1000);
+        } else if (this.props.firing) {
+          this.props.setClip(this.props.clip - 1);
+          this.bullets.push(this.renderBullet(velocity));
+          this.props.setFiring(false);
+        }
+      } else if (
+        this.props.firing &&
+        this.props.canShoot &&
+        this.props.clip > 0 &&
+        !this.state.isReloading
+      ) {
+        const velocity = forward.map((vector) => 20 * vector);
+        this.setState({
+          ...this.state,
+          shotSound: true,
+          currentAnim: "recoil",
+        });
         this.props.setClip(this.props.clip - 1);
         this.props.setCanShoot(false);
         this.props.setFiring(false);
-        this.props.setBurst(true);
-
         this.bullets.push(this.renderBullet(velocity));
-        setTimeout(() => {
-          this.props.setFiring(true);
-        }, 100);
-        setTimeout(() => {
-          this.props.setFiring(true);
-        }, 200);
-        setTimeout(() => {
-          this.props.setCanShoot(true);
-          this.props.setBurst(false);
-          !this.state.isReloading &&
+        !this.state.isReloading &&
+          setTimeout(() => {
             this.setState({
               ...this.state,
               currentAnim: "",
             });
-        }, 1000);
-      } else if (this.props.firing) {
-        this.props.setClip(this.props.clip - 1);
-        this.bullets.push(this.renderBullet(velocity));
-        this.props.setFiring(false);
-      }
-    } else if (
-      this.props.firing &&
-      this.props.canShoot &&
-      this.props.clip > 0 &&
-      !this.state.isReloading
-    ) {
-      const velocity = forward.map((vector) => 20 * vector);
-      this.setState({
-        ...this.state,
-        shotSound: true,
-        currentAnim: "recoil",
-      });
-      this.props.setClip(this.props.clip - 1);
-      this.props.setCanShoot(false);
-      this.props.setFiring(false);
-      this.bullets.push(this.renderBullet(velocity));
-      !this.state.isReloading &&
-        setTimeout(() => {
-          this.setState({
-            ...this.state,
-            currentAnim: "",
-          });
-          this.props.setCanShoot(true);
-        }, this.props.selected.timeout);
-    } else if (!this.targets.length) {
-      for (let i = 0; i < 10; i++) {
-        this.targets.push(this.renderTarget(i));
+            this.props.setCanShoot(true);
+          }, this.props.selected.timeout);
+      } else if (!this.targets.length) {
+        for (let i = 0; i < 10; i++) {
+          this.targets.push(this.renderTarget(i));
+        }
       }
     }
   }
@@ -745,9 +747,9 @@ export default class HelloWorldSceneAR extends Component {
 ViroAnimations.registerAnimations({
   recoilUp: {
     properties: {
-      positionX: selected.position[0],
-      positionY: selected.position[1] + 0.01,
-      positionZ: selected.position[2] + 0.05,
+      positionX: 0.02,
+      positionY: -0.1 + 0.01,
+      positionZ: -0.2 + 0.05,
     },
     easing: "easeOut",
     duration: 150,
@@ -755,14 +757,37 @@ ViroAnimations.registerAnimations({
   recoilDown: {
     // properties: { positionX: 0.02, positionY: -0.1, positionZ: -0.2 },
     properties: {
-      positionX: selected.position[0],
-      positionY: selected.position[1],
-      positionZ: selected.position[2],
+      positionX: 0.02,
+      positionY: -0.1,
+      positionZ: -0.2,
     },
     easing: "easeIn",
     duration: 150,
   },
   recoil: [["recoilUp", "recoilDown"]],
+});
+
+ViroAnimations.registerAnimations({
+  BRRecoilUp: {
+    properties: {
+      positionX: 0.02,
+      positionY: -0.069 + 0.01,
+      positionZ: -0.18 + 0.05,
+    },
+    easing: "easeOut",
+    duration: 150,
+  },
+  BRRecoilDown: {
+    // properties: { positionX: 0.02, positionY: -0.1, positionZ: -0.2 },
+    properties: {
+      positionX: 0.02,
+      positionY: -0.069,
+      positionZ: -0.18,
+    },
+    easing: "easeIn",
+    duration: 150,
+  },
+  BRRecoil: [["BRRecoilUp", "BRRecoilDown"]],
 });
 
 ViroAnimations.registerAnimations({
