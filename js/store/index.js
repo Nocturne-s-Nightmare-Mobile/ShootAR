@@ -18,7 +18,7 @@ let defaultState = {
   // battlefield: [false, false],
   burst: false,
   gameStarted: false,
-  insideShootingRange: true,
+  insideShootingRange: false,
   score: 0,
   clip: 8,
   timer: 60,
