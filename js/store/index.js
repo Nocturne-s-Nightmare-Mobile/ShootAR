@@ -70,7 +70,7 @@ export const guns = {
     animation: "",
   },
   HaloBR: {
-    name: "HaloBr",
+    name: "HaloBR",
     source: HaloBR,
     bulletStart: [0.02, -0.06, -0.15],
     recoilAnim: "",
