@@ -17,6 +17,7 @@ import {
   guns,
   setBurst,
   unlockGun,
+  setDifficulty,
 } from './store';
 
 import { connect } from 'react-redux';
@@ -114,10 +115,10 @@ export default class HelloWorldSceneAR extends Component {
   hitTarget(tag) {
     Vibration.vibrate(50);
     this.targets[+tag] = this.renderTarget(+tag);
-    this.setState((prevState) => ({
+    this.setState({
       ...this.state,
       explosionSound: true,
-    }));
+    });
     this.props.setHits(this.props.hits + 1);
   }
 
@@ -126,6 +127,9 @@ export default class HelloWorldSceneAR extends Component {
     this.props.startGame(true);
     this.props.setClip(this.props.selected.clip);
     this.props.setTimer(60);
+    for (let i = 0; i < 10; i++) {
+      this.targets.push(this.renderTarget(i));
+    }
     let x = setInterval(() => {
       this.props.setTimer(this.props.timer - 1);
       if (this.props.timer <= 0) {
@@ -155,13 +159,25 @@ export default class HelloWorldSceneAR extends Component {
   }
 
   renderTarget(num) {
+    let posDifficulty;
+    if (this.props.difficulty[0] === 'Normal') {
+      posDifficulty = [5, 3];
+    } else if (this.props.difficulty[0] === 'Hard') {
+      posDifficulty = [3, 7];
+    } else if (this.props.difficulty[0] === 'Easy') {
+      posDifficulty = [0, 2.5];
+    } else if (this.props.difficulty[0] === 'Expert') {
+      posDifficulty = [5, 10];
+    }
     let posX =
       Math.floor(Math.random() * 6) *
       (Math.floor(Math.random() * 2) === 1 ? -1 : 1);
     let posY =
       Math.floor(Math.random() * 4) *
       (Math.floor(Math.random() * 2) === 1 ? -1 : 1);
-    let posZ = Math.floor(Math.random() * 5 * -1 - 3);
+    let posZ = Math.floor(
+      Math.random() * posDifficulty[0] * -1 - posDifficulty[1]
+    );
     let randomPosition = [posX, posY, posZ];
     const textures = [
       'metallic',
@@ -229,7 +245,6 @@ export default class HelloWorldSceneAR extends Component {
       <ViroSphere
         key={this.bullets.length}
         radius={0.006}
-        //Make This Bullet Start Pos after componetized v
         position={[0.021, -0.06, -0.15]}
         physicsBody={{
           type: 'Dynamic',
@@ -246,10 +261,10 @@ export default class HelloWorldSceneAR extends Component {
   }
 
   fire({ position, rotation, forward }) {
-    if (this.state.isReloading) {
-      this.props.setCanShoot(false);
-      this.props.setFiring(false);
-    } else if (this.props.clip === 0) {
+    // if (this.state.isReloading) {
+    //   this.props.setCanShoot(false);
+    //   this.props.setFiring(false);
+    if (this.props.clip === 0) {
       this.props.setCanShoot(false);
       this.setState({ isReloading: true, currentAnim: 'reload' });
       this.props.setFiring(false);
@@ -308,10 +323,6 @@ export default class HelloWorldSceneAR extends Component {
         });
         this.props.setCanShoot(true);
       }, this.props.selected.timeout);
-    } else if (!this.targets.length) {
-      for (let i = 0; i < 10; i++) {
-        this.targets.push(this.renderTarget(i));
-      }
     }
   }
 
@@ -324,7 +335,6 @@ export default class HelloWorldSceneAR extends Component {
     }, 1500);
     setTimeout(() => {
       this.setState({
-        isReloading: false,
         shotSound: false,
       });
       this.props.setFiring(false);
@@ -333,6 +343,7 @@ export default class HelloWorldSceneAR extends Component {
     }, 2000);
     setTimeout(() => {
       this.setState({
+        isReloading: false,
         magAnim: '',
       });
     }, 3000);
@@ -490,47 +501,7 @@ export default class HelloWorldSceneAR extends Component {
           castsShadow={true}
         />
         <ViroARCamera>
-          {/* <ViroText
-            text={'O'}
-            position={[0.485, -0.465, -2]}
-            style={{ color: 'white', fontSize: 7 }}
-          /> */}
           <ViroNode>
-            {/* <Viro3DObject
-              source={require('./res/gun.vrx')}
-              type="VRX"
-              highAccuracyEvents={true}
-              scale={[0.0003, 0.0003, 0.0003]}
-              position={[0.02, -0.1, -0.2]}
-              rotation={[0, 90, 355]}
-              animation={{
-                name: this.state.currentAnim,
-                run: true,
-              }}
-              onClick={() => {
-                if (this.props.canShoot && Platform.OS !== 'ios') {
-                  this.props.setFiring(true);
-                }
-              }}
-            /> */}
-
-            {/* <Viro3DObject
-              source={require('./res/Ak.vrx')}
-              type="VRX"
-              scale={[0.0016, 0.0016, 0.0016]}
-              position={[0.021, -0.075, -0.125]}
-              rotation={[353, 185, 350]}
-              // animation={{
-              //   name: this.state.currentAnim,
-              //   run: true,
-              // }}
-              onClick={() => {
-                if (this.props.canShoot && Platform.OS !== 'ios') {
-                  this.props.setFiring(true);
-                }
-              }}
-            /> */}
-
             {/* Magazine */}
             <Viro3DObject
               highAccuracyEvents={true}
@@ -545,20 +516,6 @@ export default class HelloWorldSceneAR extends Component {
               }}
             />
 
-            {/* <Viro3DObject
-              source={require('./res/ColtGun.vrx')}
-              type="VRX"
-              scale={[0.00017, 0.00017, 0.00017]}
-              position={[0.02, -0.4, -0.2]}
-              rotation={[0, 273, 355]}
-              animation={{
-                name: this.state.currentAnim,
-                run: true,
-              }}
-              onClick={() => {
-                this.props.setFiring(true);
-              }}
-            /> */}
             <Viro3DObject
               source={this.props.selected.source}
               type="VRX"
@@ -585,7 +542,7 @@ export default class HelloWorldSceneAR extends Component {
             <ViroSphere
               position={[0, 0, -5]}
               radius={0.55}
-              materials={['bullseyeSphere']}
+              materials={[this.props.difficulty[1]]}
               physicsBody={{
                 type: 'Static',
                 mass: 0,
@@ -595,6 +552,62 @@ export default class HelloWorldSceneAR extends Component {
               transformBehaviors={['billboard']}
               viroTag={'Start'}
               onCollision={this.startGame}
+            />
+            <ViroSphere
+              position={[-1.2, 1.3, -10]}
+              radius={0.3}
+              materials={['greenMetal']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              transformBehaviors={['billboard']}
+              onCollision={() =>
+                this.props.setDifficulty(['Easy', 'greenMetal'])
+              }
+            />
+            <ViroSphere
+              position={[-0.4, 1.7, -10]}
+              radius={0.3}
+              materials={['gold']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              transformBehaviors={['billboard']}
+              onCollision={() => this.props.setDifficulty(['Normal', 'gold'])}
+            />
+            <ViroSphere
+              position={[0.4, 1.7, -10]}
+              radius={0.3}
+              materials={['redMetal']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              transformBehaviors={['billboard']}
+              onCollision={() => this.props.setDifficulty(['Hard', 'redMetal'])}
+            />
+            <ViroSphere
+              position={[1.2, 1.3, -10]}
+              radius={0.3}
+              materials={['diamondPlate']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              transformBehaviors={['billboard']}
+              onCollision={() =>
+                this.props.setDifficulty(['Expert', 'diamondPlate'])
+              }
             />
             <Viro3DObject
               source={handgun}
@@ -977,6 +990,12 @@ ViroMaterials.createMaterials({
   silver: {
     diffuseTexture: require('./res/silver.jpg'),
   },
+  greenMetal: {
+    diffuseTexture: require('./res/greenMetal.jpg'),
+  },
+  diamondPlate: {
+    diffuseTexture: require('./res/diamondPlate.jpg'),
+  },
 });
 
 const mapState = (state) => ({
@@ -992,6 +1011,7 @@ const mapState = (state) => ({
   selected: state.selected,
   burst: state.burst,
   unlocked: state.unlocked,
+  difficulty: state.difficulty,
 });
 
 const mapDispatch = (dispatch) => ({
@@ -1006,6 +1026,7 @@ const mapDispatch = (dispatch) => ({
   selectGun: (selected) => dispatch(setSelected(selected)),
   setBurst: (burst) => dispatch(setBurst(burst)),
   unlockGun: (gun) => dispatch(unlockGun(gun)),
+  setDifficulty: (difficulty) => dispatch(setDifficulty(difficulty)),
 });
 
 module.exports = connect(mapState, mapDispatch)(HelloWorldSceneAR);

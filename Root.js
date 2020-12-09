@@ -210,7 +210,7 @@ class Menu extends Component {
                     color: 'white',
                   }}
                 >
-                  {`Shoot to Start!\nScore: ${this.props.score}`}
+                  {`Shoot Center Target to Start!\nDifficulty: ${this.props.difficulty[0]}\nScore: ${this.props.score}`}
                 </Text>
               )
             ) : (
@@ -380,6 +380,7 @@ const mapState = (state) => ({
   clip: state.clip,
   timer: state.timer,
   burst: state.burst,
+  difficulty: state.difficulty,
 });
 
 module.exports = connect(mapState, mapDispatch)(Menu);
