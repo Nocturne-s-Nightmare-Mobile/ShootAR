@@ -16,7 +16,7 @@ let defaultState = {
   // currentAnim: '',
   // songs: [false, false, false, false, false, false, false],
   // battlefield: [false, false],
-  difficulty: 'Hard',
+  difficulty: ['Normal', 'gold'],
   burst: false,
   gameStarted: false,
   insideShootingRange: true,
@@ -189,7 +189,7 @@ function gameReducer(state = defaultState, action) {
     case UNLOCK_GUN:
       return { ...state, unlocked: { ...state.unlocked, [action.gun]: true } };
     case SET_DIFFICULTY:
-      return { ...state, difficilty: action.difficulty };
+      return { ...state, difficulty: action.difficulty };
     default:
       return state;
   }

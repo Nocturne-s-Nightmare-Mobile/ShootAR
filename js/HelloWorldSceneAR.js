@@ -127,6 +127,9 @@ export default class HelloWorldSceneAR extends Component {
     this.props.startGame(true);
     this.props.setClip(this.props.selected.clip);
     this.props.setTimer(60);
+    for (let i = 0; i < 10; i++) {
+      this.targets.push(this.renderTarget(i));
+    }
     let x = setInterval(() => {
       this.props.setTimer(this.props.timer - 1);
       if (this.props.timer <= 0) {
@@ -157,13 +160,13 @@ export default class HelloWorldSceneAR extends Component {
 
   renderTarget(num) {
     let posDifficulty;
-    if (this.props.difficulty === 'Normal') {
+    if (this.props.difficulty[0] === 'Normal') {
       posDifficulty = [5, 3];
-    } else if (this.props.difficulty === 'Hard') {
+    } else if (this.props.difficulty[0] === 'Hard') {
       posDifficulty = [3, 7];
-    } else if (this.props.difficulty === 'Easy') {
+    } else if (this.props.difficulty[0] === 'Easy') {
       posDifficulty = [0, 2.5];
-    } else if (this.props.difficulty === 'Expert') {
+    } else if (this.props.difficulty[0] === 'Expert') {
       posDifficulty = [5, 10];
     }
     let posX =
@@ -320,10 +323,6 @@ export default class HelloWorldSceneAR extends Component {
         });
         this.props.setCanShoot(true);
       }, this.props.selected.timeout);
-    } else if (!this.targets.length) {
-      for (let i = 0; i < 10; i++) {
-        this.targets.push(this.renderTarget(i));
-      }
     }
   }
 
@@ -543,7 +542,7 @@ export default class HelloWorldSceneAR extends Component {
             <ViroSphere
               position={[0, 0, -5]}
               radius={0.55}
-              materials={['bullseyeSphere']}
+              materials={[this.props.difficulty[1]]}
               physicsBody={{
                 type: 'Static',
                 mass: 0,
@@ -555,8 +554,8 @@ export default class HelloWorldSceneAR extends Component {
               onCollision={this.startGame}
             />
             <ViroSphere
-              position={[-1, 1.2, -10]}
-              radius={0.2}
+              position={[-1.2, 1.3, -10]}
+              radius={0.3}
               materials={['greenMetal']}
               physicsBody={{
                 type: 'Static',
@@ -565,7 +564,50 @@ export default class HelloWorldSceneAR extends Component {
                 velocity: [0, 0, 0],
               }}
               transformBehaviors={['billboard']}
-              onCollision={() => this.props.setDifficulty('Easy')}
+              onCollision={() =>
+                this.props.setDifficulty(['Easy', 'greenMetal'])
+              }
+            />
+            <ViroSphere
+              position={[-0.4, 1.7, -10]}
+              radius={0.3}
+              materials={['gold']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              transformBehaviors={['billboard']}
+              onCollision={() => this.props.setDifficulty(['Normal', 'gold'])}
+            />
+            <ViroSphere
+              position={[0.4, 1.7, -10]}
+              radius={0.3}
+              materials={['redMetal']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              transformBehaviors={['billboard']}
+              onCollision={() => this.props.setDifficulty(['Hard', 'redMetal'])}
+            />
+            <ViroSphere
+              position={[1.2, 1.3, -10]}
+              radius={0.3}
+              materials={['diamondPlate']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              transformBehaviors={['billboard']}
+              onCollision={() =>
+                this.props.setDifficulty(['Expert', 'diamondPlate'])
+              }
             />
             <Viro3DObject
               source={handgun}
@@ -950,6 +992,9 @@ ViroMaterials.createMaterials({
   },
   greenMetal: {
     diffuseTexture: require('./res/greenMetal.jpg'),
+  },
+  diamondPlate: {
+    diffuseTexture: require('./res/diamondPlate.jpg'),
   },
 });
 
