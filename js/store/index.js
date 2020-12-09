@@ -18,7 +18,11 @@ let defaultState = {
   // battlefield: [false, false],
   burst: false,
   gameStarted: false,
-  insideShootingRange: false,
+  insideShootingRange: true,
+  unlocked: {
+    HaloBR: false,
+    Ak: false,
+  },
   score: 0,
   clip: 8,
   timer: 60,
@@ -36,6 +40,12 @@ let defaultState = {
     animation: '',
   },
 };
+
+const UNLOCK_GUN = 'UNLOCK_GUN';
+export const unlockGun = (gun) => ({
+  type: UNLOCK_GUN,
+  gun,
+});
 
 const GET_INSIDE_SHOOTING_RANGE = 'GET_INSIDE_SHOOTING_RANGE';
 export const getInsidePortal = (insideShootingRange) => ({
@@ -169,6 +179,8 @@ function gameReducer(state = defaultState, action) {
       return { ...state, selected: guns[action.selected] };
     case SET_BURST:
       return { ...state, burst: action.burst };
+    case UNLOCK_GUN:
+      return { ...state, unlocked: { ...state.unlocked, [action.gun]: true } };
     default:
       return state;
   }
