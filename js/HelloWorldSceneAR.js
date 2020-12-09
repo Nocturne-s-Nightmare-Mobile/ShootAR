@@ -239,48 +239,50 @@ export default class HelloWorldSceneAR extends Component {
   }
 
   fire({ position, rotation, forward }) {
-    if (this.props.clip === 0) {
+    if (this.state.isReloading) {
+      this.props.setCanShoot(false);
+      this.props.setFiring(false);
+    } else if (this.props.clip === 0) {
       this.props.setCanShoot(false);
       this.setState({ isReloading: true, currentAnim: 'reload' });
       this.props.setFiring(false);
       this.reload();
     } else if (
       this.props.firing &&
-      this.props.canShoot &&
       this.props.clip > 0 &&
       !this.state.isReloading &&
-      this.props.selected.type === 'burst' &&
-      this.props.burst === false
+      this.props.selected.type === 'burst'
     ) {
       const velocity = forward.map((vector) => 20 * vector);
-      this.props.setClip(this.props.clip - 1);
-      this.props.setCanShoot(false);
-      this.props.setFiring(false);
-      this.props.setBurst(true);
-      this.props.setText(this.props.burst);
+      if (!this.props.burst) {
+        this.props.setClip(this.props.clip - 1);
+        this.props.setCanShoot(false);
+        this.props.setFiring(false);
+        this.props.setBurst(true);
+        this.props.setText(this.props.burst);
 
-      this.bullets.push(this.renderBullet(velocity));
-      setTimeout(() => {
-        this.props.setCanShoot(true);
-        this.props.setFiring(true);
-      }, 100);
-      setTimeout(() => {
-        this.props.setCanShoot(true);
-        this.props.setFiring(true);
-      }, 200);
-      setTimeout(() => {
-        this.props.setCanShoot(true);
-        this.props.setBurst(false);
-      }, 1000);
+        this.bullets.push(this.renderBullet(velocity));
+        setTimeout(() => {
+          this.props.setFiring(true);
+        }, 100);
+        setTimeout(() => {
+          this.props.setFiring(true);
+        }, 200);
+        setTimeout(() => {
+          this.props.setCanShoot(true);
+          this.props.setBurst(false);
+        }, 1000);
+      } else if (this.props.firing) {
+        this.props.setClip(this.props.clip - 1);
+        this.bullets.push(this.renderBullet(velocity));
+        this.props.setFiring(false);
+      }
     } else if (
       this.props.firing &&
       this.props.canShoot &&
       this.props.clip > 0 &&
       !this.state.isReloading
     ) {
-      setTimeout(() => {
-        Vibration.vibrate(10);
-      }, 200);
       const velocity = forward.map((vector) => 20 * vector);
       this.setState({
         ...this.state,
@@ -319,8 +321,8 @@ export default class HelloWorldSceneAR extends Component {
         shotSound: false,
       });
       this.props.setFiring(false);
-      this.props.setCanShoot(true);
       this.props.setClip(this.props.selected.clip);
+      this.props.setCanShoot(true);
     }, 2000);
     setTimeout(() => {
       this.setState({
@@ -602,8 +604,8 @@ export default class HelloWorldSceneAR extends Component {
               viroTag={'Start'}
               onCollision={() => {
                 this.props.selectGun('handgun');
-                this.props.setClip(this.props.selected.clip);
                 selected = guns['handgun'];
+                this.props.setClip(selected.clip);
                 this.setState({
                   currentAnim: 'setPlace',
                 });
@@ -624,8 +626,8 @@ export default class HelloWorldSceneAR extends Component {
               viroTag={'Start'}
               onCollision={() => {
                 this.props.selectGun('Ak');
-                this.props.setClip(this.props.selected.clip);
                 selected = guns['Ak'];
+                this.props.setClip(selected.clip);
                 this.setState({
                   currentAnim: 'setPlace',
                 });
@@ -646,8 +648,8 @@ export default class HelloWorldSceneAR extends Component {
               viroTag={'Start'}
               onCollision={() => {
                 this.props.selectGun('HaloBR');
-                this.props.setClip(this.props.selected.clip);
                 selected = guns['HaloBR'];
+                this.props.setClip(selected.clip);
                 this.setState({
                   currentAnim: 'setPlace',
                 });

@@ -137,7 +137,7 @@ class Menu extends Component {
                       color: 'white',
                     }}
                   >
-                    {`Hits: ${this.props.burst}`}
+                    {`Hits: ${this.props.hits}`}
                   </Text>
                   <Text
                     style={{
