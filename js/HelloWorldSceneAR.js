@@ -115,10 +115,10 @@ export default class HelloWorldSceneAR extends Component {
   hitTarget(tag) {
     Vibration.vibrate(50);
     this.targets[+tag] = this.renderTarget(+tag);
-    this.setState((prevState) => ({
+    this.setState({
       ...this.state,
       explosionSound: true,
-    }));
+    });
     this.props.setHits(this.props.hits + 1);
   }
 
