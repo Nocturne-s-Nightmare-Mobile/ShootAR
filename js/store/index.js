@@ -16,13 +16,15 @@ let defaultState = {
   // currentAnim: '',
   // songs: [false, false, false, false, false, false, false],
   // battlefield: [false, false],
+  burst: false,
   gameStarted: false,
-  insideShootingRange: false,
+  insideShootingRange: true,
   score: 0,
   clip: 8,
   timer: 60,
   selected: {
     source: handgun,
+    type: 'semi',
     bulletStart: [0.02, -0.06, -0.15],
     recoilAnim: '',
     reloadAnim: '',
@@ -35,15 +37,22 @@ let defaultState = {
   },
 };
 
-const GET_INSIDE_SHOOTING_RANGE = "GET_INSIDE_SHOOTING_RANGE"
+const GET_INSIDE_SHOOTING_RANGE = 'GET_INSIDE_SHOOTING_RANGE';
 export const getInsidePortal = (insideShootingRange) => ({
   type: GET_INSIDE_SHOOTING_RANGE,
   insideShootingRange,
 });
 
+const SET_BURST = 'SET_BURST';
+export const setBurst = (burst) => ({
+  type: SET_BURST,
+  burst,
+});
+
 export const guns = {
   handgun: {
     source: handgun,
+    type: 'semi',
     bulletStart: [0.02, -0.06, -0.15],
     recoilAnim: '',
     reloadAnim: '',
@@ -56,6 +65,7 @@ export const guns = {
   },
   Ak: {
     source: Ak,
+    type: 'semi',
     bulletStart: [0.02, -0.06, -0.15],
     recoilAnim: '',
     reloadAnim: '',
@@ -68,6 +78,7 @@ export const guns = {
   },
   HaloBR: {
     source: HaloBR,
+    type: 'burst',
     bulletStart: [0.02, -0.06, -0.15],
     recoilAnim: '',
     reloadAnim: '',
@@ -156,6 +167,8 @@ function gameReducer(state = defaultState, action) {
       return { ...state, timer: action.timer };
     case SET_SELECTED:
       return { ...state, selected: guns[action.selected] };
+    case SET_BURST:
+      return { ...state, burst: action.burst };
     default:
       return state;
   }
