@@ -299,11 +299,19 @@ export default class HelloWorldSceneAR extends Component {
         !this.state.isReloading
       ) {
         const velocity = forward.map((vector) => 20 * vector);
-        this.setState({
-          ...this.state,
-          shotSound: true,
-          currentAnim: "recoil",
-        });
+        this.props.selected.name === "handgun" &&
+          this.setState({
+            ...this.state,
+            shotSound: true,
+            currentAnim: "recoil",
+          });
+
+        this.props.selected.name === "Ak" &&
+          this.setState({
+            ...this.state,
+            shotSound: true,
+            currentAnim: "AkRecoil",
+          });
         this.props.setClip(this.props.clip - 1);
         this.props.setCanShoot(false);
         this.props.setFiring(false);
@@ -330,6 +338,8 @@ export default class HelloWorldSceneAR extends Component {
       this.setState({ isReloading: true, currentAnim: "reload" });
     this.props.selected.name === "HaloBR" &&
       this.setState({ isReloading: true, currentAnim: "BRReload" });
+    this.props.selected.name === "Ak" &&
+      this.setState({ isReloading: true, currentAnim: "AkReload" });
     this.props.setFiring(false);
     setTimeout(() => {
       this.setState({
@@ -791,6 +801,29 @@ ViroAnimations.registerAnimations({
 });
 
 ViroAnimations.registerAnimations({
+  AkRecoilUp: {
+    properties: {
+      positionX: 0.021,
+      positionY: -0.075 + 0.01,
+      positionZ: -0.125 + 0.05,
+    },
+    easing: "easeOut",
+    duration: 20,
+  },
+  AkRecoilDown: {
+    // properties: { positionX: 0.02, positionY: -0.1, positionZ: -0.2 },
+    properties: {
+      positionX: 0.02,
+      positionY: -0.069,
+      positionZ: -0.18,
+    },
+    easing: "easeIn",
+    duration: 20,
+  },
+  AkRecoil: [["AkRecoilUp", "AkRecoilDown"]],
+});
+
+ViroAnimations.registerAnimations({
   setPlace: {
     properties: {
       positionX: selected.position[0],
@@ -869,6 +902,43 @@ ViroAnimations.registerAnimations({
     duration: 250,
   },
   BRReload: [["BRReloadStart", "BRReloadMiddle", "BRReloadEnd"]],
+});
+
+ViroAnimations.registerAnimations({
+  AkReloadStart: {
+    properties: {
+      rotateX: 353,
+      rotateY: 185,
+      rotateZ: 260,
+      positionX: 0.021,
+      positionY: -0.075,
+      positionZ: -0.125,
+    },
+    easing: "easeOut",
+    duration: 250,
+  },
+  AkReloadMiddle: {
+    properties: {
+      rotateX: 0,
+      rotateY: 180,
+      rotateZ: 265,
+    },
+    easing: "easeOut",
+    duration: 2000,
+  },
+  AkReloadEnd: {
+    properties: {
+      rotateX: 353,
+      rotateY: 185,
+      rotateZ: 350,
+      positionX: 0.021,
+      positionY: -0.075,
+      positionZ: -0.125,
+    },
+    easing: "easeIn",
+    duration: 250,
+  },
+  AkReload: [["AkReloadStart", "AkReloadMiddle", "AkReloadEnd"]],
 });
 
 // Magazine Aminations for reload
