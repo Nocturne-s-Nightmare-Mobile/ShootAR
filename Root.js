@@ -228,81 +228,80 @@ class Menu extends Component {
             )}
           </View>
         </View>
-        {Platform.OS === 'ios' && (
-          <View
-            style={{
-              top: '80%',
-              position: 'absolute',
-              zIndex: 1000,
-              elevation: 1000,
-              width: '100%',
-            }}
-          >
-            {this.props.insideShootingRange ? (
-              <>
-                {!this.props.isReloading ? (
-                  <TouchableHighlight
+        <View
+          style={{
+            top: '80%',
+            position: 'absolute',
+            zIndex: 1000,
+            elevation: 1000,
+            width: '100%',
+          }}
+        >
+          {this.props.insideShootingRange ? (
+            <>
+              {!this.props.isReloading ? (
+                <TouchableHighlight
+                  style={{
+                    height: 80,
+                    backgroundColor: this.props.canShoot ? 'red' : 'gray',
+                    width: 80,
+                    position: 'absolute',
+                    borderRadius: 40,
+                    elevation: 100000,
+                    borderColor: 'white',
+                    borderWidth: 2,
+                    left: '40%',
+                  }}
+                  underlayColor={this.props.canShoot ? 'red' : 'gray'}
+                  onPress={() => {
+                    if (this.props.canShoot) {
+                      this.props.setFiring(true);
+                    }
+                  }}
+                >
+                  <Text
                     style={{
-                      height: 80,
-                      backgroundColor: this.props.canShoot ? 'red' : 'gray',
-                      width: 80,
-                      borderRadius: 40,
-                      elevation: 100000,
-                      borderColor: 'white',
-                      borderWidth: 2,
-                      left: '40%',
-                    }}
-                    underlayColor={this.props.canShoot ? 'red' : 'gray'}
-                    onPress={() => {
-                      if (this.props.canShoot) {
-                        this.props.setFiring(true);
-                      }
+                      color: 'white',
+                      fontSize: 20,
+                      fontWeight: '800',
+                      alignSelf: 'center',
+                      paddingTop: '33%',
+                      margin: 0,
                     }}
                   >
-                    <Text
-                      style={{
-                        color: 'white',
-                        fontSize: 20,
-                        fontWeight: '800',
-                        alignSelf: 'center',
-                        paddingTop: '33%',
-                        margin: 0,
-                      }}
-                    >
-                      Shoot
-                    </Text>
-                  </TouchableHighlight>
-                ) : (
-                  <TouchableOpacity
+                    Shoot
+                  </Text>
+                </TouchableHighlight>
+              ) : (
+                <TouchableOpacity
+                  style={{
+                    height: 80,
+                    backgroundColor: 'blue',
+                    width: 80,
+                    borderRadius: 40,
+                    elevation: 100000,
+                    borderColor: 'white',
+                    borderWidth: 2,
+                    left: '40%',
+                  }}
+                  underlayColor={'blue'}
+                  activeOpacity={0.5}
+                >
+                  <Text
                     style={{
-                      height: 80,
-                      backgroundColor: 'blue',
-                      width: 80,
-                      borderRadius: 40,
-                      elevation: 100000,
-                      borderColor: 'white',
-                      borderWidth: 2,
-                      left: '40%',
+                      color: 'white',
+                      alignSelf: 'center',
+                      paddingTop: '37%',
+                      margin: 0,
                     }}
-                    underlayColor={'blue'}
-                    activeOpacity={0.5}
                   >
-                    <Text
-                      style={{
-                        color: 'white',
-                        alignSelf: 'center',
-                        paddingTop: '37%',
-                        margin: 0,
-                      }}
-                    >
-                      Reloading!
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </>
-            ) : null}
-          </View>
-        )}
+                    Reloading!
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </>
+          ) : null}
+        </View>
         <ViroARSceneNavigator
           style={{ position: 'relative' }}
           {...this.state.sharedProps}
@@ -366,6 +365,7 @@ var localStyles = StyleSheet.create({
     fontSize: 25,
   },
   buttonText: {
+    paddingTop: '2%',
     color: '#fff',
     textAlign: 'center',
     fontSize: 25,

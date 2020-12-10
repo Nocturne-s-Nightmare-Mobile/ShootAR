@@ -530,11 +530,6 @@ export default class HelloWorldSceneAR extends Component {
               //   name: this.state.currentAnim,
               //   run: true,
               // }}
-              onClick={() => {
-                if (this.props.canShoot && Platform.OS !== 'ios') {
-                  this.props.setFiring(true);
-                }
-              }}
             />
           </ViroNode>
           {this.bullets}
@@ -543,6 +538,30 @@ export default class HelloWorldSceneAR extends Component {
           <>{this.targets}</>
         ) : (
           <>
+            <ViroText
+              text="Shoot to Select Difficulty:"
+              position={[0.1, 2.4, -10]}
+              width={3}
+              height={2}
+              style={{
+                fontSize: 40,
+                textAlign: 'center',
+                fontWeight: '900',
+              }}
+              transformBehaviors={['billboard']}
+            />
+            <ViroSphere
+              position={[0.05, 2.7, -15]}
+              radius={3}
+              materials={['black']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              // transformBehaviors={['billboard']}
+            />
             <ViroSphere
               position={[0, 0, -5]}
               radius={0.55}
@@ -884,7 +903,7 @@ ViroMaterials.createMaterials({
     diffuseTexture: require('./res/bullseye2.jpg'),
   },
   black: {
-    diffuseTexture: require('./res/black.jpeg'),
+    diffuseTexture: require('./res/blackSphere.jpg'),
   },
   metallic: {
     diffuseTexture: require('./res/metallic.jpg'),

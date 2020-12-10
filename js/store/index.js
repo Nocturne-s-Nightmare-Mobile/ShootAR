@@ -21,8 +21,8 @@ let defaultState = {
   gameStarted: false,
   insideShootingRange: true,
   unlocked: {
-    HaloBR: false,
-    Ak: false,
+    HaloBR: true,
+    Ak: true,
   },
   score: 0,
   clip: 8,
