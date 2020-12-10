@@ -19,6 +19,7 @@ let defaultState = {
   // currentAnim: '',
   // songs: [false, false, false, false, false, false, false],
   // battlefield: [false, false],
+  difficulty: ['Normal', 'gold'],
   burst: false,
   gameStarted: false,
   insideShootingRange: true,
@@ -29,6 +30,7 @@ let defaultState = {
   score: 0,
   clip: 8,
   timer: 60,
+  isReloading: false,
   selected: {
     name: "handgun",
     source: handgun,
@@ -46,7 +48,19 @@ let defaultState = {
   },
 };
 
-const UNLOCK_GUN = "UNLOCK_GUN";
+const SET_RELOADING = 'SET_RELOADING';
+export const setReloading = (reloading) => ({
+  type: SET_RELOADING,
+  reloading,
+});
+
+const SET_DIFFICULTY = 'SET_DIFFICULTY';
+export const setDifficulty = (difficulty) => ({
+  type: SET_DIFFICULTY,
+  difficulty,
+});
+
+const UNLOCK_GUN = 'UNLOCK_GUN';
 export const unlockGun = (gun) => ({
   type: UNLOCK_GUN,
   gun,
@@ -192,6 +206,10 @@ function gameReducer(state = defaultState, action) {
       return { ...state, burst: action.burst };
     case UNLOCK_GUN:
       return { ...state, unlocked: { ...state.unlocked, [action.gun]: true } };
+    case SET_DIFFICULTY:
+      return { ...state, difficulty: action.difficulty };
+    case SET_RELOADING:
+      return { ...state, isReloading: action.reloading };
     default:
       return state;
   }
