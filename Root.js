@@ -227,49 +227,56 @@ class Menu extends Component {
             )}
           </View>
         </View>
-        {Platform.OS === "ios" && (
-          <View
-            style={{
-              top: "80%",
-              position: "absolute",
-              zIndex: 1000,
-              elevation: 1000,
-              width: "100%",
-            }}
-          >
-            {this.props.insideShootingRange ? (
-              <TouchableHighlight
+        {/* {Platform.OS === "ios" && ( */}
+        <View
+          style={{
+            top: "80%",
+            position: "absolute",
+            zIndex: 1000,
+            elevation: 1000,
+            width: "100%",
+          }}
+        >
+          {this.props.insideShootingRange ? (
+            <TouchableHighlight
+              style={{
+                height: 80,
+                backgroundColor: "red",
+                width: 80,
+                borderRadius: 40,
+                elevation: 100000,
+                borderColor: "white",
+                borderWidth: 2,
+                left: "40%",
+                zIndex: 1000000,
+                position: "absolute",
+              }}
+              underlayColor={"gray"}
+              onPress={() => {
+                if (this.props.canShoot) {
+                  this.props.setFiring(true);
+                }
+              }}
+            >
+              <Text
                 style={{
-                  height: 80,
-                  backgroundColor: "red",
-                  width: 80,
-                  borderRadius: 40,
-                  elevation: 100000,
-                  borderColor: "white",
-                  borderWidth: 2,
-                  left: "40%",
+                  color: "white",
+                  alignSelf: "center",
+                  paddingTop: "37%",
+                  margin: 0,
                 }}
-                underlayColor={"gray"}
                 onPress={() => {
                   if (this.props.canShoot) {
                     this.props.setFiring(true);
                   }
                 }}
               >
-                <Text
-                  style={{
-                    color: "white",
-                    alignSelf: "center",
-                    paddingTop: "37%",
-                    margin: 0,
-                  }}
-                >
-                  Shoot
-                </Text>
-              </TouchableHighlight>
-            ) : null}
-          </View>
-        )}
+                Shoot
+              </Text>
+            </TouchableHighlight>
+          ) : null}
+        </View>
+        {/* )} */}
         <ViroARSceneNavigator
           style={{ position: "relative" }}
           {...this.state.sharedProps}

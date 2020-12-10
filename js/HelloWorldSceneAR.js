@@ -48,6 +48,7 @@ const Ak = require("./res/Ak.vrx");
 const HaloBR = require("./res/HaloBR.vrx");
 
 let selected = {
+  name: "handgun",
   source: handgun,
   bulletStart: [0.02, -0.06, -0.15],
   recoilAnim: "",
@@ -58,6 +59,7 @@ let selected = {
   position: [0.02, -0.1, -0.2],
   rotation: [0, 90, 355],
   animation: "",
+  soundSource: "./audio/pistolShot.mp3",
 };
 
 export default class HelloWorldSceneAR extends Component {
@@ -66,31 +68,10 @@ export default class HelloWorldSceneAR extends Component {
     this.state = {
       hasARInitialized: false,
       bulletPosition: [0.02, -0.06, -0.15],
-      shotSound: false,
-      BRShotSound: false,
-      akShotSound: [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-      ],
-      akShotSoundIndex: 0,
+      // shotSound: false,
+      // BRShotSound: false,
+      shotSound: [],
+      shotSoundIndex: 0,
       explosionSound: false,
       update: true,
       currentAnim: "",
@@ -101,6 +82,7 @@ export default class HelloWorldSceneAR extends Component {
       reloadSound: false,
       scene: "building",
       bursted: false,
+      canReload: true,
     };
 
     this.bullets = [];
@@ -109,8 +91,6 @@ export default class HelloWorldSceneAR extends Component {
     this._onLoadStart = this._onLoadStart.bind(this);
     this.fire = this.fire.bind(this);
     this.hitTarget = this.hitTarget.bind(this);
-    this.stopShotSound = this.stopShotSound.bind(this);
-    this.stopBRShotSound = this.stopBRShotSound.bind(this);
     this.stopExplosionSound = this.stopExplosionSound.bind(this);
     this.pickRandomSong = this.pickRandomSong.bind(this);
     this.stopSong = this.stopSong.bind(this);
@@ -119,13 +99,14 @@ export default class HelloWorldSceneAR extends Component {
     this.startGame = this.startGame.bind(this);
     this.reload = this.reload.bind(this);
     this.stopReloadSound = this.stopReloadSound.bind(this);
-    this.loopAkShotSounds = this.loopAkShotSounds.bind(this);
-    this.stopAkShotSound = this.stopAkShotSound.bind(this);
+    this.loopShotSounds = this.loopShotSounds.bind(this);
+    this.resetShotSound = this.resetShotSound.bind(this);
   }
 
   componentDidMount() {
     this.pickRandomSong();
     this.nextBattlefield();
+    this.resetShotSound();
   }
 
   _onLoadStart() {
@@ -274,7 +255,8 @@ export default class HelloWorldSceneAR extends Component {
 
   fire({ position, rotation, forward }) {
     if (!this.props.isReloading) {
-      if (this.props.clip === 0) {
+      if (this.props.clip === 0 && this.state.canReload) {
+        this.setState({ canReload: false });
         setTimeout(() => {
           this.reload();
         }, 500);
@@ -287,7 +269,7 @@ export default class HelloWorldSceneAR extends Component {
         const velocity = forward.map((vector) => 20 * vector);
         this.setState({
           ...this.state,
-          BRShotSound: true,
+          // BRShotSound: true,
           currentAnim: "BRRecoil",
         });
         if (!this.props.burst) {
@@ -298,6 +280,7 @@ export default class HelloWorldSceneAR extends Component {
           Vibration.vibrate(10);
 
           this.bullets.push(this.renderBullet(velocity));
+          this.loopShotSounds();
           setTimeout(() => {
             Vibration.vibrate(10);
             this.props.setFiring(true);
@@ -331,7 +314,7 @@ export default class HelloWorldSceneAR extends Component {
         this.props.selected.name === "handgun" &&
           this.setState({
             ...this.state,
-            shotSound: true,
+            // shotSound: true,
             currentAnim: "recoil",
           });
 
@@ -340,8 +323,8 @@ export default class HelloWorldSceneAR extends Component {
             ...this.state,
             currentAnim: "AkRecoil",
           });
-          this.loopAkShotSounds();
         }
+        this.loopShotSounds();
 
         this.props.setClip(this.props.clip - 1);
         this.props.setCanShoot(false);
@@ -354,7 +337,7 @@ export default class HelloWorldSceneAR extends Component {
               currentAnim: "",
             });
             this.props.setCanShoot(true);
-          }, this.props.selected.timeout);
+          }, this.props.selected.timeout + 50);
       } else if (!this.targets.length) {
         for (let i = 0; i < 10; i++) {
           this.targets.push(this.renderTarget(i));
@@ -363,74 +346,38 @@ export default class HelloWorldSceneAR extends Component {
     }
   }
 
-  loopAkShotSounds() {
-    if (this.state.akShotSoundIndex === 19) {
-      const newAkShotSoundArr = [
-        true,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-      ];
-      this.setState({
-        akShotSoundIndex: 1,
-        akShotSound: newAkShotSoundArr,
-      });
-    } else {
-      const newAkShotSoundArr = [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-      ];
-      newAkShotSoundArr[this.state.akShotSoundIndex] = true;
-      const newIndex = this.state.akShotSoundIndex + 1;
-      this.setState({
-        akShotSoundIndex: newIndex,
-        akShotSound: newAkShotSoundArr,
-      });
-    }
+  loopShotSounds() {
+    const newshotSoundArr = this.state.shotSound;
+    newshotSoundArr[this.state.shotSoundIndex] = true;
+    const newIndex = this.state.shotSoundIndex + 1;
+    this.setState({
+      shotSoundIndex: newIndex,
+      shotSound: newshotSoundArr,
+    });
   }
 
   reload() {
+    const arr = [];
+    for (let i = 0; i < 30; i++) {
+      arr.push(false);
+    }
     this.props.setCanShoot(false);
     this.props.selected.name === "handgun" &&
-      this.setState({ isReloading: true, currentAnim: "reload" });
+      this.setState({
+        isReloading: true,
+        currentAnim: "reload",
+      });
     this.props.selected.name === "HaloBR" &&
-      this.setState({ isReloading: true, currentAnim: "BRReload" });
+      this.setState({
+        isReloading: true,
+        currentAnim: "BRReload",
+      });
     this.props.selected.name === "Ak" &&
-      this.setState({ isReloading: true, currentAnim: "AkReload" });
+      this.setState({
+        isReloading: true,
+        currentAnim: "AkReload",
+      });
+    this.resetShotSound();
     this.props.setFiring(false);
     setTimeout(() => {
       this.setState({
@@ -441,52 +388,29 @@ export default class HelloWorldSceneAR extends Component {
     setTimeout(() => {
       this.setState({
         isReloading: false,
-        shotSound: false,
         magAnim: "",
+        currentAnim: "",
+        canReload: true,
       });
       this.props.setFiring(false);
       this.props.setClip(this.props.selected.clip);
       this.props.setCanShoot(true);
-    }, 2000);
+    }, 2500);
   }
 
   stopReloadSound() {
     this.setState({ reloadSound: false });
   }
 
-  stopShotSound() {
-    this.setState({ shotSound: false });
-  }
-
-  stopAkShotSound() {
+  resetShotSound() {
+    const arr = [];
+    for (let i = 0; i < 30; i++) {
+      arr.push(false);
+    }
     this.setState({
-      akShotSound: [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-      ],
+      shotSound: arr,
+      shotSoundIndex: 0,
     });
-  }
-
-  stopBRShotSound() {
-    this.setState({ BRShotSound: false });
   }
 
   stopExplosionSound() {
@@ -501,7 +425,7 @@ export default class HelloWorldSceneAR extends Component {
     const random = Math.floor(Math.random() * 7);
     const newSongs = [false, false, false, false, false, false, false];
     newSongs[random] = true;
-    this.setState({ songs: [...newSongs] });
+    this.setState({ songs: newSongs });
   }
 
   stopBattlefield() {
@@ -534,31 +458,30 @@ export default class HelloWorldSceneAR extends Component {
             rotation={[0, 90, 0]}
           />
         )}
-        <ViroSound
+        {/* <ViroSound
           source={require("./audio/pistolShot.mp3")}
           loop={false}
           paused={!this.state.shotSound}
           volume={0.6}
           onFinish={this.stopShotSound}
-        />
-        {this.state.akShotSound.map((map, idx) => {
+        /> */}
+        {this.state.shotSound.map((map, idx) => {
           return (
             <ViroSound
-              source={require("./audio/akShot.mp3")}
+              source={this.props.selected.soundSource}
               loop={false}
-              paused={!this.state.akShotSound[idx]}
+              paused={!this.state.shotSound[idx]}
               volume={0.6}
-              onFinish={this.stopAkShotSound}
             />
           );
         })}
-        <ViroSound
+        {/* <ViroSound
           source={require("./audio/BRShot.mp3")}
           loop={false}
           paused={!this.state.BRShotSound}
           volume={0.6}
           onFinish={this.stopBRShotSound}
-        />
+        /> */}
         <ViroSound
           source={require("./audio/explosion.mp3")}
           loop={false}
@@ -774,6 +697,7 @@ export default class HelloWorldSceneAR extends Component {
                 velocity: [0, 0, 0],
               }}
               onCollision={() => {
+                this.resetShotSound();
                 this.props.selectGun("handgun");
                 selected = guns["handgun"];
                 this.props.setClip(selected.clip);
@@ -804,6 +728,7 @@ export default class HelloWorldSceneAR extends Component {
                     velocity: [0, 0, 0],
                   }}
                   onCollision={() => {
+                    this.resetShotSound();
                     this.props.selectGun("Ak");
                     selected = guns["Ak"];
                     this.props.setClip(selected.clip);
@@ -849,6 +774,7 @@ export default class HelloWorldSceneAR extends Component {
                     velocity: [0, 0, 0],
                   }}
                   onCollision={() => {
+                    this.resetShotSound();
                     this.props.selectGun("HaloBR");
                     selected = guns["HaloBR"];
                     this.props.setClip(selected.clip);
@@ -933,7 +859,7 @@ ViroAnimations.registerAnimations({
       positionZ: -0.125 + 0.05,
     },
     easing: "easeOut",
-    duration: 20,
+    duration: 15,
   },
   AkRecoilDown: {
     // properties: { positionX: 0.02, positionY: -0.1, positionZ: -0.2 },
@@ -943,7 +869,7 @@ ViroAnimations.registerAnimations({
       positionZ: -0.18,
     },
     easing: "easeIn",
-    duration: 20,
+    duration: 15,
   },
   AkRecoil: [["AkRecoilUp", "AkRecoilDown"]],
 });

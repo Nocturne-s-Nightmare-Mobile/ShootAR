@@ -2,6 +2,9 @@ import { createStore } from "redux";
 const handgun = require("../res/gun.vrx");
 const Ak = require("../res/Ak.vrx");
 const HaloBR = require("../res/HaloBR.vrx");
+const handgunSound = require("../audio/pistolShot.mp3");
+const akSound = require("../audio/akShot.mp3");
+const brSound = require("../audio/BRShot.mp3");
 
 let defaultState = {
   // hasARInitialized: false,
@@ -39,6 +42,7 @@ let defaultState = {
     position: [0.02, -0.1, -0.2],
     rotation: [0, 90, 355],
     animation: "",
+    soundSource: handgunSound,
   },
 };
 
@@ -74,6 +78,7 @@ export const guns = {
     position: [0.02, -0.1, -0.2],
     rotation: [0, 90, 355],
     animation: "",
+    soundSource: handgunSound,
   },
   Ak: {
     name: "Ak",
@@ -88,6 +93,7 @@ export const guns = {
     position: [0.021, -0.075, -0.125],
     rotation: [353, 185, 350],
     anim: "",
+    soundSource: akSound,
   },
   HaloBR: {
     name: "HaloBR",
@@ -102,6 +108,7 @@ export const guns = {
     position: [0.02, -0.069, -0.18],
     rotation: [0, 180, 355],
     anim: "",
+    soundSource: brSound,
   },
 };
 
