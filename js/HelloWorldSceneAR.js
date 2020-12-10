@@ -53,7 +53,7 @@ let selected = {
   bulletStart: [0.02, -0.06, -0.15],
   recoilAnim: "",
   reloadAnim: "",
-  timeout: 1000,
+  timeout: 500,
   clip: 8,
   scale: [0.0003, 0.0003, 0.0003],
   position: [0.02, -0.1, -0.2],
@@ -297,7 +297,7 @@ export default class HelloWorldSceneAR extends Component {
                 ...this.state,
                 currentAnim: "",
               });
-          }, 1000);
+          }, this.props.selected.timeout);
         } else if (this.props.firing) {
           this.props.setClip(this.props.clip - 1);
           this.bullets.push(this.renderBullet(velocity));
@@ -332,10 +332,11 @@ export default class HelloWorldSceneAR extends Component {
         this.bullets.push(this.renderBullet(velocity));
         !this.state.isReloading &&
           setTimeout(() => {
-            this.setState({
-              ...this.state,
-              currentAnim: "",
-            });
+            !this.state.isReloading &&
+              this.setState({
+                ...this.state,
+                currentAnim: "",
+              });
             this.props.setCanShoot(true);
           }, this.props.selected.timeout + 50);
       } else if (!this.targets.length) {
@@ -357,10 +358,6 @@ export default class HelloWorldSceneAR extends Component {
   }
 
   reload() {
-    const arr = [];
-    for (let i = 0; i < 30; i++) {
-      arr.push(false);
-    }
     this.props.setCanShoot(false);
     this.props.selected.name === "handgun" &&
       this.setState({
@@ -458,13 +455,6 @@ export default class HelloWorldSceneAR extends Component {
             rotation={[0, 90, 0]}
           />
         )}
-        {/* <ViroSound
-          source={require("./audio/pistolShot.mp3")}
-          loop={false}
-          paused={!this.state.shotSound}
-          volume={0.6}
-          onFinish={this.stopShotSound}
-        /> */}
         {this.state.shotSound.map((map, idx) => {
           return (
             <ViroSound
@@ -475,13 +465,6 @@ export default class HelloWorldSceneAR extends Component {
             />
           );
         })}
-        {/* <ViroSound
-          source={require("./audio/BRShot.mp3")}
-          loop={false}
-          paused={!this.state.BRShotSound}
-          volume={0.6}
-          onFinish={this.stopBRShotSound}
-        /> */}
         <ViroSound
           source={require("./audio/explosion.mp3")}
           loop={false}
@@ -859,7 +842,7 @@ ViroAnimations.registerAnimations({
       positionZ: -0.125 + 0.05,
     },
     easing: "easeOut",
-    duration: 15,
+    duration: 40,
   },
   AkRecoilDown: {
     // properties: { positionX: 0.02, positionY: -0.1, positionZ: -0.2 },
@@ -869,7 +852,7 @@ ViroAnimations.registerAnimations({
       positionZ: -0.18,
     },
     easing: "easeIn",
-    duration: 15,
+    duration: 40,
   },
   AkRecoil: [["AkRecoilUp", "AkRecoilDown"]],
 });
@@ -924,9 +907,9 @@ ViroAnimations.registerAnimations({
       rotateX: 0,
       rotateY: 180,
       rotateZ: 265,
-      positionX: 0.02,
-      positionY: -0.039,
-      positionZ: -0.18,
+      positionX: 0.06,
+      positionY: -0.047,
+      positionZ: -0.23,
     },
     easing: "easeOut",
     duration: 250,
@@ -962,8 +945,8 @@ ViroAnimations.registerAnimations({
       rotateY: 185,
       rotateZ: 270,
       positionX: 0.021,
-      positionY: -0.045,
-      positionZ: -0.125,
+      positionY: -0.05,
+      positionZ: -0.1,
     },
     easing: "easeOut",
     duration: 250,
@@ -1010,7 +993,7 @@ ViroAnimations.registerAnimations({
       rotateX: 90,
       rotateY: 90,
       rotateZ: 0,
-      positionX: -1.5,
+      positionX: -0.5,
       positionY: -0.045,
       positionZ: -0.11,
     },
@@ -1022,7 +1005,7 @@ ViroAnimations.registerAnimations({
       rotateX: 90,
       rotateY: 90,
       rotateZ: 0,
-      positionX: -1.5,
+      positionX: -0.5,
       positionY: -0.045,
       positionZ: -0.11,
     },
