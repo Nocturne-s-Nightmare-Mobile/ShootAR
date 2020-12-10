@@ -83,6 +83,7 @@ export default class HelloWorldSceneAR extends Component {
 
     this.bullets = [];
     this.targets = [];
+    this.targetExplosion = [];
 
     this._onLoadStart = this._onLoadStart.bind(this);
     this.fire = this.fire.bind(this);
@@ -96,6 +97,7 @@ export default class HelloWorldSceneAR extends Component {
     this.startGame = this.startGame.bind(this);
     this.reload = this.reload.bind(this);
     this.stopReloadSound = this.stopReloadSound.bind(this);
+    this.targetBoom = this.targetBoom.bind(this);
   }
 
   componentDidMount() {
@@ -113,7 +115,60 @@ export default class HelloWorldSceneAR extends Component {
     console.log('OBJ loading failed with error: ' + event.nativeEvent.error);
   }
 
-  hitTarget(tag) {
+  targetBoom(position) {
+    this.targetExplosion.push(
+      <ViroParticleEmitter
+        key={this.targetExplosion.length}
+        position={position}
+        visible={true}
+        run={true}
+        loop={false}
+        duration={300}
+        fixedToEmitter={true}
+        image={{
+          source: require('./res/explosion.png'),
+          height: 0.20,
+          width: 0.11,
+        }}
+        spawnBehavior={{
+          particleLifetime: [50, 100],
+          emissionRatePerSecond: [25, 50],
+          maxParticles: 10,
+        }}
+        particleAppearance={{
+          opacity: {
+            initialRange: [10, 10],
+            factor: 'Time',
+            interpolation: [
+              { endValue: 0.5, interval: [0, 500] },
+              { endValue: 1.0, interval: [0, 500] },
+            ],
+          },
+          scale: {
+            initialRange: [
+              [1, 1, 1],
+              [4, 4, 4],
+            ],
+            factor: 'Distance',
+            interpolation: [
+              { endValue: [3, 3, 3], interval: [0, 400] },
+              { endValue: [0, 0, 0], interval: [400, 500] },
+            ],
+          },
+        }}
+        particlePhysics={{
+          velocity: {
+            initialRange: [
+              [2, 1, -5],
+              [-2, -1, -5],
+            ],
+          },
+        }}
+      />
+    )
+  }
+
+  hitTarget(tag, point) {
     Vibration.vibrate(50);
     this.targets[+tag] = this.renderTarget(+tag);
     this.setState({
@@ -121,6 +176,7 @@ export default class HelloWorldSceneAR extends Component {
       explosionSound: true,
     });
     this.props.setHits(this.props.hits + 1);
+    this.targetBoom(point);
   }
 
   startGame() {
@@ -504,6 +560,7 @@ export default class HelloWorldSceneAR extends Component {
           color="#ffffff"
           castsShadow={true}
         />
+        {this.targetExplosion}
         <ViroARCamera>
           <ViroNode>
             {/* Magazine */}
@@ -703,55 +760,185 @@ export default class HelloWorldSceneAR extends Component {
                   fontWeight: '900',
                 }}
                 transformBehaviors={['billboard']}
+                viroTag={'Start'}
+                onCollision={this.startGame}
               />
-            )}
-            {this.props.unlocked['HaloBR'] ? (
-              <>
-                <Viro3DObject
-                  source={HaloBR}
-                  type="VRX"
-                  position={[0, -1.3, -5]}
-                  scale={[0.0042, 0.0042, 0.0042]}
-                  rotation={[0, -90, 0]}
-                />
-                <ViroBox
-                  height={0.9}
-                  width={2.5}
-                  position={[0, -1.57, -6]}
-                  transformBehaviors={['billboard']}
-                  materials={['gold']}
-                  physicsBody={{
-                    type: 'Static',
-                    mass: 0,
-                    useGravity: false,
-                    velocity: [0, 0, 0],
-                  }}
-                  onCollision={() => {
-                    this.props.selectGun('HaloBR');
-                    selected = guns['HaloBR'];
-                    this.props.setClip(selected.clip);
-                    this.setState({
-                      currentAnim: 'setPlace',
-                    });
-                  }}
-                />
-              </>
-            ) : (
-              <ViroText
-                text="Score 35 To Unlock BR"
-                position={[0, -2.5, -10]}
-                width={3}
-                height={2}
-                style={{
-                  fontSize: 40,
-                  textAlign: 'center',
-                  fontWeight: '900',
+              <ViroSphere
+                position={[-1.2, 1.3, -10]}
+                radius={0.3}
+                materials={['greenMetal']}
+                physicsBody={{
+                  type: 'Static',
+                  mass: 0,
+                  useGravity: false,
+                  velocity: [0, 0, 0],
                 }}
                 transformBehaviors={['billboard']}
+                onCollision={() =>
+                  this.props.setDifficulty(['Easy', 'greenMetal'])
+                }
               />
-            )}
-          </>
-        )}
+              <ViroSphere
+                position={[-0.4, 1.7, -10]}
+                radius={0.3}
+                materials={['gold']}
+                physicsBody={{
+                  type: 'Static',
+                  mass: 0,
+                  useGravity: false,
+                  velocity: [0, 0, 0],
+                }}
+                transformBehaviors={['billboard']}
+                onCollision={() => this.props.setDifficulty(['Normal', 'gold'])}
+              />
+              <ViroSphere
+                position={[0.4, 1.7, -10]}
+                radius={0.3}
+                materials={['redMetal']}
+                physicsBody={{
+                  type: 'Static',
+                  mass: 0,
+                  useGravity: false,
+                  velocity: [0, 0, 0],
+                }}
+                transformBehaviors={['billboard']}
+                onCollision={() => this.props.setDifficulty(['Hard', 'redMetal'])}
+              />
+              <ViroSphere
+                position={[1.2, 1.3, -10]}
+                radius={0.3}
+                materials={['diamondPlate']}
+                physicsBody={{
+                  type: 'Static',
+                  mass: 0,
+                  useGravity: false,
+                  velocity: [0, 0, 0],
+                }}
+                transformBehaviors={['billboard']}
+                onCollision={() =>
+                  this.props.setDifficulty(['Expert', 'diamondPlate'])
+                }
+              />
+              <Viro3DObject
+                source={handgun}
+                type="VRX"
+                position={[-1.4, 0, -5]}
+                scale={[0.0013, 0.0013, 0.0013]}
+                rotation={[180, 180, 180]}
+              />
+              <ViroBox
+                height={0.9}
+                width={1}
+                position={[-1.7, 0, -6]}
+                transformBehaviors={['billboard']}
+                materials={['shiny']}
+                physicsBody={{
+                  type: 'Static',
+                  mass: 0,
+                  useGravity: false,
+                  velocity: [0, 0, 0],
+                }}
+                onCollision={() => {
+                  this.props.selectGun('handgun');
+                  selected = guns['handgun'];
+                  this.props.setClip(selected.clip);
+                  this.setState({
+                    currentAnim: 'setPlace',
+                  });
+                }}
+              />
+              {this.props.unlocked['Ak'] ? (
+                <>
+                  <Viro3DObject
+                    source={Ak}
+                    type="VRX"
+                    position={[2, 0, -5]}
+                    scale={[0.01, 0.01, 0.01]}
+                    rotation={[180, 280, 180]}
+                  />
+                  <ViroBox
+                    height={0.9}
+                    width={1.8}
+                    position={[2.15, 0, -6]}
+                    transformBehaviors={['billboard']}
+                    materials={['shiny']}
+                    physicsBody={{
+                      type: 'Static',
+                      mass: 0,
+                      useGravity: false,
+                      velocity: [0, 0, 0],
+                    }}
+                    onCollision={() => {
+                      this.props.selectGun('Ak');
+                      selected = guns['Ak'];
+                      this.props.setClip(selected.clip);
+                      this.setState({
+                        currentAnim: 'setPlace',
+                      });
+                    }}
+                  />
+                </>
+              ) : (
+                  <ViroText
+                    text="Score 25 To Unlock AK"
+                    position={[2.8, -0.5, -10]}
+                    width={3}
+                    height={2}
+                    style={{
+                      fontSize: 40,
+                      textAlign: 'center',
+                      fontWeight: '900',
+                    }}
+                    transformBehaviors={['billboard']}
+                  />
+                )}
+              {this.props.unlocked['HaloBR'] ? (
+                <>
+                  <Viro3DObject
+                    source={HaloBR}
+                    type="VRX"
+                    position={[0, -1.3, -5]}
+                    scale={[0.0042, 0.0042, 0.0042]}
+                    rotation={[0, -90, 0]}
+                  />
+                  <ViroBox
+                    height={0.9}
+                    width={2.5}
+                    position={[0, -1.57, -6]}
+                    transformBehaviors={['billboard']}
+                    materials={['gold']}
+                    physicsBody={{
+                      type: 'Static',
+                      mass: 0,
+                      useGravity: false,
+                      velocity: [0, 0, 0],
+                    }}
+                    onCollision={() => {
+                      this.props.selectGun('HaloBR');
+                      selected = guns['HaloBR'];
+                      this.props.setClip(selected.clip);
+                      this.setState({
+                        currentAnim: 'setPlace',
+                      });
+                    }}
+                  />
+                </>
+              ) : (
+                  <ViroText
+                    text="Score 35 To Unlock BR"
+                    position={[0, -2.5, -10]}
+                    width={3}
+                    height={2}
+                    style={{
+                      fontSize: 40,
+                      textAlign: 'center',
+                      fontWeight: '900',
+                    }}
+                    transformBehaviors={['billboard']}
+                  />
+                )}
+            </>
+          )}
       </ViroARScene>
     );
   }
