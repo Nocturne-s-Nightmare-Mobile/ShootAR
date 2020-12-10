@@ -18,6 +18,7 @@ import {
   setBurst,
   unlockGun,
   setDifficulty,
+  setReloading,
 } from './store';
 
 import { connect } from 'react-redux';
@@ -74,7 +75,7 @@ export default class HelloWorldSceneAR extends Component {
       magAnim: '',
       songs: [false, false, false, false, false, false, false],
       battlefield: [false, false],
-      isReloading: false,
+      // isReloading: false,
       reloadSound: false,
       scene: 'building',
       bursted: false,
@@ -117,6 +118,7 @@ export default class HelloWorldSceneAR extends Component {
   targetBoom(position) {
     this.targetExplosion.push(
       <ViroParticleEmitter
+        key={this.targetExplosion.length}
         position={position}
         visible={true}
         run={true}
@@ -131,11 +133,6 @@ export default class HelloWorldSceneAR extends Component {
         spawnBehavior={{
           particleLifetime: [50, 100],
           emissionRatePerSecond: [25, 50],
-          spawnVolume: {
-            shape: 'ellipsoid',
-            params: [10, 10, 10],
-            spawnOnSurface: true,
-          },
           maxParticles: 10,
         }}
         particleAppearance={{
@@ -324,65 +321,68 @@ export default class HelloWorldSceneAR extends Component {
     // if (this.state.isReloading) {
     //   this.props.setCanShoot(false);
     //   this.props.setFiring(false);
-    if (this.props.clip === 0) {
-      this.props.setCanShoot(false);
-      this.setState({ isReloading: true, currentAnim: 'reload' });
-      this.props.setFiring(false);
-      this.reload();
-    } else if (
-      this.props.firing &&
-      this.props.clip > 0 &&
-      !this.state.isReloading &&
-      this.props.selected.type === 'burst'
-    ) {
-      const velocity = forward.map((vector) => 20 * vector);
-      if (!this.props.burst) {
+    if (!this.props.isReloading) {
+      if (this.props.clip === 0) {
+        this.props.setCanShoot(false);
+        this.props.setReloading(true);
+        this.setState({ currentAnim: 'reload' });
+        this.props.setFiring(false);
+        this.reload();
+      } else if (
+        this.props.firing &&
+        this.props.clip > 0 &&
+        !this.props.isReloading &&
+        this.props.selected.type === 'burst'
+      ) {
+        const velocity = forward.map((vector) => 20 * vector);
+        if (!this.props.burst) {
+          this.props.setClip(this.props.clip - 1);
+          this.props.setCanShoot(false);
+          this.props.setFiring(false);
+          this.props.setBurst(true);
+          this.props.setText(this.props.burst);
+
+          this.bullets.push(this.renderBullet(velocity));
+          setTimeout(() => {
+            this.props.setFiring(true);
+          }, 100);
+          setTimeout(() => {
+            this.props.setFiring(true);
+          }, 200);
+          setTimeout(() => {
+            this.props.setCanShoot(true);
+            this.props.setBurst(false);
+          }, 1000);
+        } else if (this.props.firing) {
+          this.props.setClip(this.props.clip - 1);
+          this.bullets.push(this.renderBullet(velocity));
+          this.props.setFiring(false);
+        }
+      } else if (
+        this.props.firing &&
+        this.props.canShoot &&
+        this.props.clip > 0 &&
+        !this.props.isReloading
+      ) {
+        const velocity = forward.map((vector) => 20 * vector);
+        this.setState({
+          ...this.state,
+          shotSound: true,
+          currentAnim: 'recoil',
+        });
         this.props.setClip(this.props.clip - 1);
         this.props.setCanShoot(false);
         this.props.setFiring(false);
-        this.props.setBurst(true);
-        this.props.setText(this.props.burst);
-
         this.bullets.push(this.renderBullet(velocity));
         setTimeout(() => {
-          this.props.setFiring(true);
-        }, 100);
-        setTimeout(() => {
-          this.props.setFiring(true);
-        }, 200);
-        setTimeout(() => {
+          this.setState({
+            ...this.state,
+            currentAnim: '',
+            shotSound: false,
+          });
           this.props.setCanShoot(true);
-          this.props.setBurst(false);
-        }, 1000);
-      } else if (this.props.firing) {
-        this.props.setClip(this.props.clip - 1);
-        this.bullets.push(this.renderBullet(velocity));
-        this.props.setFiring(false);
+        }, this.props.selected.timeout);
       }
-    } else if (
-      this.props.firing &&
-      this.props.canShoot &&
-      this.props.clip > 0 &&
-      !this.state.isReloading
-    ) {
-      const velocity = forward.map((vector) => 20 * vector);
-      this.setState({
-        ...this.state,
-        shotSound: true,
-        currentAnim: 'recoil',
-      });
-      this.props.setClip(this.props.clip - 1);
-      this.props.setCanShoot(false);
-      this.props.setFiring(false);
-      this.bullets.push(this.renderBullet(velocity));
-      setTimeout(() => {
-        this.setState({
-          ...this.state,
-          currentAnim: '',
-          shotSound: false,
-        });
-        this.props.setCanShoot(true);
-      }, this.props.selected.timeout);
     }
   }
 
@@ -402,8 +402,8 @@ export default class HelloWorldSceneAR extends Component {
       this.props.setCanShoot(true);
     }, 2000);
     setTimeout(() => {
+      this.props.setReloading(false);
       this.setState({
-        isReloading: false,
         magAnim: '',
       });
     }, 3000);
@@ -587,11 +587,6 @@ export default class HelloWorldSceneAR extends Component {
               //   name: this.state.currentAnim,
               //   run: true,
               // }}
-              onClick={() => {
-                if (this.props.canShoot && Platform.OS !== 'ios') {
-                  this.props.setFiring(true);
-                }
-              }}
             />
           </ViroNode>
           {this.bullets}
@@ -599,16 +594,170 @@ export default class HelloWorldSceneAR extends Component {
         {this.props.gameStarted ? (
           <>{this.targets}</>
         ) : (
-            <>
-              <ViroSphere
-                position={[0, 0, -5]}
-                radius={0.55}
-                materials={[this.props.difficulty[1]]}
-                physicsBody={{
-                  type: 'Static',
-                  mass: 0,
-                  useGravity: false,
-                  velocity: [0, 0, 0],
+          <>
+            <ViroText
+              text="Shoot to Select Difficulty:"
+              position={[0.1, 2.4, -10]}
+              width={3}
+              height={2}
+              style={{
+                fontSize: 40,
+                textAlign: 'center',
+                fontWeight: '900',
+              }}
+              transformBehaviors={['billboard']}
+            />
+            <ViroSphere
+              position={[0.05, 2.7, -15]}
+              radius={3}
+              materials={['black']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              // transformBehaviors={['billboard']}
+            />
+            <ViroSphere
+              position={[0, 0, -5]}
+              radius={0.55}
+              materials={[this.props.difficulty[1]]}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              transformBehaviors={['billboard']}
+              viroTag={'Start'}
+              onCollision={this.startGame}
+            />
+            <ViroSphere
+              position={[-1.2, 1.3, -10]}
+              radius={0.3}
+              materials={['greenMetal']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              transformBehaviors={['billboard']}
+              onCollision={() =>
+                this.props.setDifficulty(['Easy', 'greenMetal'])
+              }
+            />
+            <ViroSphere
+              position={[-0.4, 1.75, -10]}
+              radius={0.3}
+              materials={['gold']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              transformBehaviors={['billboard']}
+              onCollision={() => this.props.setDifficulty(['Normal', 'gold'])}
+            />
+            <ViroSphere
+              position={[0.4, 1.75, -10]}
+              radius={0.3}
+              materials={['redMetal']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              transformBehaviors={['billboard']}
+              onCollision={() => this.props.setDifficulty(['Hard', 'redMetal'])}
+            />
+            <ViroSphere
+              position={[1.2, 1.3, -10]}
+              radius={0.3}
+              materials={['diamondPlate']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              transformBehaviors={['billboard']}
+              onCollision={() =>
+                this.props.setDifficulty(['Expert', 'diamondPlate'])
+              }
+            />
+            <Viro3DObject
+              source={handgun}
+              type="VRX"
+              position={[-1.4, 0, -5]}
+              scale={[0.0013, 0.0013, 0.0013]}
+              rotation={[180, 180, 180]}
+            />
+            <ViroBox
+              height={0.9}
+              width={1}
+              position={[-1.7, 0, -6]}
+              transformBehaviors={['billboard']}
+              materials={['shiny']}
+              physicsBody={{
+                type: 'Static',
+                mass: 0,
+                useGravity: false,
+                velocity: [0, 0, 0],
+              }}
+              onCollision={() => {
+                this.props.selectGun('handgun');
+                selected = guns['handgun'];
+                this.props.setClip(selected.clip);
+                this.setState({
+                  currentAnim: 'setPlace',
+                });
+              }}
+            />
+            {this.props.unlocked['Ak'] ? (
+              <>
+                <Viro3DObject
+                  source={Ak}
+                  type="VRX"
+                  position={[2, 0, -5]}
+                  scale={[0.01, 0.01, 0.01]}
+                  rotation={[180, 280, 180]}
+                />
+                <ViroBox
+                  height={0.9}
+                  width={1.8}
+                  position={[2.15, 0, -6]}
+                  transformBehaviors={['billboard']}
+                  materials={['shiny']}
+                  physicsBody={{
+                    type: 'Static',
+                    mass: 0,
+                    useGravity: false,
+                    velocity: [0, 0, 0],
+                  }}
+                  onCollision={() => {
+                    this.props.selectGun('Ak');
+                    selected = guns['Ak'];
+                    this.props.setClip(selected.clip);
+                    this.setState({
+                      currentAnim: 'setPlace',
+                    });
+                  }}
+                />
+              </>
+            ) : (
+              <ViroText
+                text="Score 25 To Unlock AK"
+                position={[2.8, -0.5, -10]}
+                width={3}
+                height={2}
+                style={{
+                  fontSize: 40,
+                  textAlign: 'center',
+                  fontWeight: '900',
                 }}
                 transformBehaviors={['billboard']}
                 viroTag={'Start'}
@@ -941,7 +1090,7 @@ ViroMaterials.createMaterials({
     diffuseTexture: require('./res/bullseye2.jpg'),
   },
   black: {
-    diffuseTexture: require('./res/black.jpeg'),
+    diffuseTexture: require('./res/blackSphere.jpg'),
   },
   metallic: {
     diffuseTexture: require('./res/metallic.jpg'),
@@ -1073,6 +1222,7 @@ const mapState = (state) => ({
   burst: state.burst,
   unlocked: state.unlocked,
   difficulty: state.difficulty,
+  isReloading: state.isReloading,
 });
 
 const mapDispatch = (dispatch) => ({
@@ -1088,6 +1238,7 @@ const mapDispatch = (dispatch) => ({
   setBurst: (burst) => dispatch(setBurst(burst)),
   unlockGun: (gun) => dispatch(unlockGun(gun)),
   setDifficulty: (difficulty) => dispatch(setDifficulty(difficulty)),
+  setReloading: (reloading) => dispatch(setReloading(reloading)),
 });
 
 module.exports = connect(mapState, mapDispatch)(HelloWorldSceneAR);

@@ -20,6 +20,7 @@ import {
   TouchableNativeFeedback,
   Platform,
   Image,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import { ViroVRSceneNavigator, ViroARSceneNavigator } from 'react-viro';
@@ -227,49 +228,80 @@ class Menu extends Component {
             )}
           </View>
         </View>
-        {Platform.OS === 'ios' && (
-          <View
-            style={{
-              top: '80%',
-              position: 'absolute',
-              zIndex: 1000,
-              elevation: 1000,
-              width: '100%',
-            }}
-          >
-            {this.props.insideShootingRange ? (
-              <TouchableHighlight
-                style={{
-                  height: 80,
-                  backgroundColor: 'red',
-                  width: 80,
-                  borderRadius: 40,
-                  elevation: 100000,
-                  borderColor: 'white',
-                  borderWidth: 2,
-                  left: '40%',
-                }}
-                underlayColor={'gray'}
-                onPress={() => {
-                  if (this.props.canShoot) {
-                    this.props.setFiring(true);
-                  }
-                }}
-              >
-                <Text
+        <View
+          style={{
+            top: '80%',
+            position: 'absolute',
+            zIndex: 1000,
+            elevation: 1000,
+            width: '100%',
+          }}
+        >
+          {this.props.insideShootingRange ? (
+            <>
+              {!this.props.isReloading ? (
+                <TouchableHighlight
                   style={{
-                    color: 'white',
-                    alignSelf: 'center',
-                    paddingTop: '37%',
-                    margin: 0,
+                    height: 80,
+                    backgroundColor: this.props.canShoot ? 'red' : 'gray',
+                    width: 80,
+                    position: 'absolute',
+                    borderRadius: 40,
+                    elevation: 100000,
+                    borderColor: 'white',
+                    borderWidth: 2,
+                    left: '40%',
+                  }}
+                  underlayColor={this.props.canShoot ? 'red' : 'gray'}
+                  onPress={() => {
+                    if (this.props.canShoot) {
+                      this.props.setFiring(true);
+                    }
                   }}
                 >
-                  Shoot
-                </Text>
-              </TouchableHighlight>
-            ) : null}
-          </View>
-        )}
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontSize: 20,
+                      fontWeight: '800',
+                      alignSelf: 'center',
+                      paddingTop: '33%',
+                      margin: 0,
+                    }}
+                  >
+                    Shoot
+                  </Text>
+                </TouchableHighlight>
+              ) : (
+                <TouchableOpacity
+                  style={{
+                    height: 80,
+                    backgroundColor: 'blue',
+                    width: 80,
+                    borderRadius: 40,
+                    elevation: 100000,
+                    borderColor: 'white',
+                    borderWidth: 2,
+                    left: '40%',
+                  }}
+                  underlayColor={'blue'}
+                  activeOpacity={0.5}
+                >
+                  <Text
+                    style={{
+                      color: 'white',
+                      alignSelf: 'center',
+                      paddingTop: '37%',
+                      margin: 0,
+                    }}
+                  >
+                    Reloading!
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </>
+          ) : null}
+        </View>
         <ViroARSceneNavigator
           style={{ position: 'relative' }}
           {...this.state.sharedProps}
@@ -333,6 +365,7 @@ var localStyles = StyleSheet.create({
     fontSize: 25,
   },
   buttonText: {
+    paddingTop: '2%',
     color: '#fff',
     textAlign: 'center',
     fontSize: 25,
@@ -381,6 +414,7 @@ const mapState = (state) => ({
   timer: state.timer,
   burst: state.burst,
   difficulty: state.difficulty,
+  isReloading: state.isReloading,
 });
 
 module.exports = connect(mapState, mapDispatch)(Menu);
