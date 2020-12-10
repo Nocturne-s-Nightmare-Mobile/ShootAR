@@ -68,6 +68,29 @@ export default class HelloWorldSceneAR extends Component {
       bulletPosition: [0.02, -0.06, -0.15],
       shotSound: false,
       BRShotSound: false,
+      akShotSound: [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+      ],
+      akShotSoundIndex: 0,
       explosionSound: false,
       update: true,
       currentAnim: "",
@@ -96,6 +119,8 @@ export default class HelloWorldSceneAR extends Component {
     this.startGame = this.startGame.bind(this);
     this.reload = this.reload.bind(this);
     this.stopReloadSound = this.stopReloadSound.bind(this);
+    this.loopAkShotSounds = this.loopAkShotSounds.bind(this);
+    this.stopAkShotSound = this.stopAkShotSound.bind(this);
   }
 
   componentDidMount() {
@@ -270,12 +295,15 @@ export default class HelloWorldSceneAR extends Component {
           this.props.setCanShoot(false);
           this.props.setFiring(false);
           this.props.setBurst(true);
+          Vibration.vibrate(10);
 
           this.bullets.push(this.renderBullet(velocity));
           setTimeout(() => {
+            Vibration.vibrate(10);
             this.props.setFiring(true);
           }, 100);
           setTimeout(() => {
+            Vibration.vibrate(10);
             this.props.setFiring(true);
           }, 200);
           setTimeout(() => {
@@ -299,6 +327,7 @@ export default class HelloWorldSceneAR extends Component {
         !this.state.isReloading
       ) {
         const velocity = forward.map((vector) => 20 * vector);
+        Vibration.vibrate(10);
         this.props.selected.name === "handgun" &&
           this.setState({
             ...this.state,
@@ -306,12 +335,14 @@ export default class HelloWorldSceneAR extends Component {
             currentAnim: "recoil",
           });
 
-        this.props.selected.name === "Ak" &&
+        if (this.props.selected.name === "Ak") {
           this.setState({
             ...this.state,
-            shotSound: true,
             currentAnim: "AkRecoil",
           });
+          this.loopAkShotSounds();
+        }
+
         this.props.setClip(this.props.clip - 1);
         this.props.setCanShoot(false);
         this.props.setFiring(false);
@@ -329,6 +360,66 @@ export default class HelloWorldSceneAR extends Component {
           this.targets.push(this.renderTarget(i));
         }
       }
+    }
+  }
+
+  loopAkShotSounds() {
+    if (this.state.akShotSoundIndex === 19) {
+      const newAkShotSoundArr = [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+      ];
+      this.setState({
+        akShotSoundIndex: 1,
+        akShotSound: newAkShotSoundArr,
+      });
+    } else {
+      const newAkShotSoundArr = [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+      ];
+      newAkShotSoundArr[this.state.akShotSoundIndex] = true;
+      const newIndex = this.state.akShotSoundIndex + 1;
+      this.setState({
+        akShotSoundIndex: newIndex,
+        akShotSound: newAkShotSoundArr,
+      });
     }
   }
 
@@ -367,6 +458,33 @@ export default class HelloWorldSceneAR extends Component {
     this.setState({ shotSound: false });
   }
 
+  stopAkShotSound() {
+    this.setState({
+      akShotSound: [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+      ],
+    });
+  }
+
   stopBRShotSound() {
     this.setState({ BRShotSound: false });
   }
@@ -381,13 +499,9 @@ export default class HelloWorldSceneAR extends Component {
 
   pickRandomSong() {
     const random = Math.floor(Math.random() * 7);
-    const newSongs = [...this.state.songs];
-    if (newSongs[random]) {
-      this.pickRandomSong();
-    } else {
-      newSongs[random] = true;
-      this.setState({ songs: [...newSongs] });
-    }
+    const newSongs = [false, false, false, false, false, false, false];
+    newSongs[random] = true;
+    this.setState({ songs: [...newSongs] });
   }
 
   stopBattlefield() {
@@ -427,6 +541,17 @@ export default class HelloWorldSceneAR extends Component {
           volume={0.6}
           onFinish={this.stopShotSound}
         />
+        {this.state.akShotSound.map((map, idx) => {
+          return (
+            <ViroSound
+              source={require("./audio/akShot.mp3")}
+              loop={false}
+              paused={!this.state.akShotSound[idx]}
+              volume={0.6}
+              onFinish={this.stopAkShotSound}
+            />
+          );
+        })}
         <ViroSound
           source={require("./audio/BRShot.mp3")}
           loop={false}
@@ -444,49 +569,49 @@ export default class HelloWorldSceneAR extends Component {
         />
         <ViroSound
           source={require("./audio/song.mp3")}
-          loop={false}
+          loop={this.state.songs[0]}
           paused={!this.state.songs[0]}
           volume={0.25}
           onFinish={this.stopSong}
         />
         <ViroSound
           source={require("./audio/song2.m4a")}
-          loop={false}
+          loop={this.state.songs[1]}
           paused={!this.state.songs[1]}
           volume={0.25}
           onFinish={this.stopSong}
         />
         <ViroSound
           source={require("./audio/song3.m4a")}
-          loop={false}
+          loop={this.state.songs[2]}
           paused={!this.state.songs[2]}
           volume={0.25}
           onFinish={this.stopSong}
         />
         <ViroSound
           source={require("./audio/song4.mp3")}
-          loop={false}
+          loop={this.state.songs[3]}
           paused={!this.state.songs[3]}
           volume={0.2}
           onFinish={this.stopSong}
         />
         <ViroSound
           source={require("./audio/song5.mp3")}
-          loop={false}
+          loop={this.state.songs[4]}
           paused={!this.state.songs[4]}
           volume={0.35}
           onFinish={this.stopSong}
         />
         <ViroSound
           source={require("./audio/song6.mp3")}
-          loop={false}
+          loop={this.state.songs[5]}
           paused={!this.state.songs[5]}
           volume={0.2}
           onFinish={this.stopSong}
         />
         <ViroSound
           source={require("./audio/song7.mp3")}
-          loop={false}
+          loop={this.state.songs[6]}
           paused={!this.state.songs[6]}
           volume={0.2}
           onFinish={this.stopSong}
@@ -909,9 +1034,9 @@ ViroAnimations.registerAnimations({
     properties: {
       rotateX: 353,
       rotateY: 185,
-      rotateZ: 260,
+      rotateZ: 270,
       positionX: 0.021,
-      positionY: -0.075,
+      positionY: -0.045,
       positionZ: -0.125,
     },
     easing: "easeOut",
@@ -919,9 +1044,9 @@ ViroAnimations.registerAnimations({
   },
   AkReloadMiddle: {
     properties: {
-      rotateX: 0,
-      rotateY: 180,
-      rotateZ: 265,
+      rotateX: 353,
+      rotateY: 185,
+      rotateZ: 270,
     },
     easing: "easeOut",
     duration: 2000,
