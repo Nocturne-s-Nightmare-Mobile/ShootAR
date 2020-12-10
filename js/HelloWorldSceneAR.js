@@ -18,6 +18,7 @@ import {
   setBurst,
   unlockGun,
   setDifficulty,
+  setReloading,
 } from './store';
 
 import { connect } from 'react-redux';
@@ -74,7 +75,7 @@ export default class HelloWorldSceneAR extends Component {
       magAnim: '',
       songs: [false, false, false, false, false, false, false],
       battlefield: [false, false],
-      isReloading: false,
+      // isReloading: false,
       reloadSound: false,
       scene: 'building',
       bursted: false,
@@ -264,65 +265,68 @@ export default class HelloWorldSceneAR extends Component {
     // if (this.state.isReloading) {
     //   this.props.setCanShoot(false);
     //   this.props.setFiring(false);
-    if (this.props.clip === 0) {
-      this.props.setCanShoot(false);
-      this.setState({ isReloading: true, currentAnim: 'reload' });
-      this.props.setFiring(false);
-      this.reload();
-    } else if (
-      this.props.firing &&
-      this.props.clip > 0 &&
-      !this.state.isReloading &&
-      this.props.selected.type === 'burst'
-    ) {
-      const velocity = forward.map((vector) => 20 * vector);
-      if (!this.props.burst) {
+    if (!this.props.isReloading) {
+      if (this.props.clip === 0) {
+        this.props.setCanShoot(false);
+        this.props.setReloading(true);
+        this.setState({ currentAnim: 'reload' });
+        this.props.setFiring(false);
+        this.reload();
+      } else if (
+        this.props.firing &&
+        this.props.clip > 0 &&
+        !this.props.isReloading &&
+        this.props.selected.type === 'burst'
+      ) {
+        const velocity = forward.map((vector) => 20 * vector);
+        if (!this.props.burst) {
+          this.props.setClip(this.props.clip - 1);
+          this.props.setCanShoot(false);
+          this.props.setFiring(false);
+          this.props.setBurst(true);
+          this.props.setText(this.props.burst);
+
+          this.bullets.push(this.renderBullet(velocity));
+          setTimeout(() => {
+            this.props.setFiring(true);
+          }, 100);
+          setTimeout(() => {
+            this.props.setFiring(true);
+          }, 200);
+          setTimeout(() => {
+            this.props.setCanShoot(true);
+            this.props.setBurst(false);
+          }, 1000);
+        } else if (this.props.firing) {
+          this.props.setClip(this.props.clip - 1);
+          this.bullets.push(this.renderBullet(velocity));
+          this.props.setFiring(false);
+        }
+      } else if (
+        this.props.firing &&
+        this.props.canShoot &&
+        this.props.clip > 0 &&
+        !this.props.isReloading
+      ) {
+        const velocity = forward.map((vector) => 20 * vector);
+        this.setState({
+          ...this.state,
+          shotSound: true,
+          currentAnim: 'recoil',
+        });
         this.props.setClip(this.props.clip - 1);
         this.props.setCanShoot(false);
         this.props.setFiring(false);
-        this.props.setBurst(true);
-        this.props.setText(this.props.burst);
-
         this.bullets.push(this.renderBullet(velocity));
         setTimeout(() => {
-          this.props.setFiring(true);
-        }, 100);
-        setTimeout(() => {
-          this.props.setFiring(true);
-        }, 200);
-        setTimeout(() => {
+          this.setState({
+            ...this.state,
+            currentAnim: '',
+            shotSound: false,
+          });
           this.props.setCanShoot(true);
-          this.props.setBurst(false);
-        }, 1000);
-      } else if (this.props.firing) {
-        this.props.setClip(this.props.clip - 1);
-        this.bullets.push(this.renderBullet(velocity));
-        this.props.setFiring(false);
+        }, this.props.selected.timeout);
       }
-    } else if (
-      this.props.firing &&
-      this.props.canShoot &&
-      this.props.clip > 0 &&
-      !this.state.isReloading
-    ) {
-      const velocity = forward.map((vector) => 20 * vector);
-      this.setState({
-        ...this.state,
-        shotSound: true,
-        currentAnim: 'recoil',
-      });
-      this.props.setClip(this.props.clip - 1);
-      this.props.setCanShoot(false);
-      this.props.setFiring(false);
-      this.bullets.push(this.renderBullet(velocity));
-      setTimeout(() => {
-        this.setState({
-          ...this.state,
-          currentAnim: '',
-          shotSound: false,
-        });
-        this.props.setCanShoot(true);
-      }, this.props.selected.timeout);
     }
   }
 
@@ -342,8 +346,8 @@ export default class HelloWorldSceneAR extends Component {
       this.props.setCanShoot(true);
     }, 2000);
     setTimeout(() => {
+      this.props.setReloading(false);
       this.setState({
-        isReloading: false,
         magAnim: '',
       });
     }, 3000);
@@ -569,7 +573,7 @@ export default class HelloWorldSceneAR extends Component {
               }
             />
             <ViroSphere
-              position={[-0.4, 1.7, -10]}
+              position={[-0.4, 1.75, -10]}
               radius={0.3}
               materials={['gold']}
               physicsBody={{
@@ -582,7 +586,7 @@ export default class HelloWorldSceneAR extends Component {
               onCollision={() => this.props.setDifficulty(['Normal', 'gold'])}
             />
             <ViroSphere
-              position={[0.4, 1.7, -10]}
+              position={[0.4, 1.75, -10]}
               radius={0.3}
               materials={['redMetal']}
               physicsBody={{
@@ -1012,6 +1016,7 @@ const mapState = (state) => ({
   burst: state.burst,
   unlocked: state.unlocked,
   difficulty: state.difficulty,
+  isReloading: state.isReloading,
 });
 
 const mapDispatch = (dispatch) => ({
@@ -1027,6 +1032,7 @@ const mapDispatch = (dispatch) => ({
   setBurst: (burst) => dispatch(setBurst(burst)),
   unlockGun: (gun) => dispatch(unlockGun(gun)),
   setDifficulty: (difficulty) => dispatch(setDifficulty(difficulty)),
+  setReloading: (reloading) => dispatch(setReloading(reloading)),
 });
 
 module.exports = connect(mapState, mapDispatch)(HelloWorldSceneAR);

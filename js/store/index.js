@@ -21,12 +21,13 @@ let defaultState = {
   gameStarted: false,
   insideShootingRange: true,
   unlocked: {
-    HaloBR: false,
-    Ak: false,
+    HaloBR: true,
+    Ak: true,
   },
   score: 0,
   clip: 8,
   timer: 60,
+  isReloading: false,
   selected: {
     source: handgun,
     type: 'semi',
@@ -41,6 +42,12 @@ let defaultState = {
     animation: '',
   },
 };
+
+const SET_RELOADING = 'SET_RELOADING';
+export const setReloading = (reloading) => ({
+  type: SET_RELOADING,
+  reloading,
+});
 
 const SET_DIFFICULTY = 'SET_DIFFICULTY';
 export const setDifficulty = (difficulty) => ({
@@ -190,6 +197,8 @@ function gameReducer(state = defaultState, action) {
       return { ...state, unlocked: { ...state.unlocked, [action.gun]: true } };
     case SET_DIFFICULTY:
       return { ...state, difficulty: action.difficulty };
+    case SET_RELOADING:
+      return { ...state, isReloading: action.reloading };
     default:
       return state;
   }

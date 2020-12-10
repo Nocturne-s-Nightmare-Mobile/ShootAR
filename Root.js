@@ -20,6 +20,7 @@ import {
   TouchableNativeFeedback,
   Platform,
   Image,
+  TouchableWithoutFeedback,
 } from 'react-native';
 
 import { ViroVRSceneNavigator, ViroARSceneNavigator } from 'react-viro';
@@ -238,35 +239,67 @@ class Menu extends Component {
             }}
           >
             {this.props.insideShootingRange ? (
-              <TouchableHighlight
-                style={{
-                  height: 80,
-                  backgroundColor: 'red',
-                  width: 80,
-                  borderRadius: 40,
-                  elevation: 100000,
-                  borderColor: 'white',
-                  borderWidth: 2,
-                  left: '40%',
-                }}
-                underlayColor={'gray'}
-                onPress={() => {
-                  if (this.props.canShoot) {
-                    this.props.setFiring(true);
-                  }
-                }}
-              >
-                <Text
-                  style={{
-                    color: 'white',
-                    alignSelf: 'center',
-                    paddingTop: '37%',
-                    margin: 0,
-                  }}
-                >
-                  Shoot
-                </Text>
-              </TouchableHighlight>
+              <>
+                {!this.props.isReloading ? (
+                  <TouchableHighlight
+                    style={{
+                      height: 80,
+                      backgroundColor: this.props.canShoot ? 'red' : 'gray',
+                      width: 80,
+                      borderRadius: 40,
+                      elevation: 100000,
+                      borderColor: 'white',
+                      borderWidth: 2,
+                      left: '40%',
+                    }}
+                    underlayColor={this.props.canShoot ? 'red' : 'gray'}
+                    onPress={() => {
+                      if (this.props.canShoot) {
+                        this.props.setFiring(true);
+                      }
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontSize: 20,
+                        fontWeight: '800',
+                        alignSelf: 'center',
+                        paddingTop: '33%',
+                        margin: 0,
+                      }}
+                    >
+                      Shoot
+                    </Text>
+                  </TouchableHighlight>
+                ) : (
+                  <TouchableOpacity
+                    style={{
+                      height: 80,
+                      backgroundColor: 'blue',
+                      width: 80,
+                      borderRadius: 40,
+                      elevation: 100000,
+                      borderColor: 'white',
+                      borderWidth: 2,
+                      left: '40%',
+                    }}
+                    underlayColor={'blue'}
+                    activeOpacity={0.5}
+                  >
+                    <Text
+                      style={{
+                        color: 'white',
+                        alignSelf: 'center',
+                        paddingTop: '37%',
+                        margin: 0,
+                      }}
+                    >
+                      Reloading!
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </>
             ) : null}
           </View>
         )}
@@ -381,6 +414,7 @@ const mapState = (state) => ({
   timer: state.timer,
   burst: state.burst,
   difficulty: state.difficulty,
+  isReloading: state.isReloading,
 });
 
 module.exports = connect(mapState, mapDispatch)(Menu);
