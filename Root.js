@@ -269,7 +269,7 @@ class Menu extends Component {
                       margin: 0,
                     }}
                   >
-                    Shoot
+                    Shoo
                   </Text>
                 </TouchableHighlight>
               ) : (
