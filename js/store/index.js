@@ -7,26 +7,25 @@ const akSound = require('../audio/akShot.mp3');
 const brSound = require('../audio/BRShot.mp3');
 
 let defaultState = {
-  // hasARInitialized: false,
   text: 'Initializing AR...',
   firing: false,
-  // bulletPosition: [0.02, -0.06, -0.15],
   hits: 0,
-  // shotSound: false,
-  // explosionSound: false,
-  // update: true,
   canShoot: true,
-  // currentAnim: '',
-  // songs: [false, false, false, false, false, false, false],
-  // battlefield: [false, false],
   difficulty: ['Normal', 'gold'],
   burst: false,
   gameStarted: false,
   insideShootingRange: true,
+  //Comment out false unlocked values and uncomment true ones below to unlock
+  //guns without earning it.
   unlocked: {
     HaloBR: false,
     Ak: false,
   },
+  //Uncomment below and comment above to unlock guns
+  // unlocked: {
+  //   HaloBR: true,
+  //   Ak: true,
+  // },
   score: 0,
   clip: 8,
   timer: 60,
@@ -47,36 +46,6 @@ let defaultState = {
     soundSource: handgunSound,
   },
 };
-
-const SET_RELOADING = 'SET_RELOADING';
-export const setReloading = (reloading) => ({
-  type: SET_RELOADING,
-  reloading,
-});
-
-const SET_DIFFICULTY = 'SET_DIFFICULTY';
-export const setDifficulty = (difficulty) => ({
-  type: SET_DIFFICULTY,
-  difficulty,
-});
-
-const UNLOCK_GUN = 'UNLOCK_GUN';
-export const unlockGun = (gun) => ({
-  type: UNLOCK_GUN,
-  gun,
-});
-
-const GET_INSIDE_SHOOTING_RANGE = 'GET_INSIDE_SHOOTING_RANGE';
-export const getInsidePortal = (insideShootingRange) => ({
-  type: GET_INSIDE_SHOOTING_RANGE,
-  insideShootingRange,
-});
-
-const SET_BURST = 'SET_BURST';
-export const setBurst = (burst) => ({
-  type: SET_BURST,
-  burst,
-});
 
 export const guns = {
   handgun: {
@@ -125,6 +94,36 @@ export const guns = {
     soundSource: brSound,
   },
 };
+
+const SET_RELOADING = 'SET_RELOADING';
+export const setReloading = (reloading) => ({
+  type: SET_RELOADING,
+  reloading,
+});
+
+const SET_DIFFICULTY = 'SET_DIFFICULTY';
+export const setDifficulty = (difficulty) => ({
+  type: SET_DIFFICULTY,
+  difficulty,
+});
+
+const UNLOCK_GUN = 'UNLOCK_GUN';
+export const unlockGun = (gun) => ({
+  type: UNLOCK_GUN,
+  gun,
+});
+
+const GET_INSIDE_SHOOTING_RANGE = 'GET_INSIDE_SHOOTING_RANGE';
+export const getInsidePortal = (insideShootingRange) => ({
+  type: GET_INSIDE_SHOOTING_RANGE,
+  insideShootingRange,
+});
+
+const SET_BURST = 'SET_BURST';
+export const setBurst = (burst) => ({
+  type: SET_BURST,
+  burst,
+});
 
 const SET_SELECTED = 'SET_SELECTED';
 export const setSelected = (selected) => ({
