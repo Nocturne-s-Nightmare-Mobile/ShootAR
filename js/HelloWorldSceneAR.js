@@ -27,7 +27,6 @@ import {
   ViroARScene,
   ViroNode,
   ViroText,
-  ViroConstants,
   ViroBox,
   ViroMaterials,
   Viro3DObject,
@@ -35,13 +34,9 @@ import {
   ViroSpotLight,
   ViroARCamera,
   ViroSphere,
-  ViroButton,
   ViroSound,
   ViroAnimations,
   ViroParticleEmitter,
-  ViroFlexView,
-  ViroImage,
-  ViroSkyBox,
   Viro360Image,
 } from 'react-viro';
 
@@ -80,7 +75,6 @@ export default class HelloWorldSceneAR extends Component {
       magAnim: '',
       songs: [false, false, false, false, false, false, false],
       battlefield: [false, false],
-      // isReloading: false,
       reloadSound: false,
       scene: 'building',
       bursted: false,
@@ -341,7 +335,6 @@ export default class HelloWorldSceneAR extends Component {
         const velocity = forward.map((vector) => 20 * vector);
         this.setState({
           ...this.state,
-          // BRShotSound: true,
           currentAnim: 'BRRecoil',
         });
         if (!this.props.burst) {
@@ -349,16 +342,16 @@ export default class HelloWorldSceneAR extends Component {
           this.props.setCanShoot(false);
           this.props.setFiring(false);
           this.props.setBurst(true);
-          // Vibration.vibrate(10);
+          Vibration.vibrate(10);
 
           this.bullets.push(this.renderBullet(velocity));
           this.loopShotSounds();
           setTimeout(() => {
-            // Vibration.vibrate(10);
+            Vibration.vibrate(10);
             this.props.setFiring(true);
           }, 100);
           setTimeout(() => {
-            // Vibration.vibrate(10);
+            Vibration.vibrate(10);
             this.props.setFiring(true);
           }, 200);
           setTimeout(() => {
@@ -382,7 +375,7 @@ export default class HelloWorldSceneAR extends Component {
         !this.state.isReloading
       ) {
         const velocity = forward.map((vector) => 20 * vector);
-        // Vibration.vibrate(10);
+        Vibration.vibrate(10);
         this.props.selected.name === 'handgun' &&
           this.setState({
             ...this.state,
