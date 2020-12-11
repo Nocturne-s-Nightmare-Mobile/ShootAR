@@ -184,7 +184,7 @@ export default class HelloWorldSceneAR extends Component {
       explosionSound: true,
     });
     this.props.setHits(this.props.hits + 1);
-    this.targetBoom(point);
+    // this.targetBoom(point);
   }
 
   startGame() {
@@ -345,20 +345,20 @@ export default class HelloWorldSceneAR extends Component {
           currentAnim: 'BRRecoil',
         });
         if (!this.props.burst) {
-          this.props.setClip(this.props.clip - 1);
+          this.props.gameStarted && this.props.setClip(this.props.clip - 1);
           this.props.setCanShoot(false);
           this.props.setFiring(false);
           this.props.setBurst(true);
-          Vibration.vibrate(10);
+          // Vibration.vibrate(10);
 
           this.bullets.push(this.renderBullet(velocity));
           this.loopShotSounds();
           setTimeout(() => {
-            Vibration.vibrate(10);
+            // Vibration.vibrate(10);
             this.props.setFiring(true);
           }, 100);
           setTimeout(() => {
-            Vibration.vibrate(10);
+            // Vibration.vibrate(10);
             this.props.setFiring(true);
           }, 200);
           setTimeout(() => {
@@ -371,7 +371,7 @@ export default class HelloWorldSceneAR extends Component {
               });
           }, this.props.selected.timeout);
         } else if (this.props.firing) {
-          this.props.setClip(this.props.clip - 1);
+          this.props.gameStarted && this.props.setClip(this.props.clip - 1);
           this.bullets.push(this.renderBullet(velocity));
           this.props.setFiring(false);
         }
@@ -382,7 +382,7 @@ export default class HelloWorldSceneAR extends Component {
         !this.state.isReloading
       ) {
         const velocity = forward.map((vector) => 20 * vector);
-        Vibration.vibrate(10);
+        // Vibration.vibrate(10);
         this.props.selected.name === 'handgun' &&
           this.setState({
             ...this.state,
@@ -397,7 +397,7 @@ export default class HelloWorldSceneAR extends Component {
           });
         }
         this.loopShotSounds();
-        this.props.setClip(this.props.clip - 1);
+        this.props.gameStarted && this.props.setClip(this.props.clip - 1);
         this.props.setCanShoot(false);
         this.props.setFiring(false);
         this.bullets.push(this.renderBullet(velocity));
@@ -685,7 +685,6 @@ export default class HelloWorldSceneAR extends Component {
                 useGravity: false,
                 velocity: [0, 0, 0],
               }}
-              // transformBehaviors={['billboard']}
             />
             <ViroSphere
               position={[0, 0, -5]}
@@ -782,7 +781,7 @@ export default class HelloWorldSceneAR extends Component {
                 selected = guns['handgun'];
                 this.props.setClip(selected.clip);
                 this.setState({
-                  currentAnim: 'setPlace',
+                  currentAnim: '',
                 });
               }}
             />
@@ -813,7 +812,7 @@ export default class HelloWorldSceneAR extends Component {
                     selected = guns['Ak'];
                     this.props.setClip(selected.clip);
                     this.setState({
-                      currentAnim: 'setPlace',
+                      currentAnim: '',
                     });
                   }}
                 />
@@ -918,7 +917,7 @@ export default class HelloWorldSceneAR extends Component {
                     selected = guns['handgun'];
                     this.props.setClip(selected.clip);
                     this.setState({
-                      currentAnim: 'setPlace',
+                      currentAnim: '',
                     });
                   }}
                 />
@@ -950,7 +949,7 @@ export default class HelloWorldSceneAR extends Component {
                     selected = guns['Ak'];
                     this.props.setClip(selected.clip);
                     this.setState({
-                      currentAnim: 'setPlace',
+                      currentAnim: '',
                     });
                   }}
                 />
@@ -996,7 +995,7 @@ export default class HelloWorldSceneAR extends Component {
                     selected = guns['HaloBR'];
                     this.props.setClip(selected.clip);
                     this.setState({
-                      currentAnim: 'setPlace',
+                      currentAnim: '',
                     });
                   }}
                 />
@@ -1072,21 +1071,20 @@ ViroAnimations.registerAnimations({
   AkRecoilUp: {
     properties: {
       positionX: 0.021,
-      positionY: -0.075 + 0.01,
-      positionZ: -0.125 + 0.05,
+      positionY: -0.075 + 0.005,
+      positionZ: -0.125 + 0.015,
     },
     easing: 'easeOut',
-    duration: 40,
+    duration: 25,
   },
   AkRecoilDown: {
-    // properties: { positionX: 0.02, positionY: -0.1, positionZ: -0.2 },
     properties: {
-      positionX: 0.02,
-      positionY: -0.069,
-      positionZ: -0.18,
+      positionX: 0.021,
+      positionY: -0.075,
+      positionZ: -0.125,
     },
     easing: 'easeIn',
-    duration: 40,
+    duration: 25,
   },
   AkRecoil: [['AkRecoilUp', 'AkRecoilDown']],
 });
@@ -1118,7 +1116,7 @@ ViroAnimations.registerAnimations({
   reloadMiddle: {
     properties: { rotateX: 0, rotateY: 90, rotateZ: 265 },
     easing: 'easeOut',
-    duration: 2000,
+    duration: 1900,
   },
   reloadEnd: {
     properties: {
@@ -1155,7 +1153,7 @@ ViroAnimations.registerAnimations({
       rotateZ: 265,
     },
     easing: 'easeOut',
-    duration: 2000,
+    duration: 1900,
   },
   BRReloadEnd: {
     properties: {
@@ -1192,7 +1190,7 @@ ViroAnimations.registerAnimations({
       rotateZ: 270,
     },
     easing: 'easeOut',
-    duration: 2000,
+    duration: 1900,
   },
   AkReloadEnd: {
     properties: {
