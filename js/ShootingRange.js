@@ -437,6 +437,7 @@ export default class ShootingRange extends Component {
         currentAnim: '',
         canReload: true,
       });
+      this.targetExplosion = [];
       this.props.setFiring(false);
       this.props.setClip(this.props.selected.clip);
       this.props.setCanShoot(true);
