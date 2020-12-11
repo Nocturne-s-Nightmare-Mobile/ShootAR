@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { StyleSheet, Vibration, Platform } from 'react-native';
+import { StyleSheet, Vibration, Platform } from "react-native";
 
 import {
   setFiring,
@@ -19,9 +19,9 @@ import {
   unlockGun,
   setDifficulty,
   setReloading,
-} from './store';
+} from "./store";
 
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 
 import {
   ViroARScene,
@@ -38,25 +38,26 @@ import {
   ViroAnimations,
   ViroParticleEmitter,
   Viro360Image,
-} from 'react-viro';
+} from "react-viro";
+import animations from "./animations";
 
-const handgun = require('./res/gun.vrx');
-const Ak = require('./res/Ak.vrx');
-const HaloBR = require('./res/HaloBR.vrx');
+const handgun = require("./res/gun.vrx");
+const Ak = require("./res/Ak.vrx");
+const HaloBR = require("./res/HaloBR.vrx");
 
 let selected = {
-  name: 'handgun',
+  name: "handgun",
   source: handgun,
   bulletStart: [0.02, -0.06, -0.15],
-  recoilAnim: '',
-  reloadAnim: '',
+  recoilAnim: "",
+  reloadAnim: "",
   timeout: 500,
   clip: 8,
   scale: [0.0003, 0.0003, 0.0003],
   position: [0.02, -0.1, -0.2],
   rotation: [0, 90, 355],
-  animation: '',
-  soundSource: './audio/pistolShot.mp3',
+  animation: "",
+  soundSource: "./audio/pistolShot.mp3",
 };
 
 export default class ShootingRange extends Component {
@@ -69,12 +70,12 @@ export default class ShootingRange extends Component {
       shotSoundIndex: 0,
       explosionSound: false,
       update: true,
-      currentAnim: '',
-      magAnim: '',
+      currentAnim: "",
+      magAnim: "",
       songs: [false, false, false, false, false, false, false],
       battlefield: [false, false],
       reloadSound: false,
-      scene: 'building',
+      scene: "building",
       bursted: false,
       canReload: true,
     };
@@ -106,13 +107,13 @@ export default class ShootingRange extends Component {
   }
 
   _onLoadStart() {
-    console.log('OBJ loading has started');
+    console.log("OBJ loading has started");
   }
   _onLoadEnd() {
-    console.log('OBJ loading has finished');
+    console.log("OBJ loading has finished");
   }
   _onError(event) {
-    console.log('OBJ loading failed with error: ' + event.nativeEvent.error);
+    console.log("OBJ loading failed with error: " + event.nativeEvent.error);
   }
 
   targetBoom(position) {
@@ -126,7 +127,7 @@ export default class ShootingRange extends Component {
         duration={300}
         fixedToEmitter={true}
         image={{
-          source: require('./res/explosion.png'),
+          source: require("./res/explosion.png"),
           height: 0.2,
           width: 0.11,
         }}
@@ -138,7 +139,7 @@ export default class ShootingRange extends Component {
         particleAppearance={{
           opacity: {
             initialRange: [10, 10],
-            factor: 'Time',
+            factor: "Time",
             interpolation: [
               { endValue: 0.5, interval: [0, 500] },
               { endValue: 1.0, interval: [0, 500] },
@@ -149,7 +150,7 @@ export default class ShootingRange extends Component {
               [1, 1, 1],
               [4, 4, 4],
             ],
-            factor: 'Distance',
+            factor: "Distance",
             interpolation: [
               { endValue: [3, 3, 3], interval: [0, 400] },
               { endValue: [0, 0, 0], interval: [400, 500] },
@@ -197,11 +198,11 @@ export default class ShootingRange extends Component {
     }, 1000);
     setTimeout(() => {
       clearInterval(x);
-      if (this.props.hits >= 25 && !this.props.unlocked['Ak']) {
-        this.props.unlockGun('Ak');
+      if (this.props.hits >= 25 && !this.props.unlocked["Ak"]) {
+        this.props.unlockGun("Ak");
       }
-      if (this.props.hits >= 35 && !this.props.unlocked['HaloBR']) {
-        this.props.unlockGun('HaloBR');
+      if (this.props.hits >= 35 && !this.props.unlocked["HaloBR"]) {
+        this.props.unlockGun("HaloBR");
       }
       this.props.setScore(this.props.hits);
       this.props.setHits(0);
@@ -209,23 +210,23 @@ export default class ShootingRange extends Component {
       this.props.setTimer(60);
       this.targets = [];
       this.bullets = [];
-      if (this.state.scene === 'building') {
-        this.setState({ scene: 'galaxy' });
+      if (this.state.scene === "building") {
+        this.setState({ scene: "galaxy" });
       } else {
-        this.setState({ scene: 'building' });
+        this.setState({ scene: "building" });
       }
     }, 60000);
   }
 
   renderTarget(num) {
     let posDifficulty;
-    if (this.props.difficulty[0] === 'Normal') {
+    if (this.props.difficulty[0] === "Normal") {
       posDifficulty = [5, 3];
-    } else if (this.props.difficulty[0] === 'Hard') {
+    } else if (this.props.difficulty[0] === "Hard") {
       posDifficulty = [3, 7];
-    } else if (this.props.difficulty[0] === 'Easy') {
+    } else if (this.props.difficulty[0] === "Easy") {
       posDifficulty = [0, 2.5];
-    } else if (this.props.difficulty[0] === 'Expert') {
+    } else if (this.props.difficulty[0] === "Expert") {
       posDifficulty = [5, 10];
     }
     let posX =
@@ -239,28 +240,28 @@ export default class ShootingRange extends Component {
     );
     let randomPosition = [posX, posY, posZ];
     const targets = [
-      'bullseyeSphere',
-      'bullseyeSphere2',
-      'bullseyeSphere3',
-      'bullseyeSphere4',
-      'bullseyeSphere5',
-      'bullseyeSphere6',
-      'bullseyeSphere7',
-      'bullseyeSphere8',
-      'bullseyeSphere9',
-      'bullseyeSphere10',
+      "bullseyeSphere",
+      "bullseyeSphere2",
+      "bullseyeSphere3",
+      "bullseyeSphere4",
+      "bullseyeSphere5",
+      "bullseyeSphere6",
+      "bullseyeSphere7",
+      "bullseyeSphere8",
+      "bullseyeSphere9",
+      "bullseyeSphere10",
     ];
     const planets = [
-      'planet1',
-      'planet2',
-      'planet3',
-      'planet4',
-      'planet5',
-      'planet6',
-      'planet7',
-      'planet8',
-      'planet9',
-      'neon',
+      "planet1",
+      "planet2",
+      "planet3",
+      "planet4",
+      "planet5",
+      "planet6",
+      "planet7",
+      "planet8",
+      "planet9",
+      "neon",
     ];
     this.setState((prevState) => ({
       ...this.state,
@@ -272,16 +273,16 @@ export default class ShootingRange extends Component {
         position={randomPosition}
         radius={0.2}
         materials={
-          this.state.scene === 'building' ? targets[num] : planets[num]
+          this.state.scene === "building" ? targets[num] : planets[num]
         }
         physicsBody={{
-          type: 'Static',
+          type: "Static",
           mass: 0,
           useGravity: false,
           velocity: [0, 0, 0],
         }}
         viroTag={`${num}`}
-        transformBehaviors={['billboard']}
+        transformBehaviors={["billboard"]}
       />
     );
   }
@@ -293,13 +294,13 @@ export default class ShootingRange extends Component {
         radius={0.006}
         position={[0.021, -0.06, -0.15]}
         physicsBody={{
-          type: 'Dynamic',
+          type: "Dynamic",
           mass: 10,
           useGravity: false,
           velocity: velocity,
         }}
-        materials={['brass']}
-        viroTag={'bullet'}
+        materials={["brass"]}
+        viroTag={"bullet"}
         highAccuracyEvents={true}
         onCollision={this.hitTarget}
       />
@@ -317,12 +318,12 @@ export default class ShootingRange extends Component {
         this.props.firing &&
         this.props.clip > 0 &&
         !this.state.isReloading &&
-        this.props.selected.type === 'burst'
+        this.props.selected.type === "burst"
       ) {
         const velocity = forward.map((vector) => 20 * vector);
         this.setState({
           ...this.state,
-          currentAnim: 'BRRecoil',
+          currentAnim: "BRRecoil",
         });
         if (!this.props.burst) {
           this.props.gameStarted && this.props.setClip(this.props.clip - 1);
@@ -347,7 +348,7 @@ export default class ShootingRange extends Component {
             !this.state.isReloading &&
               this.setState({
                 ...this.state,
-                currentAnim: '',
+                currentAnim: "",
               });
           }, this.props.selected.timeout);
         } else if (this.props.firing) {
@@ -363,16 +364,16 @@ export default class ShootingRange extends Component {
       ) {
         const velocity = forward.map((vector) => 20 * vector);
         Vibration.vibrate(10);
-        this.props.selected.name === 'handgun' &&
+        this.props.selected.name === "handgun" &&
           this.setState({
             ...this.state,
-            currentAnim: 'recoil',
+            currentAnim: "recoil",
           });
 
-        if (this.props.selected.name === 'Ak') {
+        if (this.props.selected.name === "Ak") {
           this.setState({
             ...this.state,
-            currentAnim: 'AkRecoil',
+            currentAnim: "AkRecoil",
           });
         }
         this.loopShotSounds();
@@ -385,7 +386,7 @@ export default class ShootingRange extends Component {
             !this.state.isReloading &&
               this.setState({
                 ...this.state,
-                currentAnim: '',
+                currentAnim: "",
               });
             this.props.setCanShoot(true);
           }, this.props.selected.timeout + 50);
@@ -406,35 +407,35 @@ export default class ShootingRange extends Component {
   reload() {
     this.props.setReloading(true);
     this.props.setCanShoot(false);
-    this.props.selected.name === 'handgun' &&
+    this.props.selected.name === "handgun" &&
       this.setState({
         isReloading: true,
-        currentAnim: 'reload',
+        currentAnim: "reload",
       });
-    this.props.selected.name === 'HaloBR' &&
+    this.props.selected.name === "HaloBR" &&
       this.setState({
         isReloading: true,
-        currentAnim: 'BRReload',
+        currentAnim: "BRReload",
       });
-    this.props.selected.name === 'Ak' &&
+    this.props.selected.name === "Ak" &&
       this.setState({
         isReloading: true,
-        currentAnim: 'AkReload',
+        currentAnim: "AkReload",
       });
     this.resetShotSound();
     this.props.setFiring(false);
     setTimeout(() => {
       this.setState({
         reloadSound: true,
-        magAnim: 'mag',
+        magAnim: "mag",
       });
     }, 250);
     setTimeout(() => {
       this.props.setReloading(false);
       this.setState({
         isReloading: false,
-        magAnim: '',
-        currentAnim: '',
+        magAnim: "",
+        currentAnim: "",
         canReload: true,
       });
       this.targetExplosion = [];
@@ -492,15 +493,15 @@ export default class ShootingRange extends Component {
         onTrackingUpdated={this.trackingUpdated}
         onCameraTransformUpdate={this.fire}
       >
-        {this.state.scene === 'building' && (
+        {this.state.scene === "building" && (
           <Viro360Image
-            source={require('./res/building.jpg')}
+            source={require("./res/building.jpg")}
             rotation={[0, 28, 0]}
           />
         )}
-        {this.state.scene === 'galaxy' && (
+        {this.state.scene === "galaxy" && (
           <Viro360Image
-            source={require('./res/360galaxy.jpg')}
+            source={require("./res/360galaxy.jpg")}
             rotation={[0, 90, 0]}
           />
         )}
@@ -516,7 +517,7 @@ export default class ShootingRange extends Component {
           );
         })}
         <ViroSound
-          source={require('./audio/explosion.mp3')}
+          source={require("./audio/explosion.mp3")}
           loop={false}
           paused={!this.state.explosionSound}
           volume={0.75}
@@ -524,82 +525,82 @@ export default class ShootingRange extends Component {
           interruptible={true}
         />
         <ViroSound
-          source={require('./audio/song.mp3')}
+          source={require("./audio/song.mp3")}
           loop={this.state.songs[0]}
           paused={!this.state.songs[0]}
           volume={0.25}
           onFinish={this.stopSong}
         />
         <ViroSound
-          source={require('./audio/song2.m4a')}
+          source={require("./audio/song2.m4a")}
           loop={this.state.songs[1]}
           paused={!this.state.songs[1]}
           volume={0.25}
           onFinish={this.stopSong}
         />
         <ViroSound
-          source={require('./audio/song3.m4a')}
+          source={require("./audio/song3.m4a")}
           loop={this.state.songs[2]}
           paused={!this.state.songs[2]}
           volume={0.25}
           onFinish={this.stopSong}
         />
         <ViroSound
-          source={require('./audio/song4.mp3')}
+          source={require("./audio/song4.mp3")}
           loop={this.state.songs[3]}
           paused={!this.state.songs[3]}
           volume={0.2}
           onFinish={this.stopSong}
         />
         <ViroSound
-          source={require('./audio/song5.mp3')}
+          source={require("./audio/song5.mp3")}
           loop={this.state.songs[4]}
           paused={!this.state.songs[4]}
           volume={0.35}
           onFinish={this.stopSong}
         />
         <ViroSound
-          source={require('./audio/song6.mp3')}
+          source={require("./audio/song6.mp3")}
           loop={this.state.songs[5]}
           paused={!this.state.songs[5]}
           volume={0.2}
           onFinish={this.stopSong}
         />
         <ViroSound
-          source={require('./audio/song7.mp3')}
+          source={require("./audio/song7.mp3")}
           loop={this.state.songs[6]}
           paused={!this.state.songs[6]}
           volume={0.2}
           onFinish={this.stopSong}
         />
         <ViroSound
-          source={require('./audio/battlefield.mp3')}
+          source={require("./audio/battlefield.mp3")}
           loop={true}
           paused={!this.state.battlefield[0]}
           volume={0.2}
           onFinish={this.stopBattlefield}
         />
         <ViroSound
-          source={require('./audio/battlefield2.mp3')}
+          source={require("./audio/battlefield2.mp3")}
           loop={true}
           paused={!this.state.battlefield[1]}
           volume={0.1}
           onFinish={this.stopBattlefield}
         />
         <ViroSound
-          source={require('./audio/reload.mp3')}
+          source={require("./audio/reload.mp3")}
           loop={false}
           paused={!this.state.reloadSound}
           volume={0.9}
           onFinish={this.stopReloadSound}
         />
-        <ViroAmbientLight color="#ffffff" intensity={200} />
+        <ViroAmbientLight color='#ffffff' intensity={200} />
         <ViroSpotLight
           innerAngle={5}
           outerAngle={90}
           direction={[0, -0.1, -0.1]}
           position={[0, 3, 1]}
-          color="#ffffff"
+          color='#ffffff'
           castsShadow={true}
         />
         {this.targetExplosion}
@@ -608,8 +609,8 @@ export default class ShootingRange extends Component {
             {/* Magazine */}
             <Viro3DObject
               highAccuracyEvents={true}
-              source={require('./res/Mag_Handgun.vrx')}
-              type="VRX"
+              source={require("./res/Mag_Handgun.vrx")}
+              type='VRX'
               scale={[0.004, 0.004, 0.004]}
               position={[-10, -0.045, -0.11]}
               rotation={[90, 90, 0]}
@@ -622,7 +623,7 @@ export default class ShootingRange extends Component {
             {/* Gun Model */}
             <Viro3DObject
               source={this.props.selected.source}
-              type="VRX"
+              type='VRX'
               scale={this.props.selected.scale}
               position={this.props.selected.position}
               rotation={this.props.selected.rotation}
@@ -632,7 +633,7 @@ export default class ShootingRange extends Component {
                 interruptible: true,
               }}
               onClick={() => {
-                if (this.props.canShoot && Platform.OS !== 'ios') {
+                if (this.props.canShoot && Platform.OS !== "ios") {
                   this.props.setFiring(true);
                 }
               }}
@@ -645,23 +646,23 @@ export default class ShootingRange extends Component {
         ) : (
           <>
             <ViroText
-              text="Shoot to Select Difficulty:"
+              text='Shoot to Select Difficulty:'
               position={[0.1, 2.4, -10]}
               width={3}
               height={2}
               style={{
                 fontSize: 40,
-                textAlign: 'center',
-                fontWeight: '900',
+                textAlign: "center",
+                fontWeight: "900",
               }}
-              transformBehaviors={['billboard']}
+              transformBehaviors={["billboard"]}
             />
             <ViroSphere
               position={[0.05, 2.7, -15]}
               radius={3}
-              materials={['black']}
+              materials={["black"]}
               physicsBody={{
-                type: 'Static',
+                type: "Static",
                 mass: 0,
                 useGravity: false,
                 velocity: [0, 0, 0],
@@ -672,74 +673,74 @@ export default class ShootingRange extends Component {
               radius={0.55}
               materials={[this.props.difficulty[1]]}
               physicsBody={{
-                type: 'Static',
+                type: "Static",
                 mass: 0,
                 useGravity: false,
                 velocity: [0, 0, 0],
               }}
-              transformBehaviors={['billboard']}
-              viroTag={'Start'}
+              transformBehaviors={["billboard"]}
+              viroTag={"Start"}
               onCollision={this.startGame}
             />
             <ViroSphere
               position={[-1.2, 1.3, -10]}
               radius={0.3}
-              materials={['greenMetal']}
+              materials={["greenMetal"]}
               physicsBody={{
-                type: 'Static',
+                type: "Static",
                 mass: 0,
                 useGravity: false,
                 velocity: [0, 0, 0],
               }}
-              transformBehaviors={['billboard']}
+              transformBehaviors={["billboard"]}
               onCollision={() =>
-                this.props.setDifficulty(['Easy', 'greenMetal'])
+                this.props.setDifficulty(["Easy", "greenMetal"])
               }
             />
             <ViroSphere
               position={[-0.4, 1.75, -10]}
               radius={0.3}
-              materials={['gold']}
+              materials={["gold"]}
               physicsBody={{
-                type: 'Static',
+                type: "Static",
                 mass: 0,
                 useGravity: false,
                 velocity: [0, 0, 0],
               }}
-              transformBehaviors={['billboard']}
-              onCollision={() => this.props.setDifficulty(['Normal', 'gold'])}
+              transformBehaviors={["billboard"]}
+              onCollision={() => this.props.setDifficulty(["Normal", "gold"])}
             />
             <ViroSphere
               position={[0.4, 1.75, -10]}
               radius={0.3}
-              materials={['redMetal']}
+              materials={["redMetal"]}
               physicsBody={{
-                type: 'Static',
+                type: "Static",
                 mass: 0,
                 useGravity: false,
                 velocity: [0, 0, 0],
               }}
-              transformBehaviors={['billboard']}
-              onCollision={() => this.props.setDifficulty(['Hard', 'redMetal'])}
+              transformBehaviors={["billboard"]}
+              onCollision={() => this.props.setDifficulty(["Hard", "redMetal"])}
             />
             <ViroSphere
               position={[1.2, 1.3, -10]}
               radius={0.3}
-              materials={['diamondPlate']}
+              materials={["diamondPlate"]}
               physicsBody={{
-                type: 'Static',
+                type: "Static",
                 mass: 0,
                 useGravity: false,
                 velocity: [0, 0, 0],
               }}
-              transformBehaviors={['billboard']}
+              transformBehaviors={["billboard"]}
               onCollision={() =>
-                this.props.setDifficulty(['Expert', 'diamondPlate'])
+                this.props.setDifficulty(["Expert", "diamondPlate"])
               }
             />
             <Viro3DObject
               source={handgun}
-              type="VRX"
+              type='VRX'
               position={[-1.4, 0, -5]}
               scale={[0.0013, 0.0013, 0.0013]}
               rotation={[180, 180, 180]}
@@ -748,29 +749,29 @@ export default class ShootingRange extends Component {
               height={0.9}
               width={1}
               position={[-1.7, 0, -6]}
-              transformBehaviors={['billboard']}
-              materials={['shiny']}
+              transformBehaviors={["billboard"]}
+              materials={["shiny"]}
               physicsBody={{
-                type: 'Static',
+                type: "Static",
                 mass: 0,
                 useGravity: false,
                 velocity: [0, 0, 0],
               }}
               onCollision={() => {
                 this.resetShotSound();
-                this.props.selectGun('handgun');
-                selected = guns['handgun'];
+                this.props.selectGun("handgun");
+                selected = guns["handgun"];
                 this.props.setClip(selected.clip);
                 this.setState({
-                  currentAnim: '',
+                  currentAnim: "",
                 });
               }}
             />
-            {this.props.unlocked['Ak'] ? (
+            {this.props.unlocked["Ak"] ? (
               <>
                 <Viro3DObject
                   source={Ak}
-                  type="VRX"
+                  type='VRX'
                   position={[2, 0, -5]}
                   scale={[0.01, 0.01, 0.01]}
                   rotation={[180, 280, 180]}
@@ -779,21 +780,21 @@ export default class ShootingRange extends Component {
                   height={0.9}
                   width={1.8}
                   position={[2.15, 0, -6]}
-                  transformBehaviors={['billboard']}
-                  materials={['shiny']}
+                  transformBehaviors={["billboard"]}
+                  materials={["shiny"]}
                   physicsBody={{
-                    type: 'Static',
+                    type: "Static",
                     mass: 0,
                     useGravity: false,
                     velocity: [0, 0, 0],
                   }}
                   onCollision={() => {
                     this.resetShotSound();
-                    this.props.selectGun('Ak');
-                    selected = guns['Ak'];
+                    this.props.selectGun("Ak");
+                    selected = guns["Ak"];
                     this.props.setClip(selected.clip);
                     this.setState({
-                      currentAnim: '',
+                      currentAnim: "",
                     });
                   }}
                 />
@@ -801,82 +802,82 @@ export default class ShootingRange extends Component {
             ) : (
               <>
                 <ViroText
-                  text="Score 25 To Unlock AK"
+                  text='Score 25 To Unlock AK'
                   position={[2.8, -0.5, -10]}
                   width={3}
                   height={2}
                   style={{
                     fontSize: 40,
-                    textAlign: 'center',
-                    fontWeight: '900',
+                    textAlign: "center",
+                    fontWeight: "900",
                   }}
-                  transformBehaviors={['billboard']}
-                  viroTag={'Start'}
+                  transformBehaviors={["billboard"]}
+                  viroTag={"Start"}
                   onCollision={this.startGame}
                 />
                 <ViroSphere
                   position={[-1.2, 1.3, -10]}
                   radius={0.3}
-                  materials={['greenMetal']}
+                  materials={["greenMetal"]}
                   physicsBody={{
-                    type: 'Static',
+                    type: "Static",
                     mass: 0,
                     useGravity: false,
                     velocity: [0, 0, 0],
                   }}
-                  transformBehaviors={['billboard']}
+                  transformBehaviors={["billboard"]}
                   onCollision={() =>
-                    this.props.setDifficulty(['Easy', 'greenMetal'])
+                    this.props.setDifficulty(["Easy", "greenMetal"])
                   }
                 />
                 <ViroSphere
                   position={[-0.4, 1.7, -10]}
                   radius={0.3}
-                  materials={['gold']}
+                  materials={["gold"]}
                   physicsBody={{
-                    type: 'Static',
+                    type: "Static",
                     mass: 0,
                     useGravity: false,
                     velocity: [0, 0, 0],
                   }}
-                  transformBehaviors={['billboard']}
+                  transformBehaviors={["billboard"]}
                   onCollision={() =>
-                    this.props.setDifficulty(['Normal', 'gold'])
+                    this.props.setDifficulty(["Normal", "gold"])
                   }
                 />
                 <ViroSphere
                   position={[0.4, 1.7, -10]}
                   radius={0.3}
-                  materials={['redMetal']}
+                  materials={["redMetal"]}
                   physicsBody={{
-                    type: 'Static',
+                    type: "Static",
                     mass: 0,
                     useGravity: false,
                     velocity: [0, 0, 0],
                   }}
-                  transformBehaviors={['billboard']}
+                  transformBehaviors={["billboard"]}
                   onCollision={() =>
-                    this.props.setDifficulty(['Hard', 'redMetal'])
+                    this.props.setDifficulty(["Hard", "redMetal"])
                   }
                 />
                 <ViroSphere
                   position={[1.2, 1.3, -10]}
                   radius={0.3}
-                  materials={['diamondPlate']}
+                  materials={["diamondPlate"]}
                   physicsBody={{
-                    type: 'Static',
+                    type: "Static",
                     mass: 0,
                     useGravity: false,
                     velocity: [0, 0, 0],
                   }}
-                  transformBehaviors={['billboard']}
+                  transformBehaviors={["billboard"]}
                   onCollision={() =>
-                    this.props.setDifficulty(['Expert', 'diamondPlate'])
+                    this.props.setDifficulty(["Expert", "diamondPlate"])
                   }
                 />
                 <Viro3DObject
                   source={handgun}
-                  type="VRX"
+                  type='VRX'
                   position={[-1.4, 0, -5]}
                   scale={[0.0013, 0.0013, 0.0013]}
                   rotation={[180, 180, 180]}
@@ -885,30 +886,30 @@ export default class ShootingRange extends Component {
                   height={0.9}
                   width={1}
                   position={[-1.7, 0, -6]}
-                  transformBehaviors={['billboard']}
-                  materials={['shiny']}
+                  transformBehaviors={["billboard"]}
+                  materials={["shiny"]}
                   physicsBody={{
-                    type: 'Static',
+                    type: "Static",
                     mass: 0,
                     useGravity: false,
                     velocity: [0, 0, 0],
                   }}
                   onCollision={() => {
-                    this.props.selectGun('handgun');
-                    selected = guns['handgun'];
+                    this.props.selectGun("handgun");
+                    selected = guns["handgun"];
                     this.props.setClip(selected.clip);
                     this.setState({
-                      currentAnim: '',
+                      currentAnim: "",
                     });
                   }}
                 />
               </>
             )}
-            {this.props.unlocked['Ak'] ? (
+            {this.props.unlocked["Ak"] ? (
               <>
                 <Viro3DObject
                   source={Ak}
-                  type="VRX"
+                  type='VRX'
                   position={[2, 0, -5]}
                   scale={[0.01, 0.01, 0.01]}
                   rotation={[180, 280, 180]}
@@ -917,43 +918,43 @@ export default class ShootingRange extends Component {
                   height={0.9}
                   width={1.8}
                   position={[2.15, 0, -6]}
-                  transformBehaviors={['billboard']}
-                  materials={['shiny']}
+                  transformBehaviors={["billboard"]}
+                  materials={["shiny"]}
                   physicsBody={{
-                    type: 'Static',
+                    type: "Static",
                     mass: 0,
                     useGravity: false,
                     velocity: [0, 0, 0],
                   }}
                   onCollision={() => {
-                    this.props.selectGun('Ak');
-                    selected = guns['Ak'];
+                    this.props.selectGun("Ak");
+                    selected = guns["Ak"];
                     this.props.setClip(selected.clip);
                     this.setState({
-                      currentAnim: '',
+                      currentAnim: "",
                     });
                   }}
                 />
               </>
             ) : (
               <ViroText
-                text="Score 25 To Unlock AK"
+                text='Score 25 To Unlock AK'
                 position={[2.8, -0.5, -10]}
                 width={3}
                 height={2}
                 style={{
                   fontSize: 40,
-                  textAlign: 'center',
-                  fontWeight: '900',
+                  textAlign: "center",
+                  fontWeight: "900",
                 }}
-                transformBehaviors={['billboard']}
+                transformBehaviors={["billboard"]}
               />
             )}
-            {this.props.unlocked['HaloBR'] ? (
+            {this.props.unlocked["HaloBR"] ? (
               <>
                 <Viro3DObject
                   source={HaloBR}
-                  type="VRX"
+                  type='VRX'
                   position={[0, -1.3, -5]}
                   scale={[0.0042, 0.0042, 0.0042]}
                   rotation={[0, -90, 0]}
@@ -962,37 +963,37 @@ export default class ShootingRange extends Component {
                   height={0.9}
                   width={2.5}
                   position={[0, -1.57, -6]}
-                  transformBehaviors={['billboard']}
-                  materials={['gold']}
+                  transformBehaviors={["billboard"]}
+                  materials={["gold"]}
                   physicsBody={{
-                    type: 'Static',
+                    type: "Static",
                     mass: 0,
                     useGravity: false,
                     velocity: [0, 0, 0],
                   }}
                   onCollision={() => {
                     this.resetShotSound();
-                    this.props.selectGun('HaloBR');
-                    selected = guns['HaloBR'];
+                    this.props.selectGun("HaloBR");
+                    selected = guns["HaloBR"];
                     this.props.setClip(selected.clip);
                     this.setState({
-                      currentAnim: '',
+                      currentAnim: "",
                     });
                   }}
                 />
               </>
             ) : (
               <ViroText
-                text="Score 35 To Unlock BR"
+                text='Score 35 To Unlock BR'
                 position={[0, -2.5, -10]}
                 width={3}
                 height={2}
                 style={{
                   fontSize: 40,
-                  textAlign: 'center',
-                  fontWeight: '900',
+                  textAlign: "center",
+                  fontWeight: "900",
                 }}
-                transformBehaviors={['billboard']}
+                transformBehaviors={["billboard"]}
               />
             )}
           </>
@@ -1002,369 +1003,123 @@ export default class ShootingRange extends Component {
   }
 }
 
-ViroAnimations.registerAnimations({
-  recoilUp: {
-    properties: {
-      positionX: 0.02,
-      positionY: -0.1 + 0.01,
-      positionZ: -0.2 + 0.05,
-    },
-    easing: 'easeOut',
-    duration: 150,
-  },
-  recoilDown: {
-    properties: {
-      positionX: 0.02,
-      positionY: -0.1,
-      positionZ: -0.2,
-    },
-    easing: 'easeIn',
-    duration: 150,
-  },
-  recoil: [['recoilUp', 'recoilDown']],
-});
-
-ViroAnimations.registerAnimations({
-  BRRecoilUp: {
-    properties: {
-      positionX: 0.02,
-      positionY: -0.069 + 0.01,
-      positionZ: -0.18 + 0.05,
-    },
-    easing: 'easeOut',
-    duration: 150,
-  },
-  BRRecoilDown: {
-    properties: {
-      positionX: 0.02,
-      positionY: -0.069,
-      positionZ: -0.18,
-    },
-    easing: 'easeIn',
-    duration: 150,
-  },
-  BRRecoil: [['BRRecoilUp', 'BRRecoilDown']],
-});
-
-ViroAnimations.registerAnimations({
-  AkRecoilUp: {
-    properties: {
-      positionX: 0.021,
-      positionY: -0.075 + 0.005,
-      positionZ: -0.125 + 0.015,
-    },
-    easing: 'easeOut',
-    duration: 25,
-  },
-  AkRecoilDown: {
-    properties: {
-      positionX: 0.021,
-      positionY: -0.075,
-      positionZ: -0.125,
-    },
-    easing: 'easeIn',
-    duration: 25,
-  },
-  AkRecoil: [['AkRecoilUp', 'AkRecoilDown']],
-});
-
-ViroAnimations.registerAnimations({
-  setPlace: {
-    properties: {
-      positionX: selected.position[0],
-      positionY: selected.position[1],
-      positionZ: selected.position[2],
-    },
-    duration: 50,
-  },
-});
-
-ViroAnimations.registerAnimations({
-  reloadStart: {
-    properties: {
-      rotateX: 0,
-      rotateY: 90,
-      rotateZ: 265,
-      positionX: 0.06,
-      positionY: -0.05,
-      positionZ: -0.2,
-    },
-    easing: 'easeOut',
-    duration: 250,
-  },
-  reloadMiddle: {
-    properties: { rotateX: 0, rotateY: 90, rotateZ: 265 },
-    easing: 'easeOut',
-    duration: 1900,
-  },
-  reloadEnd: {
-    properties: {
-      rotateX: 0,
-      rotateY: 90,
-      rotateZ: 355,
-      positionX: 0.02,
-      positionY: -0.1,
-      positionZ: -0.2,
-    },
-    easing: 'easeIn',
-    duration: 250,
-  },
-  reload: [['reloadStart', 'reloadMiddle', 'reloadEnd']],
-});
-
-ViroAnimations.registerAnimations({
-  BRReloadStart: {
-    properties: {
-      rotateX: 0,
-      rotateY: 180,
-      rotateZ: 265,
-      positionX: 0.06,
-      positionY: -0.047,
-      positionZ: -0.23,
-    },
-    easing: 'easeOut',
-    duration: 250,
-  },
-  BRReloadMiddle: {
-    properties: {
-      rotateX: 0,
-      rotateY: 180,
-      rotateZ: 265,
-    },
-    easing: 'easeOut',
-    duration: 1900,
-  },
-  BRReloadEnd: {
-    properties: {
-      rotateX: 0,
-      rotateY: 180,
-      rotateZ: 355,
-      positionX: 0.02,
-      positionY: -0.069,
-      positionZ: -0.18,
-    },
-    easing: 'easeIn',
-    duration: 250,
-  },
-  BRReload: [['BRReloadStart', 'BRReloadMiddle', 'BRReloadEnd']],
-});
-
-ViroAnimations.registerAnimations({
-  AkReloadStart: {
-    properties: {
-      rotateX: 353,
-      rotateY: 185,
-      rotateZ: 270,
-      positionX: 0.021,
-      positionY: -0.05,
-      positionZ: -0.1,
-    },
-    easing: 'easeOut',
-    duration: 250,
-  },
-  AkReloadMiddle: {
-    properties: {
-      rotateX: 353,
-      rotateY: 185,
-      rotateZ: 270,
-    },
-    easing: 'easeOut',
-    duration: 1900,
-  },
-  AkReloadEnd: {
-    properties: {
-      rotateX: 353,
-      rotateY: 185,
-      rotateZ: 350,
-      positionX: 0.021,
-      positionY: -0.075,
-      positionZ: -0.125,
-    },
-    easing: 'easeIn',
-    duration: 250,
-  },
-  AkReload: [['AkReloadStart', 'AkReloadMiddle', 'AkReloadEnd']],
-});
-
-// Magazine Aminations for reload
-ViroAnimations.registerAnimations({
-  magInitial: {
-    properties: {
-      rotateX: 90,
-      rotateY: 90,
-      rotateZ: 0,
-      positionX: 0.055,
-      positionY: -0.045,
-      positionZ: -0.11,
-    },
-    duration: 0,
-  },
-  magStart: {
-    properties: {
-      rotateX: 90,
-      rotateY: 90,
-      rotateZ: 0,
-      positionX: -0.5,
-      positionY: -0.045,
-      positionZ: -0.11,
-    },
-    easing: 'easeOut',
-    duration: 750,
-  },
-  magStartMiddle: {
-    properties: {
-      rotateX: 90,
-      rotateY: 90,
-      rotateZ: 0,
-      positionX: -0.5,
-      positionY: -0.045,
-      positionZ: -0.11,
-    },
-    easing: 'easeOut',
-    duration: 0,
-  },
-  magEndMiddle: {
-    properties: {
-      rotateX: 90,
-      rotateY: 90,
-      rotateZ: 0,
-      positionX: 0.055,
-      positionY: -0.045,
-      positionZ: -0.11,
-    },
-    easing: 'easeout',
-    duration: 750,
-  },
-  magEnd: {
-    properties: {
-      rotateX: 90,
-      rotateY: 90,
-      rotateZ: 0,
-      positionX: -10,
-      positionY: -0.045,
-      positionZ: -0.11,
-    },
-    duration: 0,
-  },
-
-  mag: [['magInitial', 'magStart', 'magStartMiddle', 'magEndMiddle', 'magEnd']],
-});
+animations(selected.position[0], selected.position[1], selected.position[2]);
 
 var styles = StyleSheet.create({
   helloWorldTextStyle: {
-    fontFamily: 'Arial',
+    fontFamily: "Arial",
     fontSize: 20,
-    color: 'white',
-    textAlignVertical: 'center',
-    textAlign: 'center',
+    color: "white",
+    textAlignVertical: "center",
+    textAlign: "center",
   },
 });
 
 ViroMaterials.createMaterials({
   black: {
-    diffuseTexture: require('./res/blackSphere.jpg'),
+    diffuseTexture: require("./res/blackSphere.jpg"),
   },
   metallic: {
-    diffuseTexture: require('./res/metallic.jpg'),
+    diffuseTexture: require("./res/metallic.jpg"),
   },
   brass: {
-    diffuseTexture: require('./res/brass.jpeg'),
+    diffuseTexture: require("./res/brass.jpeg"),
   },
   rough: {
-    diffuseTexture: require('./res/spheretex1.jpg'),
+    diffuseTexture: require("./res/spheretex1.jpg"),
   },
   desert: {
-    diffuseTexture: require('./res/desert.jpg'),
+    diffuseTexture: require("./res/desert.jpg"),
   },
   trippy: {
-    diffuseTexture: require('./res/spheretex2.jpg'),
+    diffuseTexture: require("./res/spheretex2.jpg"),
   },
   gold: {
-    diffuseTexture: require('./res/gold.jpg'),
+    diffuseTexture: require("./res/gold.jpg"),
   },
   blueMetal: {
-    diffuseTexture: require('./res/bluemetal.jpg'),
+    diffuseTexture: require("./res/bluemetal.jpg"),
   },
   redMetal: {
-    diffuseTexture: require('./res/redmetal3.jpg'),
+    diffuseTexture: require("./res/redmetal3.jpg"),
   },
   shiny: {
-    diffuseTexture: require('./res/shiny.jpg'),
+    diffuseTexture: require("./res/shiny.jpg"),
   },
   pink: {
-    diffuseTexture: require('./res/pink1.jpg'),
+    diffuseTexture: require("./res/pink1.jpg"),
   },
   neon: {
-    diffuseTexture: require('./res/neon.jpeg'),
+    diffuseTexture: require("./res/neon.jpeg"),
   },
   bullseyeSphere: {
-    diffuseTexture: require('./res/bullseye6.png'),
+    diffuseTexture: require("./res/bullseye6.png"),
   },
   bullseyeSphere2: {
-    diffuseTexture: require('./res/bullseye5.png'),
+    diffuseTexture: require("./res/bullseye5.png"),
   },
   bullseyeSphere3: {
-    diffuseTexture: require('./res/bullseye4.png'),
+    diffuseTexture: require("./res/bullseye4.png"),
   },
   bullseyeSphere4: {
-    diffuseTexture: require('./res/bullseye7.png'),
+    diffuseTexture: require("./res/bullseye7.png"),
   },
   bullseyeSphere5: {
-    diffuseTexture: require('./res/bullseye8.png'),
+    diffuseTexture: require("./res/bullseye8.png"),
   },
   bullseyeSphere6: {
-    diffuseTexture: require('./res/bullseye9.png'),
+    diffuseTexture: require("./res/bullseye9.png"),
   },
   bullseyeSphere7: {
-    diffuseTexture: require('./res/bullseye10.png'),
+    diffuseTexture: require("./res/bullseye10.png"),
   },
   bullseyeSphere8: {
-    diffuseTexture: require('./res/bullseye11.png'),
+    diffuseTexture: require("./res/bullseye11.png"),
   },
   bullseyeSphere9: {
-    diffuseTexture: require('./res/bullseye12.png'),
+    diffuseTexture: require("./res/bullseye12.png"),
   },
   bullseyeSphere10: {
-    diffuseTexture: require('./res/bullseye13.png'),
+    diffuseTexture: require("./res/bullseye13.png"),
   },
   planet1: {
-    diffuseTexture: require('./res/planet1.jpg'),
+    diffuseTexture: require("./res/planet1.jpg"),
   },
   planet2: {
-    diffuseTexture: require('./res/planet2.png'),
+    diffuseTexture: require("./res/planet2.png"),
   },
   planet3: {
-    diffuseTexture: require('./res/planet3.jpg'),
+    diffuseTexture: require("./res/planet3.jpg"),
   },
   planet4: {
-    diffuseTexture: require('./res/planet4.jpeg'),
+    diffuseTexture: require("./res/planet4.jpeg"),
   },
   planet5: {
-    diffuseTexture: require('./res/planet5.jpeg'),
+    diffuseTexture: require("./res/planet5.jpeg"),
   },
   planet6: {
-    diffuseTexture: require('./res/planet6.jpg'),
+    diffuseTexture: require("./res/planet6.jpg"),
   },
   planet7: {
-    diffuseTexture: require('./res/planet7.jpg'),
+    diffuseTexture: require("./res/planet7.jpg"),
   },
   planet8: {
-    diffuseTexture: require('./res/planet8.jpeg'),
+    diffuseTexture: require("./res/planet8.jpeg"),
   },
   planet9: {
-    diffuseTexture: require('./res/planet9.jpg'),
+    diffuseTexture: require("./res/planet9.jpg"),
   },
   neon2: {
-    diffuseTexture: require('./res/neon2.png'),
+    diffuseTexture: require("./res/neon2.png"),
   },
   silver: {
-    diffuseTexture: require('./res/silver.jpg'),
+    diffuseTexture: require("./res/silver.jpg"),
   },
   greenMetal: {
-    diffuseTexture: require('./res/greenMetal.jpg'),
+    diffuseTexture: require("./res/greenMetal.jpg"),
   },
   diamondPlate: {
-    diffuseTexture: require('./res/diamondPlate.jpg'),
+    diffuseTexture: require("./res/diamondPlate.jpg"),
   },
 });
 
