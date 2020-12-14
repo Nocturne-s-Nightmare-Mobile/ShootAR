@@ -24,8 +24,8 @@ import { connect } from 'react-redux';
 import { setFiring, setText } from './js/store';
 
 // Sets the default scene you want for AR and VR
-// var InitialARScene = require('./js/ARPortal');
-var InitialARScene = require('./js/ShootingRange');
+var InitialARScene = require('./js/ARPortal');
+// var InitialARScene = require('./js/ShootingRange');
 
 var UNSET = 'UNSET';
 var VR_NAVIGATOR_TYPE = 'VR';

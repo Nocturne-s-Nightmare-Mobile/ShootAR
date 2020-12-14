@@ -14,7 +14,7 @@ let defaultState = {
   difficulty: ['Normal', 'gold'],
   burst: false,
   gameStarted: false,
-  insideShootingRange: true,
+  insideShootingRange: false,
   //Comment out false unlocked values and uncomment true ones below to unlock
   //guns without earning it.
   unlocked: {
