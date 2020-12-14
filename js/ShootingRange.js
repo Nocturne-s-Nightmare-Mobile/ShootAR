@@ -172,7 +172,7 @@ export default class ShootingRange extends Component {
               [1, 1, 1],
               [0.5, 0.5, 0.5],
             ],
-            factor: 'Time',
+            factor: 'time',
             interpolation: [
               { endValue: [2, 2, 2], interval: [0, 150] },
               { endValue: [0, 0, 0], interval: [150, 300] },
