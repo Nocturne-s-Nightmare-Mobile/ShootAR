@@ -29,7 +29,7 @@ https://docs.viromedia.com/docs/quick-start<br>
 
 After installing the above, you then need to clone the repo and download the ViroMedia phone app.<br>
 
-At this point, you can run 'npm i' within the project to install dependencies.  Next, run 'npm start' within the project to launch the bundler.<br>
+At this point, you can run 'npm i' within the project to install dependencies. (For Windows users, remove the prestart script from package.json at this point)  Next, run 'npm start' within the project to launch the bundler.<br>
 
 Once the ViroMedia phone app is downloaded, you can click into it and access the menu at the top right.  (Your phone and computer must be on the same network) <br> Click the menu, and then click Enter Testbed.
 Within Testbed you can enter your computer's IPv4 address to bundle the project and run it on your phone.  If you don't know how to find your IPv4 address, run 'ipconfig getifaddr en0' in the terminal.
