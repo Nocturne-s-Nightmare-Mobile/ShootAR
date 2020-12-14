@@ -193,6 +193,9 @@ export default class ShootingRange extends Component {
     this.props.setHits(this.props.hits + 1);
     //Below function renders explosion on impact with target.  Commented out due to performance issues, but if we can optimize, would be cool to add back in.
     this.props.gameStarted && this.targetBoom(point);
+    setTimeout(() => {
+      this.targetExplosion = [];
+    }, 300);
   }
 
   startGame() {
@@ -408,7 +411,6 @@ export default class ShootingRange extends Component {
         currentAnim: '',
         canReload: true,
       });
-      this.targetExplosion = [];
       this.props.setFiring(false);
       this.props.setClip(this.props.selected.clip);
       this.props.setCanShoot(true);

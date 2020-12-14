@@ -31,7 +31,7 @@ export default class ARPortal extends Component {
       this.setState({
         elementToRender: (
           <ViroPortalScene
-            position={[0, -0.1, -1.4]}
+            position={[0, -0.1, -1]}
             passable={true}
             dragType="FixedDistance"
             onDrag={() => {}}
@@ -39,7 +39,7 @@ export default class ARPortal extends Component {
               this._onEnterPortal();
             }}
           >
-            <ViroPortal position={[0, -0.1, -1.4]} scale={[0.8, 1, 0.8]}>
+            <ViroPortal position={[0, -0.1, -1]} scale={[0.8, 1, 0.8]}>
               <Viro3DObject
                 source={require('./res/portals/portal_wood_frame.vrx')}
                 resources={[
