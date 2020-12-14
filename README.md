@@ -1,6 +1,11 @@
 # ShootAR
 
+<img src="./js/res/ShootAR.png" alt="ShootAR Lovo" width="500" height="200">
+
 ShootAR is an Augmented Reality mobile game that lets you enter a shooting range, choose a difficulty mode and then shoot randomly positioned targets in an attempt to get as high a score as possible within 60 seconds.
+
+<hr>
+
 Developers:  Chris Smith, Valentyna Vasylieva, Daniel Lee, Zachary Ernst.
 
 <hr>
