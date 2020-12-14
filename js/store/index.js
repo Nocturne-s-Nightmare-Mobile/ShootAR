@@ -17,15 +17,15 @@ let defaultState = {
   insideShootingRange: true,
   //Comment out false unlocked values and uncomment true ones below to unlock
   //guns without earning it.
-  // unlocked: {
-  //   HaloBR: false,
-  //   Ak: false,
-  // },
-  //Uncomment below and comment above to unlock guns
   unlocked: {
-    HaloBR: true,
-    Ak: true,
+    HaloBR: false,
+    Ak: false,
   },
+  //Uncomment below and comment above to unlock guns
+  // unlocked: {
+  //   HaloBR: true,
+  //   Ak: true,
+  // },
   score: 0,
   clip: 8,
   timer: 60,
