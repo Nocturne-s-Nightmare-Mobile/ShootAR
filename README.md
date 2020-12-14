@@ -12,26 +12,26 @@ Developers:  Chris Smith, Valentyna Vasylieva, Daniel Lee, Zachary Ernst.
 
 Instructions to play:
 
-To Launch ShootAR you must first download the Viro CLI tools:
-  On Mac run:
-  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+To Launch ShootAR you must first download the Viro CLI tools:<br>
+  On Mac run:<br>
+  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"<br>
 
-Then you must install Watchman:
-  On Mac run:
-  brew install watchman
+Then you must install Watchman:<br>
+  On Mac run:<br>
+  brew install watchman<br>
 
-If you don't already have node, this needs to be installed as well:
-  On Mac run:
-  brew install node
+If you don't already have node, this needs to be installed as well:<br>
+  On Mac run:<br>
+  brew install node<br>
 
-For Windows or Linux, please follow instructions here:
-https://docs.viromedia.com/docs/quick-start
+For Windows or Linux, please follow instructions here:<br>
+https://docs.viromedia.com/docs/quick-start<br>
 
-After installing the above, you then need to clone the repo and download the ViroMedia phone app.
+After installing the above, you then need to clone the repo and download the ViroMedia phone app.<br>
 
-At this point, you can run 'npm i' within the project to install dependencies.  Next, run 'npm start' within the project to launch the bundler.
+At this point, you can run 'npm i' within the project to install dependencies.  Next, run 'npm start' within the project to launch the bundler.<br>
 
-Once the ViroMedia phone app is downloaded, you can click into it and access the menu at the top right.  (Your phone and computer must be on the same network)  Click the menu, and then click Enter Testbed.
+Once the ViroMedia phone app is downloaded, you can click into it and access the menu at the top right.  (Your phone and computer must be on the same network) <br> Click the menu, and then click Enter Testbed.
 Within Testbed you can enter your computer's IPv4 address to bundle the project and run it on your phone.  If you don't know how to find your IPv4 address, run 'ipconfig getifaddr en0' in the terminal.
 
 Enjoy!
