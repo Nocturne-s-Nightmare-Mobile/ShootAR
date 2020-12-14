@@ -14,7 +14,7 @@ import {
 } from 'react-viro';
 import { getInsidePortal } from './store';
 
-const ShootingRange = require('./HelloWorldSceneAR');
+const ShootingRange = require('./ShootingRange.js');
 
 export default class ARPortal extends Component {
   constructor(props) {
